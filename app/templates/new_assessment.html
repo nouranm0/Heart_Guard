@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECG Analysis - HEARTGAURD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/assessment.css') }}">
+    <style>
+       
+        
+        /* Animation for results */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="theme-dark">
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <button class="back-button" onclick="window.location.href='/intro'">←</button>
+            <h1 class="page-title" data-i18n="new_assessment">New Assessment</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+            <button class="language-toggle" title="Toggle Language">ع</button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="assessment-content">
+       
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                    {{ message }}
+                    <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Main Assessment Card -->
+        <div class="assessment-card active-step">
+            <h3 class="card-title">
+                <span class="step-badge">1</span>
+                <span>ECG File Analysis</span>
+            </h3>
+            
+            <!-- Upload Section -->
+            <form id="uploadForm" method="POST" enctype="multipart/form-data">
+                <div id="uploadSection">
+                    <!-- File Upload Area -->
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                        </div>
+                        <p class="upload-text" data-i18n="click_to_upload">Click to upload ECG file</p>
+                        <p class="upload-format" data-i18n="supported_formats">
+                            Supported formats: xml, jpg, jpeg, png, pdf
+                        </p>
+                        <input type="file" id="fileInput" name="file" class="file-input" accept=".xml,.jpg,.jpeg,.png,.pdf,.mat,.csv">
+
+                    </div>
+
+                    <!-- File Preview -->
+                    <div class="file-preview" id="filePreview" style="display: none;">
+                        <div class="file-info">
+                            <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                                <polyline points="13 2 13 9 20 9"></polyline>
+                            </svg>
+                            <div class="file-details">
+                                <p class="file-name" id="fileName"></p>
+                                <p class="file-size" id="fileSize"></p>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-remove" id="removeFile" title="Remove file">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="card-actions">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/dashboard'">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="analyzeBtn" disabled>
+                            Analyze ECG
+                        </button>
+                    </div>
+                </div>
+            </form>
+     
+
+            <!-- Results Section -->
+{% if results %}
+<div class="results-container" id="resultsContainer">
+    <div class="results-header">
+        <h3>ECG Analysis Results</h3>
+    </div>
+    <div class="results-grid">
+        {% for label, prob in results %}
+        <div class="result-item">
+            <div class="result-label">{{ label }}</div>
+            <div class="result-probability">
+                <div class="probability-bar">
+                    <div class="probability-fill" style="width: {{ (prob*100)|round(2) }}%"></div>
+                </div>
+                <span class="probability-value">{{ (prob*100)|round(2) }}%</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Summary -->
+    <div class="analysis-summary">
+        <h4>Analysis Summary</h4>
+        {% set max_prob = 0 %}
+        {% set max_label = "" %}
+        {% for label, prob in results %}
+            {% if prob > max_prob %}
+                {% set max_prob = prob %}
+                {% set max_label = label %}
+            {% endif %}
+        {% endfor %}
+        <p class="summary-text">
+            The AI model has analyzed the uploaded ECG file and detected patterns associated with various cardiac conditions. 
+        </p>
+        {% if max_prob > 0.7 %}
+            <p class="summary-text">✅ High likelihood detected. Review closely.</p>
+        {% elif max_prob > 0.3 %}
+            <p class="summary-text">⚠️ Moderate likelihood detected. Consider follow-up tests.</p>
+        {% else %}
+            <p class="summary-text">ℹ️ Low likelihood detected. Patterns inconclusive.</p>
+        {% endif %}
+    </div>
+</div>
+{% elif request.method == 'POST' %}
+<div class="no-results">
+    <h4>Analysis Unsuccessful</h4>
+    <p>We couldn't analyze the uploaded file. Please make sure it's a valid ECG file format.</p>
+</div>
+{% endif %}
+
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script>
+        class AssessmentManager {
+            constructor() {
+                this.currentFile = null;
+                this.init();
+            }
+
+            init() {
+                console.log('AssessmentManager initialized');
+                this.setupFileUpload();
+            }
+
+            setupFileUpload() {
+                const uploadArea = document.getElementById('uploadArea');
+                const fileInput = document.getElementById('fileInput');
+                const filePreview = document.getElementById('filePreview');
+                const analyzeBtn = document.getElementById('analyzeBtn');
+                const removeFile = document.getElementById('removeFile');
+
+                if (!uploadArea || !fileInput) {
+                    console.error('Upload elements not found!');
+                    return;
+                }
+
+                console.log('Setting up file upload...');
+
+                // Click to upload
+                uploadArea.addEventListener('click', () => {
+                    console.log('Upload area clicked');
+                    fileInput.click();
+                });
+
+                // File input change
+                fileInput.addEventListener('change', (e) => {
+                    console.log('File input changed');
+                    if (e.target.files.length > 0) {
+                        this.handleFileSelect(e.target.files[0], uploadArea, filePreview, analyzeBtn);
+                    }
+                });
+
+                // Drag and drop
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragover');
+                });
+
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    if (e.dataTransfer.files.length > 0) {
+                        this.handleFileSelect(e.dataTransfer.files[0], uploadArea, filePreview, analyzeBtn);
+                    }
+                });
+
+                // Remove file
+                if (removeFile) {
+                    removeFile.addEventListener('click', () => {
+                        console.log('Remove file clicked');
+                        fileInput.value = '';
+                        this.currentFile = null;
+                        filePreview.style.display = 'none';
+                        uploadArea.style.display = 'block';
+                        analyzeBtn.disabled = true;
+                    });
+                }
+            }
+
+            handleFileSelect(file, uploadArea, filePreview, analyzeBtn) {
+                console.log('Processing file:', file.name);
+                
+                // Validate file
+                const allowedExtensions = ['xml', 'jpg', 'jpeg', 'png', 'pdf' , 'mat','csv'];
+                const fileExt = file.name.split('.').pop().toLowerCase();
+                const maxSize = 10 * 1024 * 1024; // 10MB
+
+                console.log('File extension:', fileExt);
+                console.log('File size:', (file.size / 1024 / 1024).toFixed(2), 'MB');
+
+                if (!allowedExtensions.includes(fileExt)) {
+                    this.showNotification(`Invalid file format (.${fileExt}). Supported: xml, jpg, png, pdf`, 'error');
+                    return;
+                }
+
+                if (file.size > maxSize) {
+                    this.showNotification(`File is too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum size is 10MB.`, 'error');
+                    return;
+                }
+
+                // Store file
+                this.currentFile = file;
+
+                // Update UI
+                if (document.getElementById('fileName')) {
+                    document.getElementById('fileName').textContent = file.name;
+                }
+                if (document.getElementById('fileSize')) {
+                    document.getElementById('fileSize').textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+                }
+
+                uploadArea.style.display = 'none';
+                filePreview.style.display = 'flex';
+                
+                // Enable analyze button
+                if (analyzeBtn) {
+                    analyzeBtn.disabled = false;
+                    console.log('Analyze button enabled');
+                }
+                
+                this.showNotification(`File "${file.name}" uploaded successfully!`, 'success');
+            }
+
+            showNotification(message, type = 'info') {
+                console.log('Notification:', type, message);
+                
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `flash-message flash-${type}`;
+                notification.innerHTML = `
+                    ${message}
+                    <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                `;
+
+                // Add to flash messages container
+                const container = document.querySelector('.flash-messages');
+                if (container) {
+                    container.appendChild(notification);
+                } else {
+                    // Create container if it doesn't exist
+                    const newContainer = document.createElement('div');
+                    newContainer.className = 'flash-messages';
+                    newContainer.appendChild(notification);
+                    document.querySelector('.assessment-content').prepend(newContainer);
+                }
+
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.style.opacity = '0';
+                        notification.style.transform = 'translateY(-10px)';
+                        setTimeout(() => notification.remove(), 300);
+                    }
+                }, 5000);
+            }
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, initializing AssessmentManager');
+            new AssessmentManager();
+        });
+
+        // Global function to reset analysis
+        function resetAnalysis() {
+            window.location.href = '/new-assessment';
+        }
+    </script>
+</body>
+</html>

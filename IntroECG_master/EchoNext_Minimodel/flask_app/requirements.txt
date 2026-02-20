@@ -1,0 +1,8 @@
+flask
+torch
+numpy
+pandas
+scipy
+Pillow
+xmltodict
+pytorch-lightning
