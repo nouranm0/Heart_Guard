@@ -1,19 +1,31 @@
-"""
-HEARTGAURD Flask Application Factory
-Initialize Flask app and register blueprints
-"""
+import pymysql
+pymysql.install_as_MySQLdb()  
 
 from flask import Flask
-
+from app.models import db
 
 def create_app():
-    """Create and configure the Flask application"""
-    app = Flask(__name__, 
-                template_folder='templates',
-                static_folder='static')
-    
-    # Register doctor blueprint
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'supersecretkey'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@localhost/ECGproject'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    db.init_app(app)
+
     from app.doctor.routes import doctor_bp
     app.register_blueprint(doctor_bp)
-    
+
     return app
+
+if __name__ == "__main__":
+    app = create_app()
+    with app.app_context():
+        try:
+            db.session.execute('SELECT 1')
+            print("Database connection successful.")
+            users = db.session.query(db.Model.metadata.tables['users']).all()
+            print("User table rows:")
+            for user in users:
+                print(user)
+        except Exception as e:
+            print(f"Database connection failed: {e}")
