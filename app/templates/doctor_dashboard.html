@@ -98,7 +98,7 @@
                         {% if is_admin %}Monitor all doctors across the system{% elif viewed_doctor %}Viewing patients managed by Dr. {{ viewed_doctor.username }}{% else %}Manage and monitor your patients' heart health{% endif %}
                     </p>
                 </div>
-                <div class="header-stats">
+                <!-- <div class="header-stats">
                     <div class="stat-badge">
                         <span class="badge-label" data-i18n="total_patients">{% if is_admin %}Total Doctors{% else %}Total Patients{% endif %}</span>
                         <span class="badge-value">{{ (doctors|default([])|length) if is_admin else (patients|default([])|length) }}</span>
@@ -114,7 +114,7 @@
                             <span class="badge-value">{{ patients|default([])|selectattr('risk','equalto','medium')|list|length }}</span>
                         </div>
                     {% endif %}
-                </div>
+                </div> -->
             </section>
 
             <!-- Search and Filter Section -->
