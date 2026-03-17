@@ -151,7 +151,14 @@
 
             <!-- CTA Button -->
             <div class="intro-cta-section">
-                <a href="/new-assessment" class="cta-button" data-i18n="intro_cta">Let's Start</a>
+                {% if user.role == 'doctor' %}
+                    <a href="/add-patient" class="cta-button" style="background: linear-gradient(135deg, var(--accent-glow), #00D9FF); margin-bottom: 15px;" data-i18n="add_patient">Add Patient</a>
+                    <a href="/new-assessment" class="cta-button" style="background: linear-gradient(135deg, var(--accent-glow), #00D9FF); margin-bottom: 15px;" data-i18n="Let's Start">Let's Start</a>
+                   
+                {% else %}
+                    <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 20px;">Admin users can create and manage doctors. New assessments can only be created by doctors.</p>
+                    <a href="/profile" class="cta-button" data-i18n="manage_system">Manage System</a>
+                {% endif %}
             </div>
         </div>
     </div>

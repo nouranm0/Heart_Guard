@@ -91,21 +91,11 @@
                 </div>
             </div>
         </aside>
-                </a>
-            </nav>
-
-            <!-- User Profile at Bottom -->
-            <div class="sidebar-bottom">
-                <div class="user-avatar-container">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Doctor" alt="Doctor Profile" class="user-avatar">
-                    <div class="user-status"></div>
-                </div>
-            </div>
-        </aside>
 
     <!-- Settings Container -->
     <div class="settings-container">
         <div class="settings-content">
+            <form method="post" action="{{ url_for('doctor.update_settings') }}">
             <!-- Profile Section -->
             <div class="settings-section">
                 <div class="section-header">
@@ -113,33 +103,33 @@
                 </div>
                     <div class="form-group">
                         <label data-i18n="first_name">First Name</label>
-                        <input type="text" placeholder="Ahmed" value="Ahmed">
+                        <input type="text" name="first_name" placeholder="Ahmed" value="{{ settings.first_name or '' }}">
                     </div>
                     <div class="form-group">
                         <label data-i18n="last_name">Last Name</label>
-                        <input type="text" placeholder="Hassan" value="Hassan">
+                        <input type="text" name="last_name" placeholder="Hassan" value="{{ settings.last_name or '' }}">
                     </div>
                 </div>
 
                 <div class="settings-group">
                     <div class="form-group full">
                         <label data-i18n="email">Email</label>
-                        <input type="email" placeholder="ahmed@example.com" value="ahmed@example.com">
+                        <input type="email" name="email" placeholder="ahmed@example.com" value="{{ user.email }}" readonly>
                     </div>
                 </div>
 
                 <div class="settings-group">
                     <div class="form-group">
                         <label data-i18n="phone">Phone</label>
-                        <input type="tel" placeholder="+1 (555) 123-4567" value="+1 (555) 123-4567">
+                        <input type="tel" name="phone" placeholder="+1 (555) 123-4567" value="{{ settings.phone or '' }}">
                     </div>
                     <div class="form-group">
                         <label data-i18n="date_of_birth">Date of Birth</label>
-                        <input type="date" value="1978-12-15">
+                        <input type="date" name="date_of_birth" value="{{ settings.date_of_birth.strftime('%Y-%m-%d') if settings.date_of_birth else '' }}">
                     </div>
                 </div>
 
-                <button class="btn btn-primary" data-i18n="save_changes">Save Changes</button>
+                <button type="submit" class="btn btn-primary" data-i18n="save_changes">Save Changes</button>
             </div>
 
             <!-- Notifications Section -->
@@ -155,7 +145,7 @@
                             <p class="toggle-desc" data-i18n="email_notif_desc">Receive alerts via email</p>
                         </div>
                         <label class="toggle-switch">
-                            <input type="checkbox" checked>
+                            <input type="checkbox" name="email_notifications" {{ 'checked' if settings.email_notifications else '' }}>
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
@@ -166,7 +156,7 @@
                             <p class="toggle-desc" data-i18n="push_notif_desc">Get alerts on your device</p>
                         </div>
                         <label class="toggle-switch">
-                            <input type="checkbox" checked>
+                            <input type="checkbox" name="push_notifications" {{ 'checked' if settings.push_notifications else '' }}>
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
@@ -177,7 +167,7 @@
                             <p class="toggle-desc" data-i18n="sms_notif_desc">Critical alerts via SMS</p>
                         </div>
                         <label class="toggle-switch">
-                            <input type="checkbox">
+                            <input type="checkbox" name="sms_notifications" {{ 'checked' if settings.sms_notifications else '' }}>
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
@@ -226,16 +216,16 @@
                             <p class="toggle-desc" data-i18n="dark_mode_desc">Use dark theme</p>
                         </div>
                         <label class="toggle-switch">
-                            <input type="checkbox" id="darkModeToggle" checked>
+                            <input type="checkbox" name="dark_mode" {{ 'checked' if settings.dark_mode else '' }}>
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
 
                     <div class="form-group">
                         <label data-i18n="language">Language</label>
-                        <select>
-                            <option value="en" selected>English</option>
-                            <option value="ar">العربية</option>
+                        <select name="language">
+                            <option value="en" {% if settings.language == 'en' %}selected{% endif %}>English</option>
+                            <option value="ar" {% if settings.language == 'ar' %}selected{% endif %}>العربية</option>
                         </select>
                     </div>
                 </div>
@@ -297,6 +287,7 @@
                 </div>
             </div>
         </div>
+        </form>
         </div>
     </div>
 

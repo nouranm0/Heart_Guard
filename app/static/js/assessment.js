@@ -73,7 +73,7 @@ class AssessmentManager {
                 this.currentFile = null;
                 filePreview.style.display = 'none';
                 uploadArea.style.display = 'block';
-                analyzeBtn.disabled = true;
+                this.updateAnalyzeButtonState(analyzeBtn);
             });
         }
     }
@@ -83,7 +83,7 @@ class AssessmentManager {
         
         // Validate file
 
-        const allowedExtensions = ['csv', 'xml', 'mat', 'jpg', 'jpeg', 'png', 'pdf', 'txt'];
+        const allowedExtensions = ['csv', 'xml', 'mat', 'pdf', 'jpg', 'jpeg', 'png'];
         const fileExt = file.name.split('.').pop().toLowerCase();
         const maxSize = 10 * 1024 * 1024; // 10MB
 
@@ -91,7 +91,7 @@ class AssessmentManager {
         console.log('File size:', (file.size / 1024 / 1024).toFixed(2), 'MB');
 
         if (!allowedExtensions.includes(fileExt)) {
-            this.showNotification(`Invalid file format (.${fileExt}). Supported: csv, xml, dat, mat, ecg, jpg, png, pdf, txt`, 'error');
+            this.showNotification(`Invalid file format (.${fileExt}). Supported: csv, xml, mat, pdf, jpg, jpeg, png`, 'error');
             return;
         }
 
@@ -114,10 +114,10 @@ class AssessmentManager {
         uploadArea.style.display = 'none';
         filePreview.style.display = 'flex';
         
-        // Enable analyze button
+        // Update analyze button state based on both file and patient selection
+        this.updateAnalyzeButtonState(analyzeBtn);
         if (analyzeBtn) {
-            analyzeBtn.disabled = false;
-            console.log('Analyze button enabled');
+            console.log('Analyze button state updated');
         }
         
         this.showNotification(`File "${file.name}" uploaded successfully!`, 'success');
@@ -130,9 +130,26 @@ class AssessmentManager {
     setupEventListeners() {
         // Analyze button
         const analyzeBtn = document.getElementById('analyzeBtn');
+        const patientSelect = document.getElementById('patientSelect');
+        const fileInput = document.getElementById('fileInput');
+        
         if (analyzeBtn) {
             analyzeBtn.addEventListener('click', () => {
                 this.analyzeECG();
+            });
+        }
+
+        // Patient selection validation
+        if (patientSelect) {
+            patientSelect.addEventListener('change', () => {
+                this.updateAnalyzeButtonState(analyzeBtn);
+            });
+        }
+
+        // File input validation
+        if (fileInput) {
+            fileInput.addEventListener('change', () => {
+                this.updateAnalyzeButtonState(analyzeBtn);
             });
         }
 
@@ -147,6 +164,16 @@ class AssessmentManager {
         }
     }
 
+    updateAnalyzeButtonState(analyzeBtn) {
+        if (!analyzeBtn) return;
+        
+        const patientSelect = document.getElementById('patientSelect');
+        const patientSelected = patientSelect && patientSelect.value !== '';
+        const fileSelected = this.currentFile !== null;
+        
+        analyzeBtn.disabled = !(patientSelected && fileSelected);
+    }
+
     // ============================================
     // ECG ANALYSIS
     // ============================================
@@ -154,6 +181,12 @@ class AssessmentManager {
     async analyzeECG() {
         if (!this.currentFile) {
             this.showNotification('Please select a file first', 'error');
+            return;
+        }
+
+        const patientId = document.getElementById('patientSelect').value;
+        if (!patientId) {
+            this.showNotification('Please select a patient first', 'error');
             return;
         }
 

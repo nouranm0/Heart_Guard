@@ -13,7 +13,9 @@
     <nav class="app-bar">
         <div class="app-bar-left">
             <button class="back-button" onclick="window.location.href='/intro'">←</button>
-            <h1 class="page-title" data-i18n="doctor_dashboard">Doctor Dashboard</h1>
+            <h1 class="page-title" data-i18n="doctor_dashboard">
+                {% if is_admin %}Admin Dashboard{% else %}Doctor Dashboard{% endif %}
+            </h1>
         </div>
         <div class="app-bar-right">
             <button class="theme-toggle" title="Toggle Theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
@@ -97,14 +99,20 @@
             <!-- Header Section -->
             <section class="dashboard-header">
                 <div class="header-title">
-                    <h2 data-i18n="monitored_patients">Monitored Patients</h2>
-                    <p class="subtitle" data-i18n="manage_patient_health">Manage and monitor your patients' heart health</p>
+                    <h2 data-i18n="monitored_patients">
+                        {% if is_admin %}All Doctors Overview{% else %}Monitored Patients{% endif %}
+                    </h2>
+                    <p class="subtitle" data-i18n="manage_patient_health">
+                        {% if is_admin %}Monitor all doctors across the system{% else %}Manage and monitor your patients' heart health{% endif %}
+                    </p>
                 </div>
                 <div class="header-stats">
-                    <div class="stat-badge">
-                        <span class="badge-label" data-i18n="total_patients">Total Patients</span>
-                        <span class="badge-value">12</span>
+                    <!-- ma7dah eshel el comment wla ymsa7o btgeb error -->
+                    <!-- <div class="stat-badge">
+                        <span class="badge-label" data-i18n="total_patients">{% if is_admin %}Total Doctors{% else %}Total Patients{% endif %}</span>
+                        <span class="badge-value">{{ doctors|length if is_admin else patients|length }}</span>
                     </div>
+                    {% if not is_admin %}
                     <div class="stat-badge alert-high">
                         <span class="badge-label" data-i18n="high_risk">High Risk</span>
                         <span class="badge-value">2</span>
@@ -112,190 +120,175 @@
                     <div class="stat-badge alert-medium">
                         <span class="badge-label" data-i18n="medium_risk">Medium Risk</span>
                         <span class="badge-value">3</span>
-                    </div>
+                    </div> -->
+                    {% endif %}
                 </div>
             </section>
 
             <!-- Search and Filter Section -->
             <section class="filter-section">
-                <input type="search" class="search-input" placeholder="Search patients..." data-i18n="search_placeholder">
-                <select class="filter-select">
-                    <option data-i18n="all_patients">All Patients</option>
-                    <option data-i18n="high_risk">High Risk</option>
-                    <option data-i18n="medium_risk">Medium Risk</option>
-                    <option data-i18n="low_risk">Low Risk</option>
-                </select>
+                <div class="search-filter-container">
+                    <!-- Search Bar -->
+                    <form method="get" action="/doctor-dashboard" class="search-form">
+                        <input type="search" name="q" value="{{ query or '' }}" class="search-input" placeholder="{% if is_admin %}Search doctors...{% else %}Search patients...{% endif %}" data-i18n="search_placeholder">
+                        <input type="hidden" name="risk" value="{{ risk_filter }}">
+                        <button type="submit" class="btn-search">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            Search
+                        </button>
+                    </form>
+
+                    <!-- Risk Filter Buttons (Doctor View Only) -->
+                    {% if not is_admin %}
+                    <div class="risk-filter-buttons">
+                        <form method="get" action="/doctor-dashboard" class="filter-form" style="display: flex; gap: 8px;">
+                            <input type="hidden" name="q" value="{{ query or '' }}">
+                            <button type="submit" name="risk" value="all" class="filter-btn {% if risk_filter == 'all' %}active{% endif %}">All Patients</button>
+                            <button type="submit" name="risk" value="high" class="filter-btn risk-high {% if risk_filter == 'high' %}active{% endif %}">🔴 High Risk</button>
+                            <button type="submit" name="risk" value="medium" class="filter-btn risk-medium {% if risk_filter == 'medium' %}active{% endif %}">🟠 Medium Risk</button>
+                            <button type="submit" name="risk" value="low" class="filter-btn risk-low {% if risk_filter == 'low' %}active{% endif %}">🟢 Low Risk</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    {% if is_admin %}
+                    <button class="btn-action btn-add" onclick="openAddUserModal()" title="Add a new doctor">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"></path>
+                        </svg>
+                        <span>Add Doctor</span>
+                    </button>
+                    {% else %}
+                    <a href="/add-patient" class="btn-action btn-add" title="Add a new patient">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"></path>
+                        </svg>
+                        <span>Add Patient</span>
+                    </a>
+                    {% endif %}
+                </div>
             </section>
 
             <!-- Patients List -->
             <section class="patients-list">
-                <!-- Patient Card 1 -->
-                <div class="patient-card alert-high">
-                    <div class="patient-header">
-                        <div class="patient-avatar">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Fatima" alt="Patient">
+                {% if is_admin %}
+                    <!-- Admin View: Show doctors as cards -->
+                    {% if doctors %}
+                        {% for doctor in doctors %}
+                        <div class="doctor-card">
+                            <div class="doctor-header">
+                                <div class="doctor-avatar">
+                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ doctor.username }}" alt="Doctor">
+                                </div>
+                                <div class="doctor-info">
+                                    <h3>Dr. {{ doctor.username }}</h3>
+                                    <p class="doctor-email">{{ doctor.email }}</p>
+                                    <p class="doctor-stats">
+                                        {% set doctor_patients = [] %}
+                                        {% for p in patients %}
+                                            {% if p.doctor_id == doctor.id %}
+                                                {% set _ = doctor_patients.append(p) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {{ doctor_patients|length }} patients
+                                    </p>
+                                </div>
+                                <div class="doctor-status">
+                                    <span class="status-badge success">Active</span>
+                                </div>
+                            </div>
+                            <div class="doctor-actions">
+                                <a href="/doctor/{{ doctor.id }}" class="btn-action btn-view">View Patients</a>
+                            </div>
                         </div>
-                        <div class="patient-info">
-                            <h3>Fatima Al-Mansoori</h3>
-                            <p class="patient-id">ID: P-2401-001 | 58 years old</p>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-data">
+                            <p>No doctors found in the system.</p>
+                            <button class="btn-add-patient" onclick="openAddUserModal()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 5v14M5 12h14"></path>
+                                </svg>
+                                Add Your First Doctor
+                            </button>
                         </div>
-                        <div class="patient-status alert-high">
-                            <span class="status-badge">High Risk</span>
+                    {% endif %}
+                {% else %}
+                    <!-- Doctor View: Show own patients -->
+                    {% if patients %}
+                        {% for patient in patients %}
+                        {% set assessment_count = patient.ecg_records|length %}
+                        {% set risk_class = 'alert-low' %}
+                        {% if patient.risk == 'high' %}
+                            {% set risk_class = 'alert-high' %}
+                        {% elif patient.risk == 'medium' %}
+                            {% set risk_class = 'alert-medium' %}
+                        {% endif %}
+                        <div class="patient-card {{ risk_class }}" data-risk="{{ patient.risk }}">
+                            <div class="patient-header">
+                                <div class="patient-avatar">
+                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ patient.name }}" alt="Patient">
+                                </div>
+                                <div class="patient-info">
+                                    <h3>{{ patient.name }}</h3>
+                                    <p class="patient-id">
+                                        {% if patient.birthday %}
+                                            {{ ((current_date - patient.birthday).days // 365) }} years old
+                                        {% else %}
+                                            Age not specified
+                                        {% endif %}
+                                        {% if patient.phone %} | {{ patient.phone }}{% endif %}
+                                    </p>
+                                </div>
+                                <div class="patient-status">
+                                    <span class="status-badge success">Active</span>
+                                </div>
+                            </div>
+                            <div class="patient-metrics">
+                                <div class="metric">
+                                    <span class="metric-icon">👤</span>
+                                    <span class="metric-label">Gender</span>
+                                    <span class="metric-value">{{ patient.gender or 'Not specified' }}</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-icon">📅</span>
+                                    <span class="metric-label">Registered</span>
+                                    <span class="metric-value">{{ patient.created_at.strftime('%b %d, %Y') }}</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-icon">🏥</span>
+                                    <span class="metric-label">Doctor</span>
+                                    <span class="metric-value">Dr. {{ user.username }}</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-icon">📊</span>
+                                    <span class="metric-label">Assessments</span>
+                                    <span class="metric-value">{{ patient.ecg_records|length }}</span>
+                                </div>
+                            </div>
+                            <div class="patient-actions">
+                                <a href="/patient/{{ patient.id }}" class="btn-action btn-view" data-i18n="view_details">View Details</a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="patient-metrics">
-                        <div class="metric">
-                            <span class="metric-icon"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span>
-                            <span class="metric-label">Heart Rate</span>
-                            <span class="metric-value">92 bpm</span>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-data">
+                            <p>You haven't added any patients yet.</p>
+                            <a href="/add-patient" class="btn-add-patient">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 5v14M5 12h14"></path>
+                                </svg>
+                                Add Your First Patient
+                            </a>
                         </div>
-                        <div class="metric">
-                            <span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M12 14v8M7.5 12.5h9M5 16h14"></path></svg></span>
-                            <span class="metric-label">BP</span>
-                            <span class="metric-value">145/92</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v5m0 10v5M6 8c0-1.657 1.343-3 3-3h6c1.657 0 3 1.343 3 3v8c0 3.314-2.686 6-6 6s-6-2.686-6-6V8z"></path></svg></span>
-                            <span class="metric-label">Temp</span>
-                            <span class="metric-value">37.8°C</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span>
-                            <span class="metric-label">Status</span>
-                            <span class="metric-value">Irregular</span>
-                        </div>
-                    </div>
-                    <div class="patient-actions">
-                        <button class="btn-action btn-view" data-i18n="view_details">View Details</button>
-                        <button class="btn-action btn-alert" data-i18n="send_alert">Send Alert</button>
-                    </div>
-                </div>
-
-                <!-- Patient Card 2 -->
-                <div class="patient-card alert-medium">
-                    <div class="patient-header">
-                        <div class="patient-avatar">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Mohammed" alt="Patient">
-                        </div>
-                        <div class="patient-info">
-                            <h3>Mohammed Al-Mazrouei</h3>
-                            <p class="patient-id">ID: P-2401-002 | 52 years old</p>
-                        </div>
-                        <div class="patient-status alert-medium">
-                            <span class="status-badge">Medium Risk</span>
-                        </div>
-                    </div>
-                    <div class="patient-metrics">
-                        <div class="metric">
-                            <span class="metric-icon"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span>
-                            <span class="metric-label">Heart Rate</span>
-                            <span class="metric-value">78 bpm</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M12 14v8M7.5 12.5h9M5 16h14"></path></svg></span>
-                            <span class="metric-label">BP</span>
-                            <span class="metric-value">128/82</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v5m0 10v5M6 8c0-1.657 1.343-3 3-3h6c1.657 0 3 1.343 3 3v8c0 3.314-2.686 6-6 6s-6-2.686-6-6V8z"></path></svg></span>
-                            <span class="metric-label">Temp</span>
-                            <span class="metric-value">37.1°C</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span>
-                            <span class="metric-label">Status</span>
-                            <span class="metric-value">Normal</span>
-                        </div>
-                    </div>
-                    <div class="patient-actions">
-                        <button class="btn-action btn-view" data-i18n="view_details">View Details</button>
-                        <button class="btn-action btn-monitor" data-i18n="monitor">Monitor</button>
-                    </div>
-                </div>
-
-                <!-- Patient Card 3 -->
-                <div class="patient-card">
-                    <div class="patient-header">
-                        <div class="patient-avatar">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Leila" alt="Patient">
-                        </div>
-                        <div class="patient-info">
-                            <h3>Leila Al-Suwaidi</h3>
-                            <p class="patient-id">ID: P-2401-003 | 45 years old</p>
-                        </div>
-                        <div class="patient-status">
-                            <span class="status-badge success">Low Risk</span>
-                        </div>
-                    </div>
-                    <div class="patient-metrics">
-                        <div class="metric">
-                            <span class="metric-icon">❤️</span>
-                            <span class="metric-label">Heart Rate</span>
-                            <span class="metric-value">72 bpm</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-icon">💨</span>
-                            <span class="metric-label">BP</span>
-                            <span class="metric-value">120/80</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-icon">🌡️</span>
-                            <span class="metric-label">Temp</span>
-                            <span class="metric-value">36.9°C</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-icon">📊</span>
-                            <span class="metric-label">Status</span>
-                            <span class="metric-value">Normal</span>
-                        </div>
-                    </div>
-                    <div class="patient-actions">
-                        <button class="btn-action btn-view" data-i18n="view_details">View Details</button>
-                        <button class="btn-action btn-monitor" data-i18n="monitor">Monitor</button>
-                    </div>
-                </div>
-
-                <!-- Patient Card 4 -->
-                <div class="patient-card">
-                    <div class="patient-header">
-                        <div class="patient-avatar">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed" alt="Patient">
-                        </div>
-                        <div class="patient-info">
-                            <h3>Ahmed Al-Dhaheri</h3>
-                            <p class="patient-id">ID: P-2401-004 | 60 years old</p>
-                        </div>
-                        <div class="patient-status">
-                            <span class="status-badge success">Low Risk</span>
-                        </div>
-                    </div>
-                    <div class="patient-metrics">
-                        <div class="metric">
-                            <span class="metric-icon">❤️</span>
-                            <span class="metric-label">Heart Rate</span>
-                            <span class="metric-value">68 bpm</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-icon">💨</span>
-                            <span class="metric-label">BP</span>
-                            <span class="metric-value">118/75</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-icon">🌡️</span>
-                            <span class="metric-label">Temp</span>
-                            <span class="metric-value">37.0°C</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-icon">📊</span>
-                            <span class="metric-label">Status</span>
-                            <span class="metric-value">Normal</span>
-                        </div>
-                    </div>
-                    <div class="patient-actions">
-                        <button class="btn-action btn-view" data-i18n="view_details">View Details</button>
-                        <button class="btn-action btn-monitor" data-i18n="monitor">Monitor</button>
-                    </div>
-                </div>
+                    {% endif %}
+                {% endif %}
             </section>
         </main>
     </div>
@@ -380,12 +373,255 @@
 
         .filter-section {
             display: flex;
-            gap: var(--spacing-md);
+            gap: var(--spacing-lg);
             margin-bottom: var(--spacing-xl);
+            flex-wrap: wrap;
+            align-items: flex-start;
+            animation: slideInUp 0.6s ease-out 0.2s both;
+        }
+
+        .search-filter-container {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .search-form {
+            display: flex;
+            gap: var(--spacing-md);
+            width: 100%;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: var(--spacing-md);
+            background: rgba(0, 217, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-glow);
+            background: rgba(0, 217, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.2);
+        }
+
+        /* Dark mode adjustments */
+        .theme-dark .search-input {
+            background: rgba(0, 217, 255, 0.1);
+        }
+
+        .btn-search {
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: linear-gradient(135deg, var(--accent-glow), var(--accent-dark));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .btn-search svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .risk-filter-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
             flex-wrap: wrap;
         }
 
-        .search-input,
+        .filter-form {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .filter-btn:hover {
+            background: rgba(0, 217, 255, 0.15);
+            border-color: var(--accent-glow);
+        }
+
+        .filter-btn.active {
+            background: rgba(0, 217, 255, 0.25);
+            border-color: var(--accent-glow);
+            color: var(--accent-glow);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.2);
+        }
+
+        .filter-btn.risk-high {
+            --risk-color: var(--danger, #ff4757);
+        }
+
+        .filter-btn.risk-high.active {
+            background: rgba(255, 71, 87, 0.2);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .filter-btn.risk-medium {
+            --risk-color: var(--warning, #ffc107);
+        }
+
+        .filter-btn.risk-medium.active {
+            background: rgba(255, 184, 28, 0.2);
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .filter-btn.risk-low {
+            --risk-color: #4caf50;
+        }
+
+        .filter-btn.risk-low.active {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4caf50;
+            color: #4caf50;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .btn-action svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .btn-all-patients {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4caf50;
+            color: #4caf50;
+        }
+
+        .btn-all-patients:hover {
+            background: rgba(76, 175, 80, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--accent-glow), var(--accent-dark));
+            color: white;
+            border: none;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.3);
+        }
+
+        /* Light mode adjustments */
+        .theme-light .btn-search,
+        .theme-light .btn-add {
+            color: #000;
+        }
+
+        @media (max-width: 1024px) {
+            .filter-section {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            .search-filter-container {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .action-buttons {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .btn-action {
+                flex: 1;
+                justify-content: center;
+                min-width: 140px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filter-section {
+                flex-direction: column;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .btn-search {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .filter-form {
+                flex-direction: column;
+            }
+
+            .filter-btn {
+                flex: 1;
+                text-align: center;
+            }
+
+            .action-buttons {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
         .filter-select {
             padding: var(--spacing-md);
             background: rgba(0, 217, 255, 0.05);
@@ -396,18 +632,13 @@
             transition: all 0.3s;
         }
 
-        .search-input {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .search-input:focus,
         .filter-select:focus {
             outline: none;
             border-color: var(--accent-glow);
             background: rgba(0, 217, 255, 0.1);
             box-shadow: 0 0 15px rgba(0, 217, 255, 0.2);
         }
+
 
         .patients-list {
             display: grid;
@@ -549,6 +780,11 @@
             cursor: pointer;
             transition: all 0.3s;
             font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
         }
 
         .btn-view {
@@ -632,7 +868,357 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+        .doctor-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 217, 255, 0.15);
+            border-color: var(--accent-glow);
+        }
+
+        .doctor-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .doctor-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--accent-glow);
+        }
+
+        .doctor-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .doctor-info h3 {
+            margin: 0 0 4px 0;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .doctor-email {
+            margin: 0 0 4px 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .doctor-stats {
+            margin: 0;
+            color: var(--accent-glow);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .doctor-status {
+            margin-left: auto;
+        }
+
+        .doctor-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .doctor-actions .btn-action {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .doctor-actions .btn-view {
+            background: linear-gradient(135deg, var(--accent-glow), var(--heart-glow));
+            color: white;
+        }
+
+        .doctor-actions .btn-view:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3);
+        }
+
+        .doctor-actions .btn-monitor {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .doctor-actions .btn-monitor:hover {
+            background: var(--card-bg);
+            border-color: var(--accent-glow);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 14, 39, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-dialog {
+            background: linear-gradient(135deg, var(--card-bg), var(--bg-secondary));
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 217, 255, 0.2), 0 0 40px rgba(255, 46, 99, 0.1);
+            animation: slideUp 0.3s ease-out;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--accent-glow);
+            transform: rotate(90deg);
+        }
+
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px 16px;
+            background: rgba(0, 217, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-glow);
+            background: rgba(0, 217, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.2);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--accent-glow), var(--heart-glow));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px 24px;
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--accent-glow);
+            border: 1px solid var(--accent-glow);
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(0, 217, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .modal-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .modal-message.show {
+            display: block;
+        }
+
+        .modal-message.success {
+            background: rgba(0, 217, 142, 0.2);
+            border: 1px solid rgba(0, 217, 142, 0.3);
+            color: #00d98e;
+        }
+
+        .modal-message.error {
+            background: rgba(255, 71, 87, 0.2);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            color: #ff4757;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
     </style>
+
+    <!-- Add User Modal -->
+    <div class="modal-overlay" id="addUserModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Doctor</h2>
+                <button class="modal-close" onclick="closeAddUserModal()">×</button>
+            </div>
+            <form class="modal-form" id="addUserForm" onsubmit="handleAddUserSubmit(event)">
+                <div class="form-group">
+                    <label for="username">Doctor Name *</label>
+                    <input type="text" id="username" name="username" placeholder="Enter doctor's name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" placeholder="Enter doctor's email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" name="password" placeholder="Create a secure password" required>
+                </div>
+                <div class="form-group">
+                    <label for="role">Role *</label>
+                    <select id="role" name="role" required>
+                        <option value="">Select a role</option>
+                        <option value="doctor" selected>Doctor</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div id="modalMessage" class="modal-message"></div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeAddUserModal()">Cancel</button>
+                    <button type="submit" class="btn-submit">Add Doctor</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
@@ -641,5 +1227,198 @@
     <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ecg.js') }}"></script>
+    <script>
+        // Modal Functions
+        function openAddUserModal() {
+            const modal = document.getElementById('addUserModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAddUserModal() {
+            const modal = document.getElementById('addUserModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Search and Filter Functions
+        function initializeSearch() {
+            const searchInput = document.querySelector('.search-input');
+            const filterSelect = document.querySelector('.filter-select');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', handleSearch);
+                console.log('Search input initialized');
+            } else {
+                console.log('Search input not found');
+            }
+
+            if (filterSelect) {
+                filterSelect.addEventListener('change', handleFilter);
+                console.log('Filter select initialized');
+            } else {
+                console.log('Filter select not found');
+            }
+        }
+
+        function handleSearch(event) {
+            const searchTerm = event.target.value.toLowerCase().trim();
+            const isAdmin = {{ is_admin|tojson }};
+            const items = isAdmin ? document.querySelectorAll('.doctor-card') : document.querySelectorAll('.patient-card');
+
+            console.log(`Searching for "${searchTerm}" in ${isAdmin ? 'doctors' : 'patients'}. Found ${items.length} items.`);
+
+            if (searchTerm === '') {
+                // Show all items when search is empty
+                items.forEach(item => {
+                    item.style.display = 'block';
+                });
+                return;
+            }
+
+            items.forEach(item => {
+                let name = '';
+                let details = '';
+
+                if (isAdmin) {
+                    const nameElement = item.querySelector('.doctor-info h3');
+                    const emailElement = item.querySelector('.doctor-email');
+                    name = nameElement ? nameElement.textContent.toLowerCase() : '';
+                    details = emailElement ? emailElement.textContent.toLowerCase() : '';
+                } else {
+                    const nameElement = item.querySelector('.patient-info h3');
+                    const idElement = item.querySelector('.patient-id');
+                    name = nameElement ? nameElement.textContent.toLowerCase() : '';
+                    details = idElement ? idElement.textContent.toLowerCase() : '';
+                }
+
+                const matches = name.includes(searchTerm) || details.includes(searchTerm);
+                item.style.display = matches ? 'block' : 'none';
+
+                if (matches) {
+                    console.log(`Match found: ${name} - ${details}`);
+                }
+            });
+        }
+
+        function handleFilter(event) {
+            const filterValue = event.target.value;
+            const isAdmin = {{ is_admin|tojson }};
+            const items = isAdmin ? document.querySelectorAll('.doctor-card') : document.querySelectorAll('.patient-card');
+
+            console.log(`Filtering by "${filterValue}" for ${isAdmin ? 'admin' : 'doctor'} view`);
+
+            if (filterValue === 'All Doctors' || filterValue === 'All Patients') {
+                items.forEach(item => {
+                    item.style.display = 'block';
+                });
+                return;
+            }
+
+            // For non-admin view, handle risk-based filtering
+            if (!isAdmin) {
+                if (filterValue === 'High Risk') {
+                    items.forEach(item => {
+                        // Check if patient card has high risk class or data attribute
+                        const hasHighRisk = item.classList.contains('alert-high') ||
+                                          item.dataset.risk === 'high' ||
+                                          item.querySelector('.risk-indicator.high');
+                        item.style.display = hasHighRisk ? 'block' : 'none';
+                    });
+                } else if (filterValue === 'Medium Risk') {
+                    items.forEach(item => {
+                        const hasMediumRisk = item.classList.contains('alert-medium') ||
+                                            item.dataset.risk === 'medium' ||
+                                            item.querySelector('.risk-indicator.medium');
+                        item.style.display = hasMediumRisk ? 'block' : 'none';
+                    });
+                } else if (filterValue === 'Low Risk') {
+                    items.forEach(item => {
+                        const hasLowRisk = item.classList.contains('alert-low') ||
+                                         item.dataset.risk === 'low' ||
+                                         item.querySelector('.risk-indicator.low') ||
+                                         (!item.classList.contains('alert-high') &&
+                                          !item.classList.contains('alert-medium'));
+                        item.style.display = hasLowRisk ? 'block' : 'none';
+                    });
+                } else {
+                    // Unknown filter value, show all
+                    items.forEach(item => {
+                        item.style.display = 'block';
+                    });
+                }
+            } else {
+                // For admin view, all non-"All" options show all doctors
+                items.forEach(item => {
+                    item.style.display = 'block';
+                });
+            }
+        }
+
+        // Initialize search when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeSearch);
+            document.getElementById('addUserForm').reset();
+            document.getElementById('modalMessage').classList.remove('show');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('addUserModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAddUserModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAddUserModal();
+            }
+        });
+
+        async function handleAddUserSubmit(event) {
+            event.preventDefault();
+            const form = document.getElementById('addUserForm');
+            const messageDiv = document.getElementById('modalMessage');
+            const submitBtn = form.querySelector('.btn-submit');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Adding...';
+
+            try {
+                const formData = new FormData(form);
+                const response = await fetch('/add-user', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok || result.success) {
+                    messageDiv.textContent = result.message || 'Doctor added successfully!';
+                    messageDiv.className = 'modal-message show success';
+                    form.reset();
+                    
+                    // Close modal after 2 seconds and reload
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    messageDiv.textContent = result.message || 'Failed to add doctor. Please try again.';
+                    messageDiv.className = 'modal-message show error';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.className = 'modal-message show error';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Add Doctor';
+            }
+        }
+    </script>
 </body>
 </html>
