@@ -81,7 +81,7 @@
                         <option value="">-- Choose a patient --</option>
                         {% if patients %}
                             {% for patient in patients %}
-                            <option value="{{ patient.id }}">{{ patient.name }} ({{ patient.phone or 'No phone' }})</option>
+                            <option value="{{ patient.id }}" {% if selected_patient and selected_patient.id == patient.id %}selected{% endif %}>{{ patient.name }} ({{ patient.phone or 'No phone' }})</option>
                             {% endfor %}
                         {% else %}
                             <option value="">No patients available. Add patients first.</option>

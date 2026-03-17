@@ -135,7 +135,7 @@ def model_page():
     return render_template('model.html')
 
 # -----------------------------------------
-# Doctor Dashboard - View Patients (Admin sees all, Doctor sees own patients only)
+# Doctor Dashboard - View Patients (Admin sees all, Doctor sees own patients only, Admin can view specific doctor's patients)
 @doctor_bp.route('/doctor-dashboard')
 def doctor_dashboard():
     if 'user_id' not in session:
@@ -144,6 +144,15 @@ def doctor_dashboard():
     user_id = session['user_id']
     user = User.query.get(user_id)
 
+    # Check if admin is viewing a specific doctor's patients
+    view_doctor_id = request.args.get('doctor_id', type=int)
+    viewed_doctor = None
+    if view_doctor_id and user.role == 'admin':
+        viewed_doctor = User.query.filter_by(id=view_doctor_id, role='doctor').first()
+        if not viewed_doctor:
+            flash('Doctor not found.', 'error')
+            return redirect(url_for('doctor.doctor_dashboard'))
+
     # Search query (for patients/doctors)
     query = request.args.get('q', '').strip()
     risk_filter = request.args.get('risk', 'all').lower()
@@ -151,7 +160,7 @@ def doctor_dashboard():
         risk_filter = 'all'
 
     # Admin can see all doctors, Doctor can only see their own patients
-    if user.role == 'admin':
+    if user.role == 'admin' and not view_doctor_id:
         doctors_query = User.query.filter_by(role='doctor')
         if query:
             doctors_query = doctors_query.filter(
@@ -174,7 +183,9 @@ def doctor_dashboard():
             risk_filter=risk_filter
         )
     else:
-        patients_query = Patient.query.filter_by(doctor_id=user_id)
+        # If admin viewing specific doctor, or doctor viewing own
+        target_doctor_id = view_doctor_id if view_doctor_id else user_id
+        patients_query = Patient.query.filter_by(doctor_id=target_doctor_id)
         if query:
             patients_query = patients_query.filter(
                 db.or_(
@@ -202,7 +213,9 @@ def doctor_dashboard():
             'doctor_dashboard.html',
             user=user,
             patients=patients,
-            is_admin=False,
+            viewed_doctor=viewed_doctor,
+            is_admin=user.role == 'admin' and not view_doctor_id,
+            is_viewing_doctor=bool(view_doctor_id),
             current_date=datetime.utcnow().date(),
             query=query,
             risk_filter=risk_filter
@@ -354,6 +367,15 @@ def new_assessment():
     user_id = session['user_id']
     patients = Patient.query.filter_by(doctor_id=user_id).all()
 
+    # Get patient from query param if provided
+    selected_patient_id = request.args.get('patient')
+    selected_patient = None
+    if selected_patient_id:
+        selected_patient = Patient.query.filter_by(id=selected_patient_id, doctor_id=user_id).first()
+        if not selected_patient:
+            flash('Patient not found or access denied.', 'error')
+            return redirect(url_for('doctor.new_assessment'))
+
     validation_result = {}
     all_results = []
     top_diagnosis = None
@@ -392,23 +414,33 @@ def new_assessment():
             processing_error = None
 
             if ext in ["csv", "pdf", "mat"]:
-                validation_result = validate_and_predict(file_path) or {}
-                if validation_result.get("prediction"):
-                    all_results = [(k, v) for k, v in validation_result["prediction"].items()]
+                try:
+                    validation_result = validate_and_predict(file_path) or {}
+                except Exception as ve:
+                    processing_error = f"Validation service error: {str(ve)}"
+                    validation_result = {}
+                prediction = validation_result.get("prediction") or {}
+                if prediction:
+                    all_results = [(k, v) for k, v in prediction.items()]
                     top_diagnosis = validation_result.get("top_diagnosis")
                     top_confidence = validation_result.get("top_confidence")
-                    full_results = validation_result.get("prediction", {})
+                    full_results = prediction
                 elif not validation_result.get("is_valid", False):
                     processing_error = f"File validation failed: {', '.join(validation_result.get('reasons', ['Unknown validation error']))}"
 
             elif ext == "xml":
-                echonext_results = echonext_predict(file_path)
+                try:
+                    echonext_results = echonext_predict(file_path)
+                except Exception as ee:
+                    processing_error = f"EchoNext service error: {str(ee)}"
+                    echonext_results = {}
                 if echonext_results and echonext_results.get("is_ecg"):
-                    if echonext_results.get("prediction"):
-                        all_results = [(k, v) for k, v in echonext_results.get("prediction").items()]
+                    prediction = echonext_results.get("prediction") or {}
+                    if prediction:
+                        all_results = [(k, v) for k, v in prediction.items()]
                         top_diagnosis = echonext_results.get("top_diagnosis")
                         top_confidence = echonext_results.get("top_confidence", 0)
-                        full_results = echonext_results.get("prediction", {})
+                        full_results = prediction
                     else:
                         processing_error = "XML file detected as ECG but no analysis results generated"
                 else:
@@ -416,20 +448,28 @@ def new_assessment():
 
             elif ext in ["jpg", "jpeg", "png"]:
                 # Try validation service first
-                validation_result = validate_and_predict(file_path) or {}
-                if validation_result.get("prediction"):
-                    all_results = [(k, v) for k, v in validation_result["prediction"].items()]
+                try:
+                    validation_result = validate_and_predict(file_path) or {}
+                except Exception as ve:
+                    validation_result = {}
+                prediction = validation_result.get("prediction") or {}
+                if prediction:
+                    all_results = [(k, v) for k, v in prediction.items()]
                     top_diagnosis = validation_result.get("top_diagnosis")
                     top_confidence = validation_result.get("top_confidence")
-                    full_results = validation_result.get("prediction", {})
+                    full_results = prediction
 
                 # Also try EchoNext for images
-                echonext_results = echonext_predict(file_path)
+                try:
+                    echonext_results = echonext_predict(file_path)
+                except Exception as ee:
+                    echonext_results = {}
                 if echonext_results and echonext_results.get("is_ecg"):
-                    for k, v in echonext_results.get("prediction", {}).items():
+                    prediction = echonext_results.get("prediction") or {}
+                    for k, v in prediction.items():
                         all_results.append((f"{k}", v/10))
                     if not full_results:
-                        full_results.update(echonext_results.get("prediction", {}))
+                        full_results.update(prediction)
                         top_diagnosis = echonext_results.get("top_diagnosis")
                         top_confidence = echonext_results.get("top_confidence", 0)
 
@@ -458,9 +498,14 @@ def new_assessment():
 
                 # Create alert for the assessment completion
                 patient = Patient.query.get(int(patient_id))
-                alert_type = 'critical' if top_confidence and top_confidence > 0.8 else 'warning' if top_confidence and top_confidence > 0.5 else 'info'
                 alert_title = f"New ECG Assessment Completed for {patient.name}"
-                alert_message = f"Diagnosis: {top_diagnosis or 'Analysis completed'} (Confidence: {top_confidence:.1% if top_confidence else 'N/A'})"
+                try:
+                    confidence_str = f"{top_confidence:.1%}" if top_confidence is not None and isinstance(top_confidence, (int, float)) else 'N/A'
+                    alert_message = f"Diagnosis: {top_diagnosis or 'Analysis completed'} (Confidence: {confidence_str})"
+                except Exception:
+                    alert_message = f"Diagnosis: {top_diagnosis or 'Analysis completed'} (Confidence: N/A)"
+                
+                alert_type = 'critical' if top_confidence and isinstance(top_confidence, (int, float)) and top_confidence > 0.8 else 'warning' if top_confidence and isinstance(top_confidence, (int, float)) and top_confidence > 0.5 else 'info'
                 
                 create_alert(user_id, int(patient_id), alert_type, alert_title, alert_message)
 
@@ -477,7 +522,7 @@ def new_assessment():
             print(f"Error in new_assessment: {e}")
             import traceback
             traceback.print_exc()
-            flash('An unexpected error occurred during assessment. Please check the file format and try again.', 'error')
+            flash(f'An unexpected error occurred during assessment: {str(e)}. Please check the file format and try again.', 'error')
             db.session.rollback()
 
         return redirect(url_for('doctor.new_assessment'))
@@ -488,7 +533,8 @@ def new_assessment():
         top_diagnosis=top_diagnosis,
         top_confidence=top_confidence,
         validation=validation_result,
-        patients=patients
+        patients=patients,
+        selected_patient=selected_patient
     )
 
 # -----------------------------------------
