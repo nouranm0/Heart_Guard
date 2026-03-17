@@ -74,6 +74,7 @@
                 </a>
 
                 <!-- New Assessment -->
+                {% if session.get('role') != 'admin' %}
                 <a href="/new-assessment" class="nav-item" data-tooltip="New Assessment">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <path d="M12 5v14"></path>
@@ -82,6 +83,7 @@
                     </svg>
                     <span class="nav-tooltip">New Assessment</span>
                 </a>
+                {% endif %}
 
                 <!-- Settings -->
                 <a href="/settings" class="nav-item" data-tooltip="Settings">

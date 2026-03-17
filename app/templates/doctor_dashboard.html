@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Dashboard - HEARTGAURD</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') if url_for is defined else '/static/css/main.css' }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') if url_for is defined else '/static/css/dashboard.css' }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="theme-dark">
@@ -14,7 +14,7 @@
         <div class="app-bar-left">
             <button class="back-button" onclick="window.location.href='/intro'">←</button>
             <h1 class="page-title" data-i18n="doctor_dashboard">
-                {% if is_admin %}Admin Dashboard{% else %}Doctor Dashboard{% endif %}
+                {% if is_admin %}Doctors{% else %}Doctor Dashboard{% endif %}
             </h1>
         </div>
         <div class="app-bar-right">
@@ -55,15 +55,15 @@
                     <span class="nav-tooltip">Dashboard</span>
                 </a>
 
-                <!-- Patients (Active) -->
-                <a href="/doctor-dashboard" class="nav-item active" data-tooltip="Patients">
+                <!-- Patients/Doctors (Active) -->
+                <a href="/doctor-dashboard" class="nav-item active" data-tooltip="{% if is_admin %}Doctors{% else %}Patients{% endif %}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                         <circle cx="9" cy="7" r="4"></circle>
                         <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
                         <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                     </svg>
-                    <span class="nav-tooltip">Patients</span>
+                    <span class="nav-tooltip">{% if is_admin %}Doctors{% else %}Patients{% endif %}</span>
                 </a>
 
                 <!-- Alerts -->
@@ -84,14 +84,6 @@
                     <span class="nav-tooltip">Settings</span>
                 </a>
             </nav>
-
-            <!-- User Profile at Bottom -->
-            <div class="sidebar-bottom">
-                <div class="user-avatar-container">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Doctor" alt="Doctor Profile" class="user-avatar">
-                    <div class="user-status"></div>
-                </div>
-            </div>
         </aside>
 
         <!-- Main Content with Scrollbar Indicators -->
@@ -100,27 +92,27 @@
             <section class="dashboard-header">
                 <div class="header-title">
                     <h2 data-i18n="monitored_patients">
-                        {% if is_admin %}All Doctors Overview{% else %}Monitored Patients{% endif %}
+                        {% if is_admin %}All Doctors Overview{% elif viewed_doctor %}Dr. {{ viewed_doctor.username }}'s Patients{% else %}Monitored Patients{% endif %}
                     </h2>
                     <p class="subtitle" data-i18n="manage_patient_health">
-                        {% if is_admin %}Monitor all doctors across the system{% else %}Manage and monitor your patients' heart health{% endif %}
+                        {% if is_admin %}Monitor all doctors across the system{% elif viewed_doctor %}Viewing patients managed by Dr. {{ viewed_doctor.username }}{% else %}Manage and monitor your patients' heart health{% endif %}
                     </p>
                 </div>
                 <div class="header-stats">
-                    <!-- ma7dah eshel el comment wla ymsa7o btgeb error -->
-                    <!-- <div class="stat-badge">
+                    <div class="stat-badge">
                         <span class="badge-label" data-i18n="total_patients">{% if is_admin %}Total Doctors{% else %}Total Patients{% endif %}</span>
-                        <span class="badge-value">{{ doctors|length if is_admin else patients|length }}</span>
+                        <span class="badge-value">{{ (doctors|default([])|length) if is_admin else (patients|default([])|length) }}</span>
                     </div>
+
                     {% if not is_admin %}
-                    <div class="stat-badge alert-high">
-                        <span class="badge-label" data-i18n="high_risk">High Risk</span>
-                        <span class="badge-value">2</span>
-                    </div>
-                    <div class="stat-badge alert-medium">
-                        <span class="badge-label" data-i18n="medium_risk">Medium Risk</span>
-                        <span class="badge-value">3</span>
-                    </div> -->
+                        <div class="stat-badge alert-high">
+                            <span class="badge-label" data-i18n="high_risk">High Risk</span>
+                            <span class="badge-value">{{ patients|default([])|selectattr('risk','equalto','high')|list|length }}</span>
+                        </div>
+                        <div class="stat-badge alert-medium">
+                            <span class="badge-label" data-i18n="medium_risk">Medium Risk</span>
+                            <span class="badge-value">{{ patients|default([])|selectattr('risk','equalto','medium')|list|length }}</span>
+                        </div>
                     {% endif %}
                 </div>
             </section>
@@ -131,6 +123,7 @@
                     <!-- Search Bar -->
                     <form method="get" action="/doctor-dashboard" class="search-form">
                         <input type="search" name="q" value="{{ query or '' }}" class="search-input" placeholder="{% if is_admin %}Search doctors...{% else %}Search patients...{% endif %}" data-i18n="search_placeholder">
+                        {% if viewed_doctor %}<input type="hidden" name="doctor_id" value="{{ viewed_doctor.id }}">{% endif %}
                         <input type="hidden" name="risk" value="{{ risk_filter }}">
                         <button type="submit" class="btn-search">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -146,6 +139,8 @@
                     <div class="risk-filter-buttons">
                         <form method="get" action="/doctor-dashboard" class="filter-form" style="display: flex; gap: 8px;">
                             <input type="hidden" name="q" value="{{ query or '' }}">
+                            {% if viewed_doctor %}<input type="hidden" name="doctor_id" value="{{ viewed_doctor.id }}">{% endif %}
+                            <input type="hidden" name="risk" value="{{ risk_filter }}">
                             <button type="submit" name="risk" value="all" class="filter-btn {% if risk_filter == 'all' %}active{% endif %}">All Patients</button>
                             <button type="submit" name="risk" value="high" class="filter-btn risk-high {% if risk_filter == 'high' %}active{% endif %}">🔴 High Risk</button>
                             <button type="submit" name="risk" value="medium" class="filter-btn risk-medium {% if risk_filter == 'medium' %}active{% endif %}">🟠 Medium Risk</button>
@@ -164,6 +159,13 @@
                         </svg>
                         <span>Add Doctor</span>
                     </button>
+                    {% elif viewed_doctor %}
+                    <a href="/doctor-dashboard" class="btn-action btn-view" title="Back to Doctors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                        </svg>
+                        <span>Back to Doctors</span>
+                    </a>
                     {% else %}
                     <a href="/add-patient" class="btn-action btn-add" title="Add a new patient">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -204,7 +206,7 @@
                                 </div>
                             </div>
                             <div class="doctor-actions">
-                                <a href="/doctor/{{ doctor.id }}" class="btn-action btn-view">View Patients</a>
+                                <a href="/doctor-dashboard?doctor_id={{ doctor.id }}" class="btn-action btn-view">View Patients</a>
                             </div>
                         </div>
                         {% endfor %}
@@ -238,7 +240,7 @@
                                 <div class="patient-info">
                                     <h3>{{ patient.name }}</h3>
                                     <p class="patient-id">
-                                        {% if patient.birthday %}
+                                        {% if patient.birthday and current_date is defined %}
                                             {{ ((current_date - patient.birthday).days // 365) }} years old
                                         {% else %}
                                             Age not specified
@@ -259,12 +261,12 @@
                                 <div class="metric">
                                     <span class="metric-icon">📅</span>
                                     <span class="metric-label">Registered</span>
-                                    <span class="metric-value">{{ patient.created_at.strftime('%b %d, %Y') }}</span>
+                                    <span class="metric-value">{{ patient.created_at.strftime('%b %d, %Y') if patient.created_at else 'Unknown' }}</span>
                                 </div>
                                 <div class="metric">
                                     <span class="metric-icon">🏥</span>
                                     <span class="metric-label">Doctor</span>
-                                    <span class="metric-value">Dr. {{ user.username }}</span>
+                                    <span class="metric-value">Dr. {{ user.username if user is defined and user else 'Unknown' }}</span>
                                 </div>
                                 <div class="metric">
                                     <span class="metric-icon">📊</span>
@@ -274,18 +276,23 @@
                             </div>
                             <div class="patient-actions">
                                 <a href="/patient/{{ patient.id }}" class="btn-action btn-view" data-i18n="view_details">View Details</a>
+                                {% if user.role != 'admin' %}
+                                <a href="/new-assessment?patient={{ patient.id }}" class="btn-action btn-new-assessment">New Assessment</a>
+                                {% endif %}
                             </div>
                         </div>
                         {% endfor %}
                     {% else %}
                         <div class="no-data">
-                            <p>You haven't added any patients yet.</p>
+                            <p>{% if viewed_doctor %}Dr. {{ viewed_doctor.username }} hasn't added any patients yet.{% else %}You haven't added any patients yet.{% endif %}</p>
+                            {% if not viewed_doctor %}
                             <a href="/add-patient" class="btn-add-patient">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M12 5v14M5 12h14"></path>
                                 </svg>
                                 Add Your First Patient
                             </a>
+                            {% endif %}
                         </div>
                     {% endif %}
                 {% endif %}
@@ -797,6 +804,16 @@
             box-shadow: 0 8px 20px rgba(0, 217, 255, 0.3);
         }
 
+        .btn-new-assessment {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            color: white;
+        }
+
+        .btn-new-assessment:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
         .btn-alert {
             background: linear-gradient(135deg, #FF4757 0%, #FF1744 100%);
             color: white;
@@ -1221,12 +1238,12 @@
     </div>
 
     <!-- Scripts -->
-    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/ecg.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') if url_for is defined else '/static/js/theme.js' }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') if url_for is defined else '/static/js/language.js' }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') if url_for is defined else '/static/js/animations.js' }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') if url_for is defined else '/static/js/navigation.js' }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') if url_for is defined else '/static/js/dashboard.js' }}"></script>
+    <script src="{{ url_for('static', filename='js/ecg.js') if url_for is defined else '/static/js/ecg.js' }}"></script>
     <script>
         // Modal Functions
         function openAddUserModal() {
@@ -1263,7 +1280,7 @@
 
         function handleSearch(event) {
             const searchTerm = event.target.value.toLowerCase().trim();
-            const isAdmin = {{ is_admin|tojson }};
+            const isAdmin = '{{ is_admin|tojson }}' === 'true';
             const items = isAdmin ? document.querySelectorAll('.doctor-card') : document.querySelectorAll('.patient-card');
 
             console.log(`Searching for "${searchTerm}" in ${isAdmin ? 'doctors' : 'patients'}. Found ${items.length} items.`);
@@ -1303,7 +1320,7 @@
 
         function handleFilter(event) {
             const filterValue = event.target.value;
-            const isAdmin = {{ is_admin|tojson }};
+            const isAdmin = '{{ is_admin|tojson }}' === 'true';
             const items = isAdmin ? document.querySelectorAll('.doctor-card') : document.querySelectorAll('.patient-card');
 
             console.log(`Filtering by "${filterValue}" for ${isAdmin ? 'admin' : 'doctor'} view`);
@@ -1356,10 +1373,11 @@
         }
 
         // Initialize search when DOM is loaded
-        document.addEventListener('DOMContentLoaded', initializeSearch);
-            document.getElementById('addUserForm').reset();
-            document.getElementById('modalMessage').classList.remove('show');
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+    initializeSearch();
+    document.getElementById('addUserForm').reset();
+    document.getElementById('modalMessage').classList.remove('show');
+});
 
         // Close modal when clicking outside
         document.getElementById('addUserModal')?.addEventListener('click', function(e) {

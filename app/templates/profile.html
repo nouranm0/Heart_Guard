@@ -111,15 +111,15 @@
                     <span class="nav-tooltip">Dashboard</span>
                 </a>
 
-                <!-- Patients -->
-                <a href="/doctor-dashboard" class="nav-item" data-tooltip="Patients">
+                <!-- Patients/Doctors -->
+                <a href="/doctor-dashboard" class="nav-item" data-tooltip="{% if user.role == 'admin' %}Doctors{% else %}Patients{% endif %}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                         <circle cx="9" cy="7" r="4"></circle>
                         <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
                         <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                     </svg>
-                    <span class="nav-tooltip">Patients</span>
+                    <span class="nav-tooltip">{% if user.role == 'admin' %}Doctors{% else %}Patients{% endif %}</span>
                 </a>
 
                 <!-- Alerts -->
@@ -132,6 +132,7 @@
                 </a>
 
                 <!-- New Assessment -->
+                {% if session.get('role') != 'admin' %}
                 <a href="/new-assessment" class="nav-item" data-tooltip="New Assessment">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <path d="M12 5v14"></path>
@@ -140,6 +141,7 @@
                     </svg>
                     <span class="nav-tooltip">New Assessment</span>
                 </a>
+                {% endif %}
 
                 <!-- Profile (Active) -->
                 <a href="/profile" class="nav-item active" data-tooltip="Profile">
