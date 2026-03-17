@@ -69,3 +69,46 @@ class AuditLog(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('User', backref='audit_logs')
+
+
+class Alert(db.Model):
+    __tablename__ = 'alerts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
+    patient_id = db.Column(db.Integer, db.ForeignKey('patients.id', ondelete='CASCADE'))
+    alert_type = db.Column(db.Enum('critical', 'warning', 'info'), default='info')
+    title = db.Column(db.String(255), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    is_read = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='alerts')
+    patient = db.relationship('Patient', backref='alerts')
+
+
+class UserSettings(db.Model):
+    __tablename__ = 'user_settings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), unique=True)
+    
+    # Notification preferences
+    email_notifications = db.Column(db.Boolean, default=True)
+    push_notifications = db.Column(db.Boolean, default=True)
+    sms_notifications = db.Column(db.Boolean, default=False)
+    
+    # Appearance settings
+    dark_mode = db.Column(db.Boolean, default=True)
+    language = db.Column(db.String(10), default='en')
+    
+    # Profile info
+    first_name = db.Column(db.String(100))
+    last_name = db.Column(db.String(100))
+    phone = db.Column(db.String(20))
+    date_of_birth = db.Column(db.Date)
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = db.relationship('User', backref='settings')

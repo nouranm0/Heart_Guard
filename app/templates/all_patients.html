@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Patients - HEARTGAURD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="theme-dark">
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <button class="back-button" onclick="window.location.href='/doctor-dashboard'">←</button>
+            <h1 class="page-title">All Patients</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
+            <button class="language-toggle" title="Toggle Language">ع</button>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Professional Left Sidebar Navigation -->
+        <aside class="dashboard-sidebar">
+            <!-- Logo Section -->
+            <div class="sidebar-logo-section">
+                <div class="sidebar-logo" onclick="window.location.href='/dashboard'">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50,15 Q35,30 25,45 Q20,52 25,60 Q35,70 50,85 Q65,70 75,60 Q80,52 75,45 Q65,30 50,15 Z" fill="url(#heartGradient)" stroke="currentColor" stroke-width="1.5"/>
+                        <defs>
+                            <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--accent-glow);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:var(--heart-glow);stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Navigation Items -->
+            <nav class="sidebar-nav">
+                <!-- Dashboard -->
+                <a href="/dashboard" class="nav-item" data-tooltip="Dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span class="nav-tooltip">Dashboard</span>
+                </a>
+
+                <!-- Patients (Active) -->
+                <a href="/all-patients" class="nav-item active" data-tooltip="All Patients">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span class="nav-tooltip">All Patients</span>
+                </a>
+
+                <!-- Alerts -->
+                <a href="/alerts" class="nav-item" data-tooltip="Alerts">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="nav-tooltip">Alerts</span>
+                </a>
+
+                <!-- Settings -->
+                <a href="/settings" class="nav-item" data-tooltip="Settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6m-16.78 7.78l4.24-4.24m3.08-3.08l4.24-4.24"></path>
+                    </svg>
+                    <span class="nav-tooltip">Settings</span>
+                </a>
+            </nav>
+
+            <!-- User Profile at Bottom -->
+            <div class="sidebar-bottom">
+                <div class="user-avatar-container">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" alt="Admin Profile" class="user-avatar">
+                    <div class="user-status"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="doctor-dashboard-content">
+            <!-- Header Section -->
+            <section class="dashboard-header">
+                <div class="header-title">
+                    <h2>All Patients System-wide</h2>
+                    <p class="subtitle">View and manage all patients across all doctors</p>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-badge">
+                        <span class="badge-label">Total Patients</span>
+                        <span class="badge-value">{{ patients|length }}</span>
+                    </div>
+                    <div class="stat-badge alert-high">
+                        <span class="badge-label">High Risk</span>
+                        <span class="badge-value">{{ patients|selectattr('risk', 'equalto', 'high')|list|length }}</span>
+                    </div>
+                    <div class="stat-badge alert-medium">
+                        <span class="badge-label">Medium Risk</span>
+                        <span class="badge-value">{{ patients|selectattr('risk', 'equalto', 'medium')|list|length }}</span>
+                    </div>
+                    <div class="stat-badge alert-low">
+                        <span class="badge-label">Low Risk</span>
+                        <span class="badge-value">{{ patients|selectattr('risk', 'equalto', 'low')|list|length }}</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Search and Filter Section -->
+            <section class="filter-section">
+                <form method="get" action="/all-patients" class="search-form">
+                    <input type="search" name="q" value="{{ query or '' }}" class="search-input" placeholder="Search by name or phone...">
+                    <input type="hidden" name="risk" value="{{ risk_filter }}">
+                    <input type="hidden" name="sort" value="{{ sort_by }}">
+                    <button type="submit" class="btn-search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </form>
+
+                <div class="filter-group">
+                    <a href="/all-patients?q={{ query|urlencode }}&risk=all&sort={{ sort_by }}" class="filter-btn {% if risk_filter == 'all' %}active{% endif %}">All</a>
+                    <a href="/all-patients?q={{ query|urlencode }}&risk=high&sort={{ sort_by }}" class="filter-btn {% if risk_filter == 'high' %}active{% endif %}">🔴 High Risk</a>
+                    <a href="/all-patients?q={{ query|urlencode }}&risk=medium&sort={{ sort_by }}" class="filter-btn {% if risk_filter == 'medium' %}active{% endif %}">🟠 Medium Risk</a>
+                    <a href="/all-patients?q={{ query|urlencode }}&risk=low&sort={{ sort_by }}" class="filter-btn {% if risk_filter == 'low' %}active{% endif %}">🟢 Low Risk</a>
+                </div>
+
+                <div class="sort-selector">
+                    <label>Sort by:</label>
+                    <div class="sort-options">
+                        <a href="/all-patients?q={{ query|urlencode }}&risk={{ risk_filter }}&sort=recent" class="sort-btn {% if sort_by == 'recent' %}active{% endif %}">Recent</a>
+                        <a href="/all-patients?q={{ query|urlencode }}&risk={{ risk_filter }}&sort=oldest" class="sort-btn {% if sort_by == 'oldest' %}active{% endif %}">Oldest</a>
+                        <a href="/all-patients?q={{ query|urlencode }}&risk={{ risk_filter }}&sort=name" class="sort-btn {% if sort_by == 'name' %}active{% endif %}">Name</a>
+                        <a href="/all-patients?q={{ query|urlencode }}&risk={{ risk_filter }}&sort=doctor" class="sort-btn {% if sort_by == 'doctor' %}active{% endif %}">Doctor</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Patients Table View -->
+            <section class="patients-table">
+                {% if patients|length > 0 %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Phone</th>
+                                <th>Age</th>
+                                <th>Doctor</th>
+                                <th>Risk Level</th>
+                                <th>Assessments</th>
+                                <th>Registered</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for patient in patients %}
+                            <tr class="risk-{{ patient.risk }}">
+                                <td class="patient-name">
+                                    <strong>{{ patient.name }}</strong>
+                                </td>
+                                <td>{{ patient.phone or 'N/A' }}</td>
+                                <td>
+                                    {% if patient.birthday %}
+                                        {{ ((current_date - patient.birthday).days // 365) }} years
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if patient.doctor %}
+                                        Dr. {{ patient.doctor.username }}
+                                    {% else %}
+                                        Not assigned
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="risk-badge risk-{{ patient.risk }}">
+                                        {% if patient.risk == 'high' %}
+                                            🔴 High
+                                        {% elif patient.risk == 'medium' %}
+                                            🟠 Medium
+                                        {% else %}
+                                            🟢 Low
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td>{{ patient.ecg_records|length }}</td>
+                                <td>{{ patient.created_at.strftime('%b %d, %Y') }}</td>
+                                <td>
+                                    <a href="/patient/{{ patient.id }}" class="action-link">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="no-data">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="empty-icon">
+                            <circle cx="50" cy="50" r="45" fill="rgba(0, 217, 255, 0.1)" stroke="var(--accent-glow)" stroke-width="2"/>
+                            <path d="M35 40 Q50 35 65 40" stroke="var(--accent-glow)" stroke-width="2" fill="none"/>
+                            <circle cx="40" cy="35" r="2" fill="var(--accent-glow)"/>
+                            <circle cx="60" cy="35" r="2" fill="var(--accent-glow)"/>
+                            <path d="M40 55 Q50 60 60 55" stroke="var(--accent-glow)" stroke-width="2" fill="none"/>
+                        </svg>
+                        <p>No patients found matching your filters.</p>
+                    </div>
+                {% endif %}
+            </section>
+        </main>
+    </div>
+
+    <style>
+        .sort-selector {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-left: auto;
+            padding: 0 var(--spacing-lg);
+        }
+
+        .sort-selector label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .sort-options {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .sort-btn {
+            padding: 6px 12px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid transparent;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .sort-btn:hover,
+        .sort-btn.active {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: var(--accent-glow);
+            color: var(--accent-glow);
+        }
+
+        .patients-table {
+            margin-top: var(--spacing-xl);
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.04), rgba(0, 217, 255, 0.02));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .data-table thead {
+            background: rgba(0, 217, 255, 0.08);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .data-table th {
+            padding: var(--spacing-lg);
+            text-align: left;
+            font-weight: 700;
+            color: var(--accent-glow);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table td {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .data-table tbody tr {
+            transition: all 0.3s;
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(0, 217, 255, 0.08);
+        }
+
+        .data-table tbody tr.risk-high:hover {
+            background: rgba(255, 71, 87, 0.08);
+        }
+
+        .data-table tbody tr.risk-medium:hover {
+            background: rgba(255, 184, 28, 0.08);
+        }
+
+        .data-table tbody tr.risk-low:hover {
+            background: rgba(76, 175, 80, 0.08);
+        }
+
+        .patient-name {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .risk-badge.risk-high {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--danger);
+        }
+
+        .risk-badge.risk-medium {
+            background: rgba(255, 184, 28, 0.2);
+            color: var(--warning);
+        }
+
+        .risk-badge.risk-low {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .action-link {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(0, 217, 255, 0.2);
+            color: var(--accent-glow);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .action-link:hover {
+            background: rgba(0, 217, 255, 0.3);
+            transform: translateX(2px);
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--spacing-lg);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: var(--spacing-xl);
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+
+        .no-data p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 1.05rem;
+        }
+
+        @media (max-width: 768px) {
+            .sort-selector {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-left: 0;
+                margin-top: var(--spacing-md);
+                padding: var(--spacing-lg) 0;
+                border-top: 1px solid var(--border-color);
+            }
+
+            .data-table {
+                font-size: 0.85rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: var(--spacing-md);
+            }
+        }
+    </style>
+
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+</body>
+</html>

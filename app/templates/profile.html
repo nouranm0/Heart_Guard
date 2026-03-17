@@ -202,17 +202,7 @@
                         {% if user.role == 'doctor' %}
                         <div class="detail-item">
                             <label>Patients:</label>
-                            <span>
-                                {% if user.patients %}
-                                <ul>
-                                {% for patient in user.patients %}
-                                    <li>{{ patient.name }} - {{ patient.phone or 'No phone' }}</li>
-                                {% endfor %}
-                                </ul>
-                                {% else %}
-                                No patients assigned.
-                                {% endif %}
-                            </span>
+                            <span>{{ user.patients|length }} patients assigned</span>
                         </div>
                         {% endif %}
                     </div>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ patient.name }} - Patient Details - HEARTGAURD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="theme-dark">
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <button class="back-button" onclick="window.location.href='/doctor-dashboard'">←</button>
+            <h1 class="page-title">{{ patient.name }} - Patient Details</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+            <button class="language-toggle" title="Toggle Language">ع</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="detail-page-content">
+        <!-- Patient Info Panel -->
+        <section class="patient-info-panel">
+            <div class="patient-header">
+                <div class="patient-avatar-large">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ patient.name }}" alt="Patient">
+                </div>
+                <div class="patient-header-info">
+                    <h1>{{ patient.name }}</h1>
+                    {% if patient.birthday %}
+                        <p class="patient-age">{{ ((current_date - patient.birthday).days // 365) }} years old</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="patient-info-grid">
+                <div class="info-card">
+                    <span class="info-icon">👤</span>
+                    <span class="info-label">Gender</span>
+                    <span class="info-value">{{ patient.gender or 'Not specified' }}</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-icon">📞</span>
+                    <span class="info-label">Phone</span>
+                    <span class="info-value">{{ patient.phone or 'Not provided' }}</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-icon">📅</span>
+                    <span class="info-label">Registered</span>
+                    <span class="info-value">{{ patient.created_at.strftime('%b %d, %Y') }}</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-icon">📊</span>
+                    <span class="info-label">Total Assessments</span>
+                    <span class="info-value">{{ assessments|length }}</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Assessment History -->
+        <section class="assessment-history">
+            <h2>Assessment History</h2>
+            {% if assessments %}
+                <div class="assessments-timeline">
+                    {% for assessment in assessments %}
+                    <div class="assessment-item">
+                        <div class="assessment-date">
+                            {{ assessment.created_at.strftime('%b %d, %Y') }}<br>
+                            <small>{{ assessment.created_at.strftime('%H:%M') }}</small>
+                        </div>
+                        <div class="assessment-content">
+                            <div class="assessment-header">
+                                <h3>{{ assessment.file_name }}</h3>
+                                <span class="file-type-badge">{{ assessment.file_type|upper }}</span>
+                            </div>
+                            <div class="assessment-body">
+                                <div class="diagnosis-box">
+                                    <p class="diagnosis-label">Top Diagnosis</p>
+                                    <p class="diagnosis-result">{{ assessment.top_diagnosis or 'N/A' }}</p>
+                                    {% if assessment.top_confidence %}
+                                        <div class="confidence-bar" style="--confidence: {{ (assessment.top_confidence * 100)|round(1) }}%">
+                                            <div class="confidence-fill"></div>
+                                        </div>
+                                        <p class="confidence-text">Confidence: {{ (assessment.top_confidence * 100)|round(1) }}%</p>
+                                    {% endif %}
+                                </div>
+                                <div class="assessment-meta">
+                                    <p><strong>File Size:</strong> {{ (assessment.file_size / 1024)|round(2) }} KB</p>
+                                    <p><strong>Status:</strong> <span class="status-badge success">{{ assessment.validation_status }}</span></p>
+                                </div>
+                            </div>
+                            <div class="assessment-actions">
+                                <a href="/assessment/{{ assessment.id }}" class="btn-action btn-view-results">
+                                    View Full Results
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-assessments">
+                    <p>No assessments yet for this patient.</p>
+                    <a href="/new-assessment" class="btn-action btn-primary">Create Assessment</a>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <style>
+        .detail-page-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .patient-info-panel {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .patient-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .patient-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--accent-glow);
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
+        }
+
+        .patient-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .patient-header-info h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 8px 0;
+        }
+
+        .patient-age {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .patient-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .info-card {
+            background: rgba(0, 217, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+        }
+
+        .info-icon {
+            font-size: 2rem;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .assessment-history {
+            background: transparent;
+        }
+
+        .assessment-history h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 30px 0;
+        }
+
+        .assessments-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .assessment-item {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 20px;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .assessment-item:hover {
+            transform: translateX(8px);
+            border-color: var(--accent-glow);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.15);
+        }
+
+        .assessment-date {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 12px;
+            font-weight: 600;
+            color: var(--accent-glow);
+            text-align: center;
+        }
+
+        .assessment-date small {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 400;
+        }
+
+        .assessment-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .assessment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .assessment-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .file-type-badge {
+            background: linear-gradient(135deg, var(--accent-glow), var(--heart-glow));
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .assessment-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .diagnosis-box {
+            background: rgba(0, 217, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .diagnosis-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 0 0 8px 0;
+            font-weight: 600;
+        }
+
+        .diagnosis-result {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent-glow);
+            margin: 0 0 10px 0;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-glow), var(--heart-glow));
+            transition: width 0.3s ease;
+            width: var(--confidence, 0%);
+        }
+
+        .confidence-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .assessment-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .assessment-meta p {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: rgba(0, 217, 142, 0.2);
+            color: #00d98e;
+        }
+
+        .assessment-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-view-results {
+            flex: 1;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, var(--accent-glow), var(--heart-glow));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+        }
+
+        .btn-view-results:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .no-assessments {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
+            border: 1px dashed var(--border-color);
+            border-radius: 16px;
+        }
+
+        .no-assessments p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .detail-page-content {
+                padding: 20px;
+            }
+
+            .patient-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .patient-header-info h1 {
+                font-size: 1.5rem;
+            }
+
+            .assessment-item {
+                grid-template-columns: 1fr;
+            }
+
+            .assessment-body {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

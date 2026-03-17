@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Patient - Heart Guard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <style>
+        .patient-form-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 217, 255, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-glow);
+            box-shadow: 0 0 12px rgba(0, 217, 255, 0.3);
+            background: var(--input-bg-focus);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--accent-glow), var(--heart-glow));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px 24px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent-glow);
+        }
+
+        .form-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .form-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        body.light-mode .form-group input,
+        body.light-mode .form-group select {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 217, 255, 0.2);
+        }
+
+        body.light-mode .form-group input:focus,
+        body.light-mode .form-group select:focus {
+            background: white;
+            border-color: var(--accent-glow);
+        }
+    </style>
+</head>
+<body class="theme-dark">
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <button class="back-button" onclick="window.location.href='/intro'">←</button>
+            <h1 class="page-title">Add Patient</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+            <button class="language-toggle" title="Toggle Language">ع</button>
+        </div>
+    </nav>
+
+    <main class="assessment-content">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                    {{ message }}
+                    <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="patient-form-container">
+            <h2 class="form-title">Register New Patient</h2>
+            <p class="form-subtitle">Add a new patient to your care</p>
+
+            <form method="POST">
+                <div class="form-group">
+                    <label for="name">Patient Name *</label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        placeholder="Enter patient's full name"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        name="phone" 
+                        placeholder="Enter patient's phone number"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender">
+                        <option value="">Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="birthday">Date of Birth</label>
+                    <input 
+                        type="date" 
+                        id="birthday" 
+                        name="birthday"
+                    >
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Add Patient</button>
+                    <button type="button" class="btn-cancel" onclick="window.location.href='/intro'">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Results - HEARTGAURD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="theme-dark">
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <button class="back-button" onclick="window.history.back()">←</button>
+            <h1 class="page-title">Assessment Results</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+            <button class="language-toggle" title="Toggle Language">ع</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="results-page-content">
+        <!-- Header Summary -->
+        <section class="results-header">
+            <div class="header-left">
+                <h1>{{ patient.name }}'s ECG Assessment</h1>
+                <p class="assessment-date">{{ assessment.created_at.strftime('%B %d, %Y at %H:%M') }}</p>
+            </div>
+            <div class="header-right">
+                <div class="file-info">
+                    <span class="file-name">{{ assessment.file_name }}</span>
+                    <span class="file-type">{{ assessment.file_type|upper }}</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Diagnosis Card -->
+        <section class="diagnosis-section">
+            <div class="top-diagnosis-card">
+                <h2>Primary Diagnosis</h2>
+                <div class="diagnosis-display">
+                    <div class="diagnosis-label">{{ assessment.top_diagnosis or 'N/A' }}</div>
+                    {% if assessment.top_confidence %}
+                        <div class="confidence-display">
+                            <div class="confidence-circle">
+                                <svg viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(0,217,255,0.1)" stroke-width="8" />
+                                    <circle cx="50" cy="50" r="45" fill="none" stroke="url(#confidenceGradient)" stroke-width="8" 
+                                            stroke-dasharray="{{ assessment.top_confidence * 282.7 }} 282.7" 
+                                            transform="rotate(-90 50 50)" stroke-linecap="round" />
+                                    <defs>
+                                        <linearGradient id="confidenceGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#00d9ff;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#ff2e63;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <text x="50" y="50" text-anchor="middle" dy="0.3em" font-size="24" font-weight="bold" fill="currentColor">
+                                        {{ (assessment.top_confidence * 100)|round(1) }}%
+                                    </text>
+                                </svg>
+                            </div>
+                            <p class="confidence-text">Confidence Level</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Results -->
+        {% if assessment.full_results %}
+        <section class="detailed-results">
+            <h2>Detailed Analysis</h2>
+            <div class="results-grid">
+                {% for diagnosis, value in assessment.full_results.items() %}
+                <div class="result-card">
+                    <div class="result-header">
+                        <h4>{{ diagnosis }}</h4>
+                        <span class="result-percentage">{{ (value * 100)|round(1) }}%</span>
+                    </div>
+                    <div class="result-bar-container">
+                        <div class="result-bar" style="--result-fill: {{ (value * 100)|round(1) }}%">
+                            <div class="result-bar-fill"></div>
+                        </div>
+                    </div>
+                    <div class="result-meta">
+                        {% if value > 0.7 %}
+                            <span class="risk-level high">High Likelihood</span>
+                        {% elif value > 0.4 %}
+                            <span class="risk-level medium">Moderate Likelihood</span>
+                        {% else %}
+                            <span class="risk-level low">Low Likelihood</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Assessment Information -->
+        <section class="assessment-info">
+            <h2>Assessment Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Patient</span>
+                    <span class="info-value">{{ patient.name }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">File Type</span>
+                    <span class="info-value">{{ assessment.file_type|upper }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">File Size</span>
+                    <span class="info-value">{{ (assessment.file_size / 1024)|round(2) }} KB</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Status</span>
+                    <span class="info-value status-badge">{{ assessment.validation_status }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Assessment Date</span>
+                    <span class="info-value">{{ assessment.created_at.strftime('%B %d, %Y') }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Time</span>
+                    <span class="info-value">{{ assessment.created_at.strftime('%H:%M:%S') }}</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <section class="results-actions">
+            <a href="/patient/{{ patient.id }}" class="btn-action btn-secondary">Back to Patient</a>
+            <button class="btn-action btn-primary" onclick="window.print()">Print Report</button>
+        </section>
+    </main>
+
+    <style>
+        .results-page-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .header-left h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 8px 0;
+        }
+
+        .assessment-date {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-name {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .file-type {
+            background: linear-gradient(135deg, var(--accent-glow), var(--heart-glow));
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .diagnosis-section {
+            margin-bottom: 40px;
+        }
+
+        .top-diagnosis-card {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .top-diagnosis-card h2 {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin: 0 0 30px 0;
+            font-weight: 600;
+        }
+
+        .diagnosis-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .diagnosis-label {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-glow), var(--heart-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .confidence-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .confidence-circle {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+        }
+
+        .confidence-circle svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 10px rgba(0, 217, 255, 0.2));
+        }
+
+        .confidence-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .detailed-results {
+            margin-bottom: 40px;
+        }
+
+        .detailed-results h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 25px 0;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .result-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-glow);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.15);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-header h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .result-percentage {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-glow);
+        }
+
+        .result-bar-container {
+            margin-bottom: 12px;
+        }
+
+        .result-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .result-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-glow), var(--heart-glow));
+            transition: width 0.3s ease;
+            width: var(--result-fill, 0%);
+        }
+
+        .result-meta {
+            display: flex;
+            gap: 10px;
+        }
+
+        .risk-level {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .risk-level.high {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+        }
+
+        .risk-level.medium {
+            background: rgba(255, 184, 28, 0.2);
+            color: #ffc107;
+        }
+
+        .risk-level.low {
+            background: rgba(0, 217, 142, 0.2);
+            color: #00d98e;
+        }
+
+        .assessment-info {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .assessment-info h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 20px 0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 1.05rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(0, 217, 142, 0.2);
+            color: #00d98e;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .results-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-action {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-secondary {
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--accent-glow);
+            border: 1px solid var(--accent-glow);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 217, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-glow), var(--heart-glow));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.3);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media print {
+            .app-bar, .results-actions {
+                display: none;
+            }
+
+            .results-page-content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .results-page-content {
+                padding: 20px;
+            }
+
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-left h1 {
+                font-size: 1.5rem;
+            }
+
+            .diagnosis-display {
+                gap: 20px;
+            }
+
+            .diagnosis-label {
+                font-size: 1.8rem;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+</body>
+</html>
