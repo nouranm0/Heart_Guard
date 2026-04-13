@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction - HEARTGAURD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        .user-profile-container {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .user-name {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-glow);
+            transition: var(--transition);
+        }
+        .user-avatar:hover {
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+        .logout-btn {
+            background: var(--danger);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+        .logout-btn:hover {
+            background: #ff4757;
+        }
+    </style>
+</head>
+<body>
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <h1 class="page-title" data-i18n="about_heartguard">About HEARTGAURD</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
+            {% if user %}
+                <div class="user-profile-container" onclick="window.location.href='/profile'">
+                    <span class="user-name">{{ user.username }}</span>
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ user.username }}" alt="Profile Icon" class="user-avatar">
+                </div>
+                <a href="/logout" class="logout-btn" data-i18n="logout">Logout</a>
+            {% else %}
+                <a href="/login" class="logout-btn" style="background: var(--accent-glow);" data-i18n="login">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Intro Container -->
+    <div class="intro-container">
+        <div class="intro-content">
+            <!-- Animated Heart -->
+            <div class="intro-heart-animation">
+                <svg class="intro-heart" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M85,35 C85,25 75,15 65,15 C55,15 50,20 50,20 C50,20 45,15 35,15 C25,15 15,25 15,35 C15,55 50,80 50,80 C50,80 85,55 85,35 Z" 
+                          fill="#FF2E63" stroke="#FF6B9D" stroke-width="1"/>
+                </svg>
+            </div>
+
+            <!-- Main Heading -->
+            <h2 class="intro-heading" data-i18n="intro_heading">
+                Intelligent Cardiac Monitoring
+            </h2>
+
+            <!-- Scientific Description -->
+            <div class="intro-section">
+                <h3 class="section-title"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span data-i18n="project_overview">Project Overview</span></h3>
+                <p class="intro-description" data-i18n="project_overview_desc">
+                    HEARTGAURD is an advanced AI-powered platform designed for real-time cardiac health monitoring and early detection of cardiovascular abnormalities. By leveraging machine learning algorithms and signal processing techniques, our system analyzes electrocardiogram (ECG) signals to identify pathological patterns and provide clinical-grade diagnostic insights.
+                </p>
+            </div>
+
+            <!-- Clinical Significance -->
+            <div class="intro-section">
+                <h3 class="section-title"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"></path></svg> <span data-i18n="clinical_significance">Clinical Significance</span></h3>
+                <p class="intro-description" data-i18n="clinical_significance_desc">
+                    Cardiovascular diseases remain the leading cause of mortality globally. Early detection of arrhythmias, ischemia, and conduction abnormalities can significantly improve patient outcomes. HEARTGAURD bridges the gap between continuous monitoring and clinical decision-making by providing real-time analysis of cardiac rhythms and hemodynamic parameters.
+                </p>
+            </div>
+
+            <!-- Technology Stack -->
+            <div class="intro-section">
+                <h3 class="section-title"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6m-16.78 7.78l4.24-4.24m3.08-3.08l4.24-4.24"></path></svg> <span data-i18n="technology_methodology">Technology & Methodology</span></h3>
+                <p class="intro-description">
+                    Our platform employs state-of-the-art deep learning models trained on extensive ECG databases. The system performs multi-lead ECG signal analysis, extracting diagnostic features through advanced signal processing and convolutional neural networks (CNN) for accurate classification of cardiac conditions.
+                </p>
+            </div>
+
+            <!-- Key Features Grid -->
+            <div class="features-grid animated-features">
+                <div class="feature-card">
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
+                    <div class="feature-title">Real-Time Analysis</div>
+                    <div class="feature-text">Continuous ECG signal processing with sub-second latency</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="6" height="6"></rect><circle cx="7" cy="7" r="1.5"></circle><circle cx="17" cy="7" r="1.5"></circle><path d="M3 15h18M12 20v-2M8 20h8"></path></svg></div>
+                    <div class="feature-title">AI-Powered Detection</div>
+                    <div class="feature-text">Deep learning models for arrhythmia and pathology recognition</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 4h-3v5h3M10 9v8M14 20H8v-3"></path><circle cx="12" cy="12" r="3"></circle></svg></div>
+                    <div class="feature-title">Clinical Validation</div>
+                    <div class="feature-text">Algorithms validated against standard diagnostic criteria</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></div>
+                    <div class="feature-title">Quantitative Metrics</div>
+                    <div class="feature-text">Precise measurement of QRS, ST, QT intervals and more</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
+                    <div class="feature-title">Predictive Analytics</div>
+                    <div class="feature-text">Risk stratification and prognostic assessment</div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+                    <div class="feature-title">HIPAA Compliant</div>
+                    <div class="feature-text">Secure data handling and patient privacy protection</div>
+                </div>
+            </div>
+
+            <!-- Benefits Section -->
+            <div class="intro-section">
+                <h3 class="section-title"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> Key Benefits</h3>
+                <ul class="benefits-list">
+                    <li><strong>Early Intervention:</strong> Detect cardiac abnormalities before clinical symptoms manifest</li>
+                    <li><strong>Reduced Healthcare Costs:</strong> Prevent hospitalizations through proactive monitoring</li>
+                    <li><strong>Improved Accuracy:</strong> Minimize false positives with AI-validated diagnostic algorithms</li>
+                    <li><strong>Enhanced Patient Outcomes:</strong> Timely alerts enable immediate medical intervention</li>
+                </ul>
+            </div>
+
+            <!-- CTA Button -->
+            <div class="intro-cta-section">
+                {% if user %}
+                    {% if user.role == 'doctor' %}
+                        <a href="/dashboard" class="cta-button" style="background: linear-gradient(135deg, var(--accent-glow), #00D9FF); margin-bottom: 15px;" data-i18n="lets_start">Let's Start</a>
+                    {% else %}
+                        <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 20px;">Admin users can create and manage doctors. New assessments can only be created by doctors.</p>
+                        <a href="/profile" class="cta-button" data-i18n="manage_system">Manage System</a>
+                    {% endif %}
+                {% else %}
+                    <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 20px;">Welcome to HEARTGAURD. Please login to access the dashboard and start monitoring cardiac health.</p>
+                    <a href="/login" class="cta-button" style="background: linear-gradient(135deg, var(--accent-glow), #00D9FF);">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ecg.js') }}"></script>
+</body>
+</html>
