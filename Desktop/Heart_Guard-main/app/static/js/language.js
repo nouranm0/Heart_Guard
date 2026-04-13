@@ -1,0 +1,531 @@
+/*
+HEARTGAURD - Language System (Arabic/English + RTL Support)
+Handles language toggle, translations, and RTL layout
+*/
+
+class LanguageManager {
+    constructor() {
+        this.currentLanguage = localStorage.getItem('language') || 'en';
+        
+        this.translations = {
+            en: {
+                // Navigation
+                'back': '←',
+                'splash_title': 'HEARTGAURD',
+                'splash_subtitle': 'AI-Powered Heart Intelligence',
+                'login_title': 'HEARTGUARD Login',
+                
+                // Intro Page
+                'intro_title': 'Advanced Heart Monitoring',
+                'intro_description': 'HEARTGAURD utilizes cutting-edge AI to monitor cardiac health in real-time. Our advanced algorithms analyze ECG patterns, detect arrhythmias, and identify potential risks before they become critical.',
+                'feature_real_time': 'Real-Time Monitoring',
+                'feature_real_time_desc': 'Live ECG analysis with instant alerts',
+                'feature_ai_detection': 'AI Detection',
+                'feature_ai_detection_desc': 'Advanced machine learning algorithms',
+                'feature_predictive': 'Predictive Analytics',
+                'feature_predictive_desc': 'Early risk identification',
+                'intro_cta': 'Let\'s Start',
+                
+                // Model Page
+                'model_title': 'AI Analysis Pipeline',
+                'model_description': 'Our intelligent system processes ECG data through multiple stages of analysis',
+                'step_ecg': 'ECG Input',
+                'step_analysis': 'AI Analysis',
+                'step_diagnosis': 'Diagnosis',
+                'parameters_title': 'Key ECG Parameters',
+                'param_st': 'ST Segment',
+                'param_st_desc': 'Elevation or depression indicating ischemia',
+                'param_qrs': 'QRS Duration',
+                'param_qrs_desc': 'Measures ventricular depolarization',
+                'param_qt': 'QT Interval',
+                'param_qt_desc': 'Assesses repolarization duration',
+                'param_arrhythmia': 'Arrhythmia',
+                'param_arrhythmia_desc': 'Irregular heart rhythm detection',
+                'param_ischemia': 'Ischemia',
+                'param_ischemia_desc': 'Reduced blood flow to heart muscle',
+                'model_cta': 'View Dashboard',
+                
+                // Dashboard
+                'doctor_dashboard': 'Doctor Dashboard',
+                'vital_signs': 'Vital Signs',
+                'heart_rate': 'Heart Rate',
+                'blood_pressure': 'Blood Pressure',
+                'respiration': 'Respiration',
+                'temperature': 'Temperature',
+                'ecg_waveform': 'Live ECG Waveform',
+                'ai_diagnosis': 'AI Diagnosis Summary',
+                'risk_level': 'Risk Level',
+                'risk_low': 'Low Risk',
+                'risk_medium': 'Medium Risk',
+                'risk_high': 'High Risk',
+                'status_normal': 'Normal',
+                'status_abnormal': 'Abnormal',
+                'bpm': 'bpm',
+                'mmhg': 'mmHg',
+                'breaths': 'breaths/min',
+                'celsius': '°C',
+                'email_label': 'Email',
+                'password_label': 'Password',
+                'login_button': 'Login',
+                'email_placeholder': 'Enter your email',
+                'password_placeholder': 'Enter your password',
+                'add_patient': 'Add Patient',
+                'register_patient': 'Register New Patient',
+                'add_new_patient': 'Add a new patient to your care',
+                'patient_name': 'Patient Name',
+                'phone_number': 'Phone Number',
+                'email': 'Email',
+                'date_of_birth': 'Date of Birth',
+                'gender': 'Gender',
+                'select_gender': 'Select gender',
+                'city': 'City',
+                'submit': 'Submit',
+                'cancel': 'Cancel',
+                'patient_dashboard': 'Patient Dashboard',
+                'doctor_patients': 'Patients',
+                'dashboard_title': 'Precision AI Heart Monitoring - HEARTGAURD',
+                'doctor_dashboard_title': 'Patients - HEARTGAURD',
+                'doctor_patients_title': 'Patients - HEARTGAURD',
+                'all_patients_title': 'All Patients - HEARTGAURD',
+                'action': 'Action',
+                'age': 'Age',
+                'years': 'years',
+                'not_assigned': 'Not assigned',
+                'all_patients_systemwide': 'All Patients System-wide',
+                'all_patients_subtitle': 'View and manage all patients across all doctors',
+                'patient_details_title': 'Patient Details - HEARTGAURD',
+                'view_full_results': 'View Full Results',
+                'file_size': 'File Size:',
+                'status_label': 'Status:',
+                'create_assessment': 'Create Assessment',
+                'monitor_manage_patients': 'Monitor and manage patients',
+                'total_patients': 'Total Patients',
+                'high_risk': 'High Risk',
+                'medium_risk': 'Medium Risk',
+                'doctor_abbr': 'Dr.',
+                'doctor': 'Doctor',
+                'assessments': 'Assessments',
+                'has_no_patients_yet': 'has no patients yet.',
+                'patient_details': 'Patient Details',
+                'years_old': 'years old',
+                'all_patients': 'All Patients',
+                'gender': 'Gender',
+                'phone': 'Phone',
+                'registered': 'Registered',
+                'total_assessments': 'Total Assessments',
+                'assessment_history': 'Assessment History',
+                'top_diagnosis': 'Top Diagnosis',
+                'confidence': 'Confidence',
+                'not_specified': 'Not specified',
+                'not_provided': 'Not provided',
+                'not_available': 'N/A',
+                'patients': 'Patients',
+                'alerts': 'Alerts',
+                'new_assessment': 'New Assessment',
+                'settings': 'Settings',
+                'add_patient': 'Add Patient',
+                'last_assessment': 'Last assessment:',
+                'no_assessments_yet': 'No assessments yet',
+                'normal_sinus_rhythm': '✓ Normal Sinus Rhythm',
+                'no_data_yet': 'No data yet',
+                'optimal': '✓ Optimal',
+                'temperature': 'Temperature',
+                'normal': '✓ Normal',
+                'breathing_rate': 'Breathing Rate',
+                'normal_respiration': '✓ Normal Respiration',
+                'start_new_assessment': 'Start New Assessment',
+                'view_history_text': 'View History',
+                'search': 'Search',
+                'search_placeholder': 'Search patients...',
+                'active_status': 'Active',
+                'view_details': 'View Details',
+                'monitor': 'Monitor',
+                'schedule': 'Schedule',
+                'view_full_record': 'View Full Record',
+                'save_changes': 'Save Changes',
+                'notifications': 'Notifications',
+                'email_notif': 'Email Notifications',
+                'email_notif_desc': 'Receive alerts via email',
+                'push_notif': 'Push Notifications',
+                'push_notif_desc': 'Get alerts on your device',
+                'sms_notif': 'SMS Notifications',
+                'sms_notif_desc': 'Critical alerts via SMS',
+                'security': 'Security',
+                'current_password': 'Current Password',
+                'new_password': 'New Password',
+                'confirm_password': 'Confirm New Password',
+                'update_password': 'Update Password',
+                'two_factor_info': 'Two-Factor Authentication',
+                'enable_2fa': 'Enable 2FA',
+                'profile_info': 'Profile Information',
+                'dashboard_tooltip': 'Dashboard',
+                'patients_tooltip': 'Patients',
+                'alerts_tooltip': 'Alerts',
+                'new_assessment_tooltip': 'New Assessment',
+                'settings_tooltip': 'Settings',
+                'add_patient_tooltip': 'Add Patient',
+                'profile_tooltip': 'Profile',
+                'settings_title': 'Settings - HEARTGAURD',
+                'toggle_theme': 'Toggle Theme',
+                'toggle_language': 'Toggle Language',
+                'placeholder_first_name': 'Ahmed',
+                'placeholder_last_name': 'Hassan',
+                'placeholder_email': 'ahmed@example.com',
+                'placeholder_phone': '+1 (555) 123-4567',
+                'page_subtitle': 'Important notifications and warnings',
+                'alert_all': 'All',
+                'alert_critical': 'Critical',
+                'alert_warning': 'Warning',
+                'alert_info': 'Info',
+                'high_heart_rate_detected': 'High Heart Rate Detected',
+                'high_heart_rate_details': 'Your heart rate reached 145 bpm at 14:32. Consider resting.',
+                'irregular_heart_rhythm_detected': 'Irregular Heart Rhythm Detected',
+                'arrhythmia_detected': 'Possible arrhythmia pattern detected in ECG reading.',
+                'daily_checkin_reminder': 'Daily Check-In Reminder',
+                'daily_checkin_details': 'Don\'t forget to complete your daily health check-in today.',
+                'hours_ago': 'hours ago',
+                'advanced_alert_management_coming_soon': 'Advanced Alert Management Coming Soon',
+                'custom_alert_rules_message': 'Customizable alert rules and real-time notifications will be available here',
+                'back_to_dashboard': 'Back to Dashboard',
+                'years_old': 'years old',
+                'age_not_specified': 'Age not specified',
+                'not_specified': 'Not specified',
+                'male': 'Male',
+                'female': 'Female',
+                'other': 'Other',
+                'enter_patient_name': 'Enter patient\'s full name',
+                'enter_phone_number': 'Enter patient\'s phone number',
+                'ecg_file_analysis': 'ECG File Analysis',
+                'select_patient': 'Select Patient *',
+                'choose_patient': '-- Choose a patient --',
+                'no_patients_available': 'No patients available. Add patients first.',
+                'add_a_patient': 'Add a patient',
+                'about_heartguard': 'About HEARTGAURD',
+                'logout': 'Logout',
+                'login': 'Login',
+                'project_overview': 'Project Overview',
+                'project_overview_desc': 'HEARTGAURD is an advanced AI-powered platform designed for real-time cardiac health monitoring and early detection of cardiovascular abnormalities. By leveraging machine learning algorithms and signal processing techniques, our system analyzes electrocardiogram (ECG) signals to identify pathological patterns and provide clinical-grade diagnostic insights.',
+                'clinical_significance': 'Clinical Significance',
+                'clinical_significance_desc': 'Cardiovascular diseases remain the leading cause of mortality globally. Early detection of arrhythmias, ischemia, and conduction abnormalities can significantly improve patient outcomes. HEARTGAURD bridges the gap between continuous monitoring and clinical decision-making by providing real-time analysis of cardiac rhythms and hemodynamic parameters.',
+                'technology_methodology': 'Technology & Methodology',
+                'intro_heading': 'Intelligent Cardiac Monitoring',
+                'toggle_theme': 'Toggle Theme',
+                'toggle_language': 'Toggle Language',
+                'dashboard_tooltip': 'Dashboard',
+                'patients_tooltip': 'Patients',
+                'alerts_tooltip': 'Alerts',
+                'new_assessment_tooltip': 'New Assessment',
+                'settings_tooltip': 'Settings',
+                'add_patient_tooltip': 'Add Patient',
+                'profile_tooltip': 'Profile',
+                'page_subtitle': 'Important notifications and warnings',
+                'alert_all': 'All',
+                'alert_critical': 'Critical',
+                'alert_warning': 'Warning',
+                'alert_info': 'Info',
+                'high_heart_rate_detected': 'High Heart Rate Detected',
+                'high_heart_rate_details': 'Your heart rate reached 145 bpm at 14:32. Consider resting.',
+                'irregular_heart_rhythm_detected': 'Irregular Heart Rhythm Detected',
+                'arrhythmia_detected': 'Possible arrhythmia pattern detected in ECG reading.',
+                'daily_checkin_reminder': 'Daily Check-In Reminder',
+                'daily_checkin_details': 'Don\'t forget to complete your daily health check-in today.',
+                'hours_ago': 'hours ago',
+                'advanced_alert_management_coming_soon': 'Advanced Alert Management Coming Soon',
+                'custom_alert_rules_message': 'Customizable alert rules and real-time notifications will be available here',
+                'back_to_dashboard': 'Back to Dashboard',
+                'toggle_theme': 'Toggle Theme',
+                'toggle_language': 'Toggle Language'
+            },
+            ar: {
+                // Navigation
+                'back': '→',
+                'splash_title': 'حماية القلب',
+                'splash_subtitle': 'ذكاء قلبي مدعوم بالذكاء الاصطناعي',
+                'login_title': 'تسجيل الدخول لحماية القلب',
+                
+                // Intro Page
+                'intro_title': 'مراقبة القلب المتقدمة',
+                'intro_description': 'تستخدم حماية القلب أحدث تقنيات الذكاء الاصطناعي لمراقبة صحة القلب في الوقت الفعلي. تحلل خوارزمياتنا المتقدمة أنماط مخطط كهربية القلب وتكتشف عدم انتظام ضربات القلب وتحدد المخاطر المحتملة قبل أن تصبح حرجة.',
+                'feature_real_time': 'المراقبة في الوقت الفعلي',
+                'feature_real_time_desc': 'تحليل مخطط كهربية القلب المباشر مع تنبيهات فورية',
+                'feature_ai_detection': 'كشف الذكاء الاصطناعي',
+                'feature_ai_detection_desc': 'خوارزميات التعلم الآلي المتقدمة',
+                'feature_predictive': 'التحليلات التنبؤية',
+                'feature_predictive_desc': 'تحديد المخاطر المبكرة',
+                'intro_cta': 'Let\'s Start',
+                
+                // Model Page
+                'model_title': 'خط أنابيب تحليل الذكاء الاصطناعي',
+                'model_description': 'يعالج نظامنا الذكي بيانات مخطط كهربية القلب من خلال مراحل تحليل متعددة',
+                'step_ecg': 'مدخلات ECG',
+                'step_analysis': 'تحليل الذكاء الاصطناعي',
+                'step_diagnosis': 'التشخيص',
+                'parameters_title': 'معاملات مخطط كهربية القلب الرئيسية',
+                'param_st': 'القطعة ST',
+                'param_st_desc': 'الارتفاع أو الانخفاض يشير إلى الإقفار',
+                'param_qrs': 'مدة QRS',
+                'param_qrs_desc': 'يقيس إزالة الاستقطاب البطيني',
+                'param_qt': 'فترة QT',
+                'param_qt_desc': 'يقيم مدة إعادة الاستقطاب',
+                'param_arrhythmia': 'عدم انتظام الضربات',
+                'param_arrhythmia_desc': 'كشف عدم انتظام ضربات القلب',
+                'param_ischemia': 'الإقفار',
+                'param_ischemia_desc': 'تدفق دم منخفض لعضلة القلب',
+                'model_cta': 'عرض لوحة التحكم',
+                
+                // Dashboard
+                'doctor_dashboard': 'لوحة تحكم الطبيب',
+                'vital_signs': 'العلامات الحيوية',
+                'heart_rate': 'معدل ضربات القلب',
+                'blood_pressure': 'ضغط الدم',
+                'respiration': 'التنفس',
+                'temperature': 'درجة الحرارة',
+                'ecg_waveform': 'موجة مخطط كهربية القلب المباشرة',
+                'ai_diagnosis': 'ملخص التشخيص بالذكاء الاصطناعي',
+                'risk_level': 'مستوى الخطر',
+                'risk_low': 'خطر منخفض',
+                'risk_medium': 'خطر متوسط',
+                'risk_high': 'خطر مرتفع',
+                'status_normal': 'عادي',
+                'status_abnormal': 'غير طبيعي',
+                'bpm': 'نبضة/دقيقة',
+                'mmhg': 'ملم زئبق',
+                'breaths': 'نفس/دقيقة',
+                'celsius': '°م',
+                'email_label': 'البريد الإلكتروني',
+                'password_label': 'كلمة المرور',
+                'login_button': 'تسجيل الدخول',
+                'email_placeholder': 'أدخل بريدك الإلكتروني',
+                'password_placeholder': 'أدخل كلمة المرور',
+                'add_patient': 'إضافة مريض جديد',
+                'register_patient': 'تسجيل مريض جديد',
+                'add_new_patient': 'إضافة مريض جديد لرعايتك',
+                'patient_name': 'اسم المريض',
+                'phone_number': 'رقم الهاتف',
+                'email': 'البريد الإلكتروني',
+                'date_of_birth': 'تاريخ الميلاد',
+                'gender': 'النوع',
+                'select_gender': 'اختر النوع',
+                'city': 'المدينة',
+                'submit': 'إرسال',
+                'cancel': 'إلغاء',
+                'patient_dashboard': 'لوحة تحكم المريض',
+                'doctor_patients': 'المرضى',
+                'doctor_dashboard_title': 'المرضى - HEARTGAURD',
+                'doctor_patients_title': 'المرضى - HEARTGAURD',
+                'dashboard_title': 'مراقبة القلب الدقيق باستخدام الذكاء الاصطناعي - HEARTGAURD',
+                'all_patients_title': 'جميع المرضى - HEARTGAURD',
+                'action': 'الإجراء',
+                'age': 'العمر',
+                'years': 'سنوات',
+                'not_assigned': 'غير معين',
+                'all_patients_systemwide': 'جميع المرضى على مستوى النظام',
+                'all_patients_subtitle': 'عرض وإدارة جميع المرضى عبر جميع الأطباء',
+                'patient_details_title': 'تفاصيل المريض - HEARTGAURD',
+                'view_full_results': 'عرض النتائج الكاملة',
+                'file_size': 'حجم الملف:',
+                'status_label': 'الحالة:',
+                'create_assessment': 'إنشاء تقييم',
+                'monitor_manage_patients': 'راقب المرضى وقم بإدارتهم',
+                'total_patients': 'إجمالي المرضى',
+                'high_risk': 'خطر مرتفع',
+                'medium_risk': 'خطر متوسط',
+                'doctor_abbr': 'د.',
+                'doctor': 'طبيب',
+                'assessments': 'التقييمات',
+                'has_no_patients_yet': 'لا يمتلك مرضى بعد.',
+                'patient_details': 'تفاصيل المريض',
+                'years_old': 'سنة',
+                'all_patients': 'جميع المرضى',
+                'gender': 'النوع',
+                'phone': 'الهاتف',
+                'registered': 'مسجل في',
+                'total_assessments': 'إجمالي التقييمات',
+                'assessment_history': 'سجل التقييمات',
+                'top_diagnosis': 'التشخيص الأفضل',
+                'confidence': 'الثقة',
+                'not_specified': 'غير محدد',
+                'not_provided': 'لم يتم توفيره',
+                'not_available': 'غير متوفر',
+                'patients': 'المرضى',
+                'alerts': 'التنبيهات',
+                'new_assessment': 'تقييم جديد',
+                'settings': 'الإعدادات',
+                'add_patient': 'إضافة مريض',
+                'last_assessment': 'آخر تقييم:',
+                'no_assessments_yet': 'لا توجد تقييمات بعد',
+                'normal_sinus_rhythm': '✓ إيقاع الجيب الطبيعي',
+                'no_data_yet': 'لا توجد بيانات بعد',
+                'optimal': '✓ مثالي',
+                'temperature': 'درجة الحرارة',
+                'normal': '✓ طبيعي',
+                'breathing_rate': 'معدل التنفس',
+                'normal_respiration': '✓ تنفس طبيعي',
+                'start_new_assessment': 'ابدأ تقييم جديد',
+                'view_history_text': 'عرض التاريخ',
+                'years_old': 'سنة',
+                'age_not_specified': 'العمر غير محدد',
+                'not_specified': 'غير محدد',
+                'male': 'ذكر',
+                'female': 'أنثى',
+                'other': 'آخر',
+                'active_status': 'نشط',
+                'search': 'بحث',
+                'search_placeholder': 'ابحث عن المرضى...',
+                'view_details': 'عرض التفاصيل',
+                'monitor': 'مراقبة',
+                'schedule': 'جدولة',
+                'view_full_record': 'عرض السجل الكامل',
+                'save_changes': 'حفظ التغييرات',
+                'notifications': 'الإشعارات',
+                'email_notif': 'إشعارات البريد الإلكتروني',
+                'email_notif_desc': 'استقبال التنبيهات عبر البريد الإلكتروني',
+                'push_notif': 'إشعارات الدفع',
+                'push_notif_desc': 'استقبال التنبيهات على جهازك',
+                'sms_notif': 'إشعارات الرسائل القصيرة',
+                'sms_notif_desc': 'تنبيهات حرجة عبر الرسائل القصيرة',
+                'security': 'الأمان',
+                'current_password': 'كلمة المرور الحالية',
+                'new_password': 'كلمة مرور جديدة',
+                'confirm_password': 'تأكيد كلمة المرور الجديدة',
+                'update_password': 'تحديث كلمة المرور',
+                'two_factor_info': 'المصادقة الثنائية',
+                'enable_2fa': 'تفعيل المصادقة الثنائية',
+                'profile_info': 'معلومات الملف الشخصي',
+                'enter_patient_name': 'أدخل اسم المريض الكامل',
+                'enter_phone_number': 'أدخل رقم هاتف المريض',
+                'ecg_file_analysis': 'تحليل ملف ECG',
+                'select_patient': 'اختر المريض *',
+                'choose_patient': '-- اختر مريضاً --',
+                'no_patients_available': 'لا يوجد مرضى متاحين. أضف مرضى أولاً.',
+                'add_a_patient': 'أضف مريضاً',
+                'about_heartguard': 'حول حماية القلب',
+                'logout': 'تسجيل الخروج',
+                'login': 'تسجيل الدخول',
+                'project_overview': 'نظرة عامة على المشروع',
+                'project_overview_desc': 'حماية القلب هي منصة متقدمة مدعومة بالذكاء الاصطناعي مصممة لمراقبة صحة القلب في الوقت الفعلي واكتشاف مبكر للشذوذ القلبي الوعائي. من خلال الاستفادة من خوارزميات التعلم الآلي وتقنيات معالجة الإشارات، يقوم نظامنا بتحليل إشارات مخطط كهربية القلب (ECG) لتحديد الأنماط المرضية وتقديم رؤى تشخيصية بمستوى سريري.',
+                'clinical_significance': 'الأهمية السريرية',
+                'clinical_significance_desc': 'تبقى الأمراض القلبية الوعائية السبب الرئيسي للوفيات على مستوى العالم. يمكن أن يحسن الكشف المبكر عن عدم انتظام ضربات القلب والإقفار وشذوذ التوصيل النتائج لدى المرضى بشكل كبير. تملأ حماية القلب الفجوة بين المراقبة المستمرة واتخاذ القرارات السريرية من خلال تقديم تحليل في الوقت الفعلي لإيقاعات القلب والمعاملات الهيدرو ديناميكية.',
+                'technology_methodology': 'التكنولوجيا والمنهجية',
+                'intro_heading': 'مراقبة قلبية ذكية',
+                'toggle_theme': 'تبديل الوضع',
+                'toggle_language': 'تبديل اللغة',
+                'placeholder_first_name': 'أحمد',
+                'placeholder_last_name': 'حسن',
+                'placeholder_email': 'ahmed@example.com',
+                'placeholder_phone': '+1 (555) 123-4567',
+                'settings_title': 'الإعدادات - HEARTGAURD',
+                'dashboard_tooltip': 'لوحة التحكم',
+                'patients_tooltip': 'المرضى',
+                'alerts_tooltip': 'التنبيهات',
+                'new_assessment_tooltip': 'تقييم جديد',
+                'settings_tooltip': 'الإعدادات',
+                'add_patient_tooltip': 'إضافة مريض',
+                'profile_tooltip': 'الملف الشخصي',
+                'page_subtitle': 'التنبيهات المهمة والتحذيرات',
+                'alert_all': 'الكل',
+                'alert_critical': 'حرج',
+                'alert_warning': 'تحذير',
+                'alert_info': 'معلومات',
+                'high_heart_rate_detected': 'تم اكتشاف ارتفاع في معدل ضربات القلب',
+                'high_heart_rate_details': 'وصل معدل ضربات قلبك إلى 145 نبضة في الدقيقة عند 14:32. يُرجى الراحة.',
+                'irregular_heart_rhythm_detected': 'تم اكتشاف عدم انتظام في إيقاع القلب',
+                'arrhythmia_detected': 'تم اكتشاف نمط محتمل لعدم انتظام ضربات القلب في قراءة ECG.',
+                'daily_checkin_reminder': 'تذكير الفحص اليومي',
+                'daily_checkin_details': 'لا تنسَ إكمال فحص صحتك اليومي.',
+                'hours_ago': 'ساعات مضت',
+                'advanced_alert_management_coming_soon': 'إدارة التنبيهات المتقدمة قادمة قريبًا',
+                'custom_alert_rules_message': 'ستتوافر قواعد تنبيه قابلة للتخصيص وتنبيهات في الوقت الحقيقي هنا',
+                'back_to_dashboard': 'العودة إلى لوحة التحكم'
+            }
+        };        
+        this.init();
+    }
+
+    init() {
+        this.applyLanguage(this.currentLanguage);
+        
+        // Add event listener to language toggle button
+        const languageToggle = document.querySelector('.language-toggle');
+        if (languageToggle) {
+            languageToggle.addEventListener('click', () => this.toggleLanguage());
+            this.updateLanguageIcon();
+        }
+    }
+
+    toggleLanguage() {
+        this.currentLanguage = this.currentLanguage === 'en' ? 'ar' : 'en';
+        this.applyLanguage(this.currentLanguage);
+        localStorage.setItem('language', this.currentLanguage);
+        this.updateLanguageIcon();
+        // Update session on server
+        fetch(`/set_language/${this.currentLanguage}`, { method: 'GET' });
+    }
+
+    applyLanguage(lang) {
+        const body = document.body;
+        
+        // Apply RTL for Arabic
+        if (lang === 'ar') {
+            body.classList.add('rtl');
+            body.setAttribute('lang', 'ar');
+            document.documentElement.setAttribute('dir', 'rtl');
+        } else {
+            body.classList.remove('rtl');
+            body.setAttribute('lang', 'en');
+            document.documentElement.setAttribute('dir', 'ltr');
+        }
+        
+        // Update all text elements
+        this.updateAllText(lang);
+    }
+
+    updateAllText(lang) {
+        const translationKeys = Object.keys(this.translations[lang]);
+        
+        translationKeys.forEach(key => {
+            const elements = document.querySelectorAll(`[data-i18n="${key}"]`);
+            elements.forEach(el => {
+                el.textContent = this.translations[lang][key];
+            });
+            
+            const placeholderElements = document.querySelectorAll(`[data-i18n-placeholder="${key}"]`);
+            placeholderElements.forEach(el => {
+                el.placeholder = this.translations[lang][key];
+            });
+
+            const titleElements = document.querySelectorAll(`[data-i18n-title="${key}"]`);
+            titleElements.forEach(el => {
+                el.title = this.translations[lang][key];
+            });
+
+            const tooltipElements = document.querySelectorAll(`[data-i18n-tooltip="${key}"]`);
+            tooltipElements.forEach(el => {
+                el.setAttribute('data-tooltip', this.translations[lang][key]);
+            });
+        });
+    }
+
+    updateLanguageIcon() {
+        const languageToggle = document.querySelector('.language-toggle');
+        if (languageToggle) {
+            if (this.currentLanguage === 'ar') {
+                languageToggle.textContent = 'EN';
+                languageToggle.title = 'Switch to English';
+            } else {
+                languageToggle.textContent = 'ع';
+                languageToggle.title = 'Switch to Arabic';
+            }
+        }
+    }
+
+    getText(key) {
+        return this.translations[this.currentLanguage][key] || key;
+    }
+}
+
+// Initialize language manager when DOM is ready
+let languageManager;
+document.addEventListener('DOMContentLoaded', () => {
+    languageManager = new LanguageManager();
+});
