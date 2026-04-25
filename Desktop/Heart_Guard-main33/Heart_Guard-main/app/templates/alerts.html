@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="alerts_title">Alerts - HeartGaurd</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body class="theme-dark">
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <button class="back-button" onclick="window.location.href='/dashboard'">←</button>
+            <h1 class="page-title" data-i18n="alerts">Health Alerts</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <aside class="dashboard-sidebar">
+    <nav class="sidebar-nav">
+        {% if user.role == 'admin' %}
+            <!-- Admin Dashboard -->
+            <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" title="Dashboard" data-tooltip="Dashboard" data-i18n-tooltip="dashboard_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span class="nav-tooltip" data-i18n="dashboard_tooltip">Dashboard</span>
+            </a>
+
+            <!-- Doctors Management -->
+            <a href="/doctor-dashboard" class="nav-item {% if request.path == '/doctor-dashboard' %}active{% endif %}" title="Doctors" data-tooltip="Doctors" data-i18n-tooltip="doctors_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="doctors_tooltip">Doctors</span>
+            </a>
+
+            <!-- Patients Overview -->
+            <a href="/all-patients" class="nav-item {% if request.path == '/all-patients' %}active{% endif %}" title="Patients" data-tooltip="Patients" data-i18n-tooltip="patients_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="patients_tooltip">Patients</span>
+            </a>
+
+            <!-- Alerts -->
+            <a href="/alerts" class="nav-item {% if request.path == '/alerts' %}active{% endif %}" title="Alerts" data-tooltip="Alerts" data-i18n-tooltip="alerts_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="alerts_tooltip">Alerts</span>
+            </a>
+
+            <!-- Settings -->
+            <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}" title="Settings" data-tooltip="Settings" data-i18n-tooltip="settings_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24M19.78 19.78l-4.24-4.24"></path>
+                    <path d="M1 12h6m6 0h6"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="settings_tooltip">Settings</span>
+            </a>
+        {% else %}
+            <!-- Doctor Dashboard -->
+            <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" title="Dashboard" data-tooltip="Dashboard" data-i18n-tooltip="dashboard_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span class="nav-tooltip" data-i18n="dashboard_tooltip">Dashboard</span>
+            </a>
+
+            <!-- Doctor Dashboard -->
+            <a href="/doctor-dashboard" class="nav-item {% if request.path == '/doctor-dashboard' %}active{% endif %}" title="My Patients" data-tooltip="My Patients" data-i18n-tooltip="my_patients_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="my_patients_tooltip">My Patients</span>
+            </a>
+
+            <!-- Alerts -->
+            <a href="/alerts" class="nav-item {% if request.path == '/alerts' %}active{% endif %}" title="Alerts" data-tooltip="Alerts" data-i18n-tooltip="alerts_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="alerts_tooltip">Alerts</span>
+            </a>
+
+            <!-- New Assessment -->
+            <a href="/new-assessment" class="nav-item {% if request.path == '/new-assessment' %}active{% endif %}" title="New Assessment" data-tooltip="New Assessment" data-i18n-tooltip="new_assessment_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="new_assessment_tooltip">New Assessment</span>
+            </a>
+
+            <!-- Settings -->
+            <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}" title="Settings" data-tooltip="Settings" data-i18n-tooltip="settings_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24M19.78 19.78l-4.24-4.24"></path>
+                    <path d="M1 12h6m6 0h6"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="settings_tooltip">Settings</span>
+            </a>
+
+            <!-- Add Patient -->
+            <a href="/add-patient" class="nav-item {% if request.path == '/add-patient' %}active{% endif %}" title="Add Patient" data-tooltip="Add Patient" data-i18n-tooltip="add_patient_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="add_patient_tooltip">Add Patient</span>
+            </a>
+        {% endif %}
+
+        <!-- Profile -->
+        <a href="/profile" class="nav-item {% if request.path == '/profile' %}active{% endif %}" title="Profile" data-tooltip="Profile" data-i18n-tooltip="profile_tooltip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span class="nav-tooltip" data-i18n="profile_tooltip">Profile</span>
+        </a>
+    </nav>
+</aside>
+
+    <!-- Main Content -->
+    <main class="alerts-container">
+        <div class="alerts-content">
+            <header class="page-header">
+                <h1 data-i18n="alerts">Health Alerts</h1>
+                <p class="subtitle" data-i18n="page_subtitle">Important notifications and warnings</p>
+            </header>
+
+            <!-- Alert Filters -->
+            <section class="alert-filters">
+                <button class="filter-btn active" data-filter="all" data-i18n="alert_all">All</button>
+                <button class="filter-btn" data-filter="critical" data-i18n="alert_critical">🔴 Critical</button>
+                <button class="filter-btn" data-filter="warning" data-i18n="alert_warning">🟠 Warning</button>
+                <button class="filter-btn" data-filter="info" data-i18n="alert_info">🔵 Info</button>
+            </section>
+
+            <!-- Sample Alerts -->
+            <section class="alerts-list">
+                <div class="alert-item alert-critical">
+                    <div class="alert-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                        </svg>
+                    </div>
+                    <div class="alert-body">
+                        <h3 data-i18n="high_heart_rate_detected">High Heart Rate Detected</h3>
+                        <p data-i18n="high_heart_rate_details">Your heart rate reached 145 bpm at 14:32. Consider resting.</p>
+                        <small><span data-i18n="hours_ago">2 hours ago</span></small>
+                    </div>
+                    <button class="alert-dismiss">×</button>
+                </div>
+
+                <div class="alert-item alert-warning">
+                    <div class="alert-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                        </svg>
+                    </div>
+                    <div class="alert-body">
+                        <h3 data-i18n="irregular_heart_rhythm_detected">Irregular Heart Rhythm Detected</h3>
+                        <p data-i18n="arrhythmia_detected">Possible arrhythmia pattern detected in ECG reading.</p>
+                        <small><span data-i18n="hours_ago">5 hours ago</span></small>
+                    </div>
+                    <button class="alert-dismiss">×</button>
+                </div>
+
+                <div class="alert-item alert-info">
+                    <div class="alert-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        </svg>
+                    </div>
+                    <div class="alert-body">
+                        <h3 data-i18n="daily_checkin_reminder">Daily Check-In Reminder</h3>
+                        <p data-i18n="daily_checkin_details">Don't forget to complete your daily health check-in today.</p>
+                        <small><span data-i18n="hours_ago">12 hours ago</span></small>
+                    </div>
+                    <button class="alert-dismiss">×</button>
+                </div>
+            </section>
+
+            <!-- Coming Soon Message -->
+            <section class="coming-soon" style="margin-top: 40px;">
+                <div class="coming-soon-content">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="coming-soon-icon">
+                        <circle cx="50" cy="50" r="45" fill="rgba(0, 217, 255, 0.1)" stroke="var(--accent-glow)" stroke-width="2"/>
+                        <path d="M50 30 L65 45 L50 60 L35 45 Z" fill="var(--accent-glow)" opacity="0.7"/>
+                        <path d="M50 60 L65 75 L50 90 L35 75 Z" fill="var(--accent-glow)" opacity="0.5"/>
+                    </svg>
+                    <h2 data-i18n="advanced_alert_management_coming_soon">Advanced Alert Management Coming Soon</h2>
+                    <p data-i18n="custom_alert_rules_message">Customizable alert rules and real-time notifications will be available here</p>
+                    <button class="btn btn-primary" data-i18n="back_to_dashboard" onclick="window.location.href='/dashboard'">Back to Dashboard</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <style>
+        .alerts-container {
+            padding-top: 70px;
+            min-height: 100vh;
+            background-color: var(--bg-dark);
+            padding-left: var(--spacing-xl);
+            padding-right: var(--spacing-xl);
+            padding-bottom: var(--spacing-xl);
+        }
+
+        .alerts-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: var(--spacing-xl);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 var(--spacing-sm) 0;
+        }
+
+        .page-header .subtitle {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .alert-filters {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            flex-wrap: wrap;
+            animation: slideInUp 0.6s ease-out 0.1s both;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: var(--accent-glow);
+            color: var(--accent-glow);
+        }
+
+        .alerts-list {
+            animation: slideInUp 0.6s ease-out 0.2s both;
+        }
+
+        .alert-item {
+            display: flex;
+            gap: var(--spacing-lg);
+            padding: var(--spacing-lg);
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-glow);
+            border-radius: 12px;
+            margin-bottom: var(--spacing-lg);
+            transition: all 0.3s;
+        }
+
+        .alert-item:hover {
+            transform: translateX(4px);
+            border-color: var(--accent-glow);
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.12), rgba(0, 217, 255, 0.08));
+        }
+
+        .alert-item.alert-critical {
+            border-left-color: var(--danger);
+        }
+
+        .alert-item.alert-critical:hover {
+            background: linear-gradient(135deg, rgba(255, 71, 87, 0.12), rgba(255, 71, 87, 0.08));
+        }
+
+        .alert-item.alert-warning {
+            border-left-color: var(--warning);
+        }
+
+        .alert-item.alert-warning:hover {
+            background: linear-gradient(135deg, rgba(255, 184, 28, 0.12), rgba(255, 184, 28, 0.08));
+        }
+
+        .alert-item.alert-info {
+            border-left-color: var(--accent-glow);
+        }
+
+        .alert-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .alert-item.alert-critical .alert-icon {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--danger);
+        }
+
+        .alert-item.alert-warning .alert-icon {
+            background: rgba(255, 184, 28, 0.2);
+            color: var(--warning);
+        }
+
+        .alert-item.alert-info .alert-icon {
+            background: rgba(0, 217, 255, 0.2);
+            color: var(--accent-glow);
+        }
+
+        .alert-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .alert-body {
+            flex: 1;
+        }
+
+        .alert-body h3 {
+            margin: 0 0 var(--spacing-sm) 0;
+            color: var(--text-primary);
+            font-size: 1.05rem;
+        }
+
+        .alert-body p {
+            margin: 0 0 var(--spacing-sm) 0;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .alert-body small {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .alert-dismiss {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-dismiss:hover {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--danger);
+        }
+
+        .coming-soon {
+            text-align: center;
+            padding: var(--spacing-xl);
+        }
+
+        .coming-soon-content {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: var(--spacing-xl);
+            animation: slideInUp 0.6s ease-out 0.3s both;
+        }
+
+        .coming-soon-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--spacing-lg);
+        }
+
+        .coming-soon-content h2 {
+            color: var(--text-primary);
+            margin: 0 0 var(--spacing-sm) 0;
+        }
+    </style>
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+
+    <script>
+        // Load alerts from API
+        async function loadAlerts() {
+            try {
+                console.log('[LOAD ALERTS] Fetching alerts from API');
+                const response = await fetch('/api/alerts?limit=50', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    console.error('[LOAD ALERTS] Error:', response.status);
+                    return;
+                }
+                
+                const data = await response.json();
+                console.log('[LOAD ALERTS] Got', data.alerts.length, 'alerts');
+                
+                displayAlerts(data.alerts);
+            } catch (error) {
+                console.error('[LOAD ALERTS] Error:', error);
+            }
+        }
+
+        function displayAlerts(alerts) {
+            const alertsList = document.querySelector('.alerts-list');
+            if (!alertsList) return;
+            
+            if (alerts.length === 0) {
+                alertsList.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No alerts at this time.</p>';
+                return;
+            }
+            
+            let html = '';
+            for (const alert of alerts) {
+                const iconClass = alert.alert_type === 'critical' ? '🚨' : 
+                                alert.alert_type === 'warning' ? '⚠️' : 'ℹ️';
+                const typeClass = `alert-${alert.alert_type}`;
+                const timeAgo = getTimeAgo(alert.created_at);
+                
+                html += `
+                    <div class="alert-item ${typeClass}" data-alert-id="${alert.id}">
+                        <div class="alert-icon">${iconClass}</div>
+                        <div class="alert-body">
+                            <h3>${alert.title}</h3>
+                            <p>${alert.message}</p>
+                            ${alert.patient_name ? `<small>Patient: ${alert.patient_name}</small><br>` : ''}
+                            <small>${timeAgo}</small>
+                        </div>
+                        <button class="alert-dismiss" onclick="markAlertRead(${alert.id})">×</button>
+                    </div>
+                `;
+            }
+            
+            alertsList.innerHTML = html;
+        }
+
+        function getTimeAgo(isoDate) {
+            const date = new Date(isoDate);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            
+            if (seconds < 60) return `${seconds} seconds ago`;
+            if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+            return `${Math.floor(seconds / 86400)} days ago`;
+        }
+
+        async function markAlertRead(alertId) {
+            try {
+                console.log('[MARK READ] Alert ID:', alertId);
+                const response = await fetch(`/api/alerts/${alertId}/read`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    console.log('[MARK READ] Success');
+                    const elem = document.querySelector(`[data-alert-id="${alertId}"]`);
+                    if (elem) {
+                        elem.style.opacity = '0.6';
+                        setTimeout(() => {
+                            elem.remove();
+                            loadAlerts(); // Reload
+                        }, 300);
+                    }
+                }
+            } catch (error) {
+                console.error('[MARK READ] Error:', error);
+            }
+        }
+
+        // Load alerts on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAlerts();
+            // Reload every 30 seconds
+            setInterval(loadAlerts, 30000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="{{ 'admin_dashboard_title' if is_admin else 'patient_dashboard_title' }}">{% if is_admin %}Admin Dashboard - HEARTGAURD{% else %}Patient Dashboard - HEARTGAURD{% endif %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body class="theme-dark">
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <h1 class="page-title" data-i18n="{{ 'admin_dashboard_heading' if is_admin else 'patient_dashboard_heading' }}">{% if is_admin %}Admin Dashboard{% else %}Patient Dashboard{% endif %}</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <aside class="dashboard-sidebar">
+    <nav class="sidebar-nav">
+        {% if user.role == 'admin' %}
+            <!-- Admin Dashboard -->
+            <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" title="Dashboard" data-tooltip="Dashboard" data-i18n-tooltip="dashboard_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span class="nav-tooltip" data-i18n="dashboard_tooltip">Dashboard</span>
+            </a>
+
+            <!-- Doctors Management -->
+            <a href="/doctor-dashboard" class="nav-item {% if request.path == '/doctor-dashboard' %}active{% endif %}" title="Doctors" data-tooltip="Doctors" data-i18n-tooltip="doctors_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="doctors_tooltip">Doctors</span>
+            </a>
+
+            <!-- Patients Overview -->
+            <a href="/all-patients" class="nav-item {% if request.path == '/all-patients' %}active{% endif %}" title="Patients" data-tooltip="Patients" data-i18n-tooltip="patients_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="patients_tooltip">Patients</span>
+            </a>
+
+            <!-- Alerts -->
+            <a href="/alerts" class="nav-item {% if request.path == '/alerts' %}active{% endif %}" title="Alerts" data-tooltip="Alerts" data-i18n-tooltip="alerts_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="alerts_tooltip">Alerts</span>
+            </a>
+
+            <!-- Settings -->
+            <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}" title="Settings" data-tooltip="Settings" data-i18n-tooltip="settings_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24M19.78 19.78l-4.24-4.24"></path>
+                    <path d="M1 12h6m6 0h6"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="settings_tooltip">Settings</span>
+            </a>
+        {% else %}
+            <!-- Doctor Dashboard -->
+            <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" title="Dashboard" data-tooltip="Dashboard" data-i18n-tooltip="dashboard_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span class="nav-tooltip" data-i18n="dashboard_tooltip">Dashboard</span>
+            </a>
+
+            <!-- Doctor Dashboard -->
+            <a href="/doctor-dashboard" class="nav-item {% if request.path == '/doctor-dashboard' %}active{% endif %}" title="My Patients" data-tooltip="My Patients" data-i18n-tooltip="my_patients_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="my_patients_tooltip">My Patients</span>
+            </a>
+
+            <!-- Alerts -->
+            <a href="/alerts" class="nav-item {% if request.path == '/alerts' %}active{% endif %}" title="Alerts" data-tooltip="Alerts" data-i18n-tooltip="alerts_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="alerts_tooltip">Alerts</span>
+            </a>
+
+            <!-- New Assessment -->
+            <a href="/new-assessment" class="nav-item {% if request.path == '/new-assessment' %}active{% endif %}" title="New Assessment" data-tooltip="New Assessment" data-i18n-tooltip="new_assessment_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="new_assessment_tooltip">New Assessment</span>
+            </a>
+
+            <!-- Settings -->
+            <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}" title="Settings" data-tooltip="Settings" data-i18n-tooltip="settings_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24M19.78 19.78l-4.24-4.24"></path>
+                    <path d="M1 12h6m6 0h6"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="settings_tooltip">Settings</span>
+            </a>
+
+            <!-- Add Patient -->
+            <a href="/add-patient" class="nav-item {% if request.path == '/add-patient' %}active{% endif %}" title="Add Patient" data-tooltip="Add Patient" data-i18n-tooltip="add_patient_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="add_patient_tooltip">Add Patient</span>
+            </a>
+        {% endif %}
+
+        <!-- Profile -->
+        <a href="/profile" class="nav-item {% if request.path == '/profile' %}active{% endif %}" title="Profile" data-tooltip="Profile" data-i18n-tooltip="profile_tooltip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span class="nav-tooltip" data-i18n="profile_tooltip">Profile</span>
+        </a>
+    </nav>
+</aside>
+
+        <main class="patient-dashboard">
+            {% if is_admin %}
+                <h2 data-i18n="admin_dashboard_heading">Admin Dashboard</h2>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label" data-i18n="total_doctors">Total Doctors</div><div class="stat-value">{{ total_doctors }}</div></div>
+                    <div class="stat-card"><div class="stat-label" data-i18n="total_patients">Total Patients</div><div class="stat-value">{{ total_patients }}</div></div>
+                    <div class="stat-card"><div class="stat-label" data-i18n="total_ecg">Total ECG</div><div class="stat-value">{{ total_ecg_records }}</div></div>
+                    <div class="stat-card"><div class="stat-label" data-i18n="high_risk">High Risk</div><div class="stat-value">{{ high_risk_count }}</div></div>
+                    <div class="stat-card"><div class="stat-label" data-i18n="medium_risk">Medium Risk</div><div class="stat-value">{{ medium_risk_count }}</div></div>
+                    <div class="stat-card"><div class="stat-label" data-i18n="low_risk">Low Risk</div><div class="stat-value">{{ low_risk_count }}</div></div>
+                </div>
+                {% if recent_alerts %}
+                    <h3 data-i18n="recent_alerts">Recent Alerts</h3>
+                    {% for alert in recent_alerts %}<div class="alert-item"><h4>{{ alert.title }}</h4><p>{{ alert.message }}</p></div>{% endfor %}
+                {% endif %}
+            {% else %}
+                <h2 data-i18n="patient_dashboard_heading">Patient Dashboard</h2>
+                {% if patient %}<h3>{{ patient.name }}</h3>{% endif %}
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label" data-i18n="heart_rate">Heart Rate</div><div class="stat-value">{% if heart_rate %}{{ heart_rate }} BPM{% else %}<span data-i18n="not_available">N/A</span>{% endif %}</div></div>
+                    <div class="stat-card"><div class="stat-label" data-i18n="blood_pressure">Blood Pressure</div><div class="stat-value">{% if blood_pressure %}{{ blood_pressure }}{% else %}<span data-i18n="not_available">N/A</span>{% endif %}</div></div>
+                    <div class="stat-card"><div class="stat-label" data-i18n="temperature">Temperature</div><div class="stat-value">{% if temperature %}{{ temperature }}�F{% else %}<span data-i18n="not_available">N/A</span>{% endif %}</div></div>
+                    <div class="stat-card"><div class="stat-label" data-i18n="breathing_rate">Breathing Rate</div><div class="stat-value">{% if breathing_rate %}{{ breathing_rate }} BPM{% else %}<span data-i18n="not_available">N/A</span>{% endif %}</div></div>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+</body>
+</html>
+

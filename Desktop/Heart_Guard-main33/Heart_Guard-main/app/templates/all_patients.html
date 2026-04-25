@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="all_patients_title">All Patients - HEARTGAURD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="theme-dark">
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <button class="back-button" onclick="window.location.href='/dashboard'">←</button>
+            <h1 class="page-title" data-i18n="all_patients">All Patients</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Professional Left Sidebar Navigation -->
+        <aside class="dashboard-sidebar">
+    <nav class="sidebar-nav">
+        {% if user.role == 'admin' %}
+            <!-- Admin Dashboard -->
+            <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" title="Dashboard" data-tooltip="Dashboard" data-i18n-tooltip="dashboard_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span class="nav-tooltip" data-i18n="dashboard_tooltip">Dashboard</span>
+            </a>
+
+            <!-- Doctors Management -->
+            <a href="/doctor-dashboard" class="nav-item {% if request.path == '/doctor-dashboard' %}active{% endif %}" title="Doctors" data-tooltip="Doctors" data-i18n-tooltip="doctors_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="doctors_tooltip">Doctors</span>
+            </a>
+
+            <!-- Patients Overview -->
+            <a href="/all-patients" class="nav-item {% if request.path == '/all-patients' %}active{% endif %}" title="Patients" data-tooltip="Patients" data-i18n-tooltip="patients_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="patients_tooltip">Patients</span>
+            </a>
+
+            <!-- Alerts -->
+            <a href="/alerts" class="nav-item {% if request.path == '/alerts' %}active{% endif %}" title="Alerts" data-tooltip="Alerts" data-i18n-tooltip="alerts_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="alerts_tooltip">Alerts</span>
+            </a>
+
+            <!-- Settings -->
+            <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}" title="Settings" data-tooltip="Settings" data-i18n-tooltip="settings_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24M19.78 19.78l-4.24-4.24M1 12h6m6 0h6"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="settings_tooltip">Settings</span>
+            </a>
+        {% else %}
+            <!-- Doctor Dashboard -->
+            <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" title="Dashboard" data-tooltip="Dashboard" data-i18n-tooltip="dashboard_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span class="nav-tooltip" data-i18n="dashboard_tooltip">Dashboard</span>
+            </a>
+
+            <!-- Doctor Dashboard -->
+            <a href="/doctor-dashboard" class="nav-item {% if request.path == '/doctor-dashboard' %}active{% endif %}" title="My Patients" data-tooltip="My Patients" data-i18n-tooltip="my_patients_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="my_patients_tooltip">My Patients</span>
+            </a>
+
+            <!-- Alerts -->
+            <a href="/alerts" class="nav-item {% if request.path == '/alerts' %}active{% endif %}" title="Alerts" data-tooltip="Alerts" data-i18n-tooltip="alerts_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="alerts_tooltip">Alerts</span>
+            </a>
+
+            <!-- New Assessment -->
+            <a href="/new-assessment" class="nav-item {% if request.path == '/new-assessment' %}active{% endif %}" title="New Assessment" data-tooltip="New Assessment" data-i18n-tooltip="new_assessment_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="new_assessment_tooltip">New Assessment</span>
+            </a>
+
+            <!-- Settings -->
+            <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}" title="Settings" data-tooltip="Settings" data-i18n-tooltip="settings_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24M19.78 19.78l-4.24-4.24M1 12h6m6 0h6"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="settings_tooltip">Settings</span>
+            </a>
+
+            <!-- Add Patient -->
+            <a href="/add-patient" class="nav-item {% if request.path == '/add-patient' %}active{% endif %}" title="Add Patient" data-tooltip="Add Patient" data-i18n-tooltip="add_patient_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="add_patient_tooltip">Add Patient</span>
+            </a>
+        {% endif %}
+
+        <!-- Profile -->
+        <a href="/profile" class="nav-item {% if request.path == '/profile' %}active{% endif %}" title="Profile" data-tooltip="Profile" data-i18n-tooltip="profile_tooltip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span class="nav-tooltip" data-i18n="profile_tooltip">Profile</span>
+        </a>
+    </nav>
+</aside>
+
+        <!-- Main Content -->
+        <main class="doctor-dashboard-content">
+            <!-- Header Section -->
+            <section class="dashboard-header">
+                <div class="header-title">
+                    <h2 data-i18n="all_patients_systemwide">All Patients System-wide</h2>
+                    <p class="subtitle" data-i18n="all_patients_subtitle">View and manage all patients across all doctors</p>
+                </div>
+                {% if user.role == 'admin' %}
+                <button class="btn-add-patient" onclick="openAddPatientModal()" data-i18n="add_patient">+ Add Patient</button>
+                {% endif %}
+                <div class="header-stats">
+                    <div class="stat-badge">
+                        <span class="badge-label" data-i18n="total_patients">Total Patients</span>
+                        <span class="badge-value">{{ patients|length }}</span>
+                    </div>
+                    <div class="stat-badge alert-high">
+                        <span class="badge-label" data-i18n="high_risk">High Risk</span>
+                        <span class="badge-value">{{ patients|selectattr('risk', 'equalto', 'high')|list|length }}</span>
+                    </div>
+                    <div class="stat-badge alert-medium">
+                        <span class="badge-label" data-i18n="medium_risk">Medium Risk</span>
+                        <span class="badge-value">{{ patients|selectattr('risk', 'equalto', 'medium')|list|length }}</span>
+                    </div>
+                    <div class="stat-badge alert-low">
+                        <span class="badge-label" data-i18n="low_risk">Low Risk</span>
+                        <span class="badge-value">{{ patients|selectattr('risk', 'equalto', 'low')|list|length }}</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Search and Filter Section -->
+            <section class="filter-section">
+                <form method="get" action="/all-patients" class="search-form">
+                    <input type="search" name="q" value="{{ query or '' }}" class="search-input" placeholder="Search by name or phone..." data-i18n-placeholder="search_placeholder">
+                    <input type="hidden" name="risk" value="{{ risk_filter }}">
+                    <input type="hidden" name="sort" value="{{ sort_by }}">
+                    <button type="submit" class="btn-search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </form>
+
+                <div class="filter-group">
+                    <a href="/all-patients?q={{ query|urlencode }}&risk=all&sort={{ sort_by }}" class="filter-btn {% if risk_filter == 'all' %}active{% endif %}" data-i18n="alert_all">All</a>
+                    <a href="/all-patients?q={{ query|urlencode }}&risk=high&sort={{ sort_by }}" class="filter-btn {% if risk_filter == 'high' %}active{% endif %}">🔴 <span data-i18n="risk_high">High</span></a>
+                    <a href="/all-patients?q={{ query|urlencode }}&risk=medium&sort={{ sort_by }}" class="filter-btn {% if risk_filter == 'medium' %}active{% endif %}">🟠 <span data-i18n="risk_medium">Medium</span></a>
+                    <a href="/all-patients?q={{ query|urlencode }}&risk=low&sort={{ sort_by }}" class="filter-btn {% if risk_filter == 'low' %}active{% endif %}">🟢 <span data-i18n="risk_low">Low</span></a>
+                </div>
+
+                <div class="sort-selector">
+                    <label data-i18n="sort_by">Sort by:</label>
+                    <div class="sort-options">
+                        <a href="/all-patients?q={{ query|urlencode }}&risk={{ risk_filter }}&sort=recent" class="sort-btn {% if sort_by == 'recent' %}active{% endif %}" data-i18n="sort_recent">Recent</a>
+                        <a href="/all-patients?q={{ query|urlencode }}&risk={{ risk_filter }}&sort=oldest" class="sort-btn {% if sort_by == 'oldest' %}active{% endif %}" data-i18n="sort_oldest">Oldest</a>
+                        <a href="/all-patients?q={{ query|urlencode }}&risk={{ risk_filter }}&sort=name" class="sort-btn {% if sort_by == 'name' %}active{% endif %}" data-i18n="sort_name">Name</a>
+                        <a href="/all-patients?q={{ query|urlencode }}&risk={{ risk_filter }}&sort=doctor" class="sort-btn {% if sort_by == 'doctor' %}active{% endif %}" data-i18n="sort_doctor">Doctor</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Patients Table View -->
+            <section class="patients-table">
+                {% if patients|length > 0 %}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="patient_name">Patient Name</th>
+                                <th data-i18n="phone">Phone</th>
+                                <th data-i18n="age">Age</th>
+                                <th data-i18n="doctor">Doctor</th>
+                                <th data-i18n="risk_level">Risk Level</th>
+                                <th data-i18n="assessments">Assessments</th>
+                                <th data-i18n="registered">Registered</th>
+                                <th data-i18n="action">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for patient in patients %}
+                            <tr class="risk-{{ patient.risk }}">
+                                <td class="patient-name">
+                                    <strong>{{ patient.name }}</strong>
+                                </td>
+                                <td>{% if patient.phone %}{{ patient.phone }}{% else %}<span data-i18n="not_available">N/A</span>{% endif %}</td>
+                                <td>
+                                    {% if patient.birthday %}
+                                        {{ ((current_date - patient.birthday).days // 365) }} <span data-i18n="years">years</span>
+                                    {% else %}
+                                        <span data-i18n="not_available">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if patient.doctor %}
+                                        <span data-i18n="doctor_abbr">Dr.</span> {{ patient.doctor.username }}
+                                    {% else %}
+                                        <span data-i18n="not_assigned">Not assigned</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="risk-badge risk-{{ patient.risk }}">
+                                        {% if patient.risk == 'high' %}
+                                            🔴 <span data-i18n="risk_high">High</span>
+                                        {% elif patient.risk == 'medium' %}
+                                            🟠 <span data-i18n="risk_medium">Medium</span>
+                                        {% else %}
+                                            🟢 <span data-i18n="risk_low">Low</span>
+                                        {% endif %}
+                                    </span>
+                                </td>
+                                <td>{{ patient.ecg_records|length }}</td>
+                                <td>{{ patient.created_at.strftime('%b %d, %Y') }}</td>
+                                <td>
+                                    <div class="action-links">
+                                        <a href="/patient/{{ patient.id }}" class="action-link" data-i18n="view_details">View</a>
+                                        <button class="action-link delete-link" onclick="deletePatient({{ patient.id }}, '{{ patient.name }}')" data-i18n="delete">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="no-data">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="empty-icon">
+                            <circle cx="50" cy="50" r="45" fill="rgba(0, 217, 255, 0.1)" stroke="var(--accent-glow)" stroke-width="2"/>
+                            <path d="M35 40 Q50 35 65 40" stroke="var(--accent-glow)" stroke-width="2" fill="none"/>
+                            <circle cx="40" cy="35" r="2" fill="var(--accent-glow)"/>
+                            <circle cx="60" cy="35" r="2" fill="var(--accent-glow)"/>
+                            <path d="M40 55 Q50 60 60 55" stroke="var(--accent-glow)" stroke-width="2" fill="none"/>
+                        </svg>
+                        <p>No patients found matching your filters.</p>
+                    </div>
+                {% endif %}
+            </section>
+        </main>
+    </div>
+
+    <style>
+        .sort-selector {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-left: auto;
+            padding: 0 var(--spacing-lg);
+        }
+
+        .sort-selector label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .sort-options {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .sort-btn {
+            padding: 6px 12px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid transparent;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .sort-btn:hover,
+        .sort-btn.active {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: var(--accent-glow);
+            color: var(--accent-glow);
+        }
+
+        .patients-table {
+            margin-top: var(--spacing-xl);
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.04), rgba(0, 217, 255, 0.02));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .data-table thead {
+            background: rgba(0, 217, 255, 0.08);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .data-table th {
+            padding: var(--spacing-lg);
+            text-align: left;
+            font-weight: 700;
+            color: var(--accent-glow);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table td {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .data-table tbody tr {
+            transition: all 0.3s;
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(0, 217, 255, 0.08);
+        }
+
+        .data-table tbody tr.risk-high:hover {
+            background: rgba(255, 71, 87, 0.08);
+        }
+
+        .data-table tbody tr.risk-medium:hover {
+            background: rgba(255, 184, 28, 0.08);
+        }
+
+        .data-table tbody tr.risk-low:hover {
+            background: rgba(76, 175, 80, 0.08);
+        }
+
+        .patient-name {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .risk-badge.risk-high {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--danger);
+        }
+
+        .risk-badge.risk-medium {
+            background: rgba(255, 184, 28, 0.2);
+            color: var(--warning);
+        }
+
+        .risk-badge.risk-low {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .action-link {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(0, 217, 255, 0.2);
+            color: var(--accent-glow);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .action-link:hover {
+            background: rgba(0, 217, 255, 0.3);
+            transform: translateX(2px);
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--spacing-lg);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: var(--spacing-xl);
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+
+        .no-data p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 1.05rem;
+        }
+
+        @media (max-width: 768px) {
+            .sort-selector {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-left: 0;
+                margin-top: var(--spacing-md);
+                padding: var(--spacing-lg) 0;
+                border-top: 1px solid var(--border-color);
+            }
+
+            .data-table {
+                font-size: 0.85rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: var(--spacing-md);
+            }
+        }
+
+        .action-links {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+
+        .delete-link {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--danger);
+            border: none;
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .delete-link:hover {
+            background: rgba(255, 71, 87, 0.3);
+            transform: translateX(2px);
+        }
+
+        .btn-add-patient {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-glow), rgba(0, 217, 255, 0.8));
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-add-patient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 217, 255, 0.3);
+        }
+
+        .modal {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+        }
+
+        .modal-content {
+            position: relative;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--accent-glow);
+        }
+
+        .modal-form {
+            padding: var(--spacing-lg);
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(0, 217, 255, 0.08);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-glow);
+            background: rgba(0, 217, 255, 0.12);
+            box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+        }
+
+        .btn-add,
+        .btn-cancel {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--accent-glow), rgba(0, 217, 255, 0.8));
+            color: var(--bg-dark);
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 217, 255, 0.3);
+        }
+
+        .btn-cancel {
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-cancel:hover {
+            background: rgba(0, 217, 255, 0.15);
+            color: var(--text-primary);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Delete Confirmation Modal */
+        .modal-confirmation {
+            text-align: center;
+            max-width: 380px;
+        }
+
+        .confirmation-icon {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-icon svg {
+            width: 64px;
+            height: 64px;
+            color: #ffa500;
+            stroke-width: 1.5;
+        }
+
+        .confirmation-title {
+            font-size: 1.3rem;
+            margin: 16px 0 12px 0;
+            color: var(--text-primary);
+        }
+
+        .confirmation-message {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .confirmation-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .confirmation-actions button {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff4757, #ff2e63);
+            color: #fff;
+            border: 1px solid #ff2e63;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+        }
+
+        .btn-danger:active {
+            transform: translateY(0);
+        }
+
+        /* Notifications */
+        .notification-container {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 500px;
+            pointer-events: none;
+        }
+
+        .flash-message {
+            padding: 14px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease-out;
+            border: 1px solid transparent;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            pointer-events: auto;
+        }
+
+        .flash-success {
+            background: rgba(0, 217, 143, 0.15);
+            border-color: rgba(0, 217, 143, 0.4);
+            color: #00D98F;
+        }
+
+        .flash-error {
+            background: rgba(255, 46, 99, 0.15);
+            border-color: rgba(255, 46, 99, 0.4);
+            color: #FF2E63;
+        }
+
+        .flash-warning {
+            background: rgba(255, 196, 0, 0.15);
+            border-color: rgba(255, 196, 0, 0.4);
+            color: #FFC400;
+        }
+
+        .flash-info {
+            background: rgba(0, 217, 255, 0.15);
+            border-color: rgba(0, 217, 255, 0.4);
+            color: var(--accent-glow);
+        }
+
+        .flash-close {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.7;
+            padding: 0;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flash-close:hover {
+            opacity: 1;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Delete Confirmation Modal */
+        .modal-confirmation {
+            text-align: center;
+            max-width: 380px;
+        }
+
+        .confirmation-icon {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-icon svg {
+            width: 64px;
+            height: 64px;
+            color: #ffa500;
+            stroke-width: 1.5;
+        }
+
+        .confirmation-title {
+            font-size: 1.3rem;
+            margin: 16px 0 12px 0;
+            color: var(--text-primary);
+        }
+
+        .confirmation-message {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .confirmation-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .confirmation-actions button {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff4757, #ff2e63);
+            color: #fff;
+            border: 1px solid #ff2e63;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+        }
+
+        .btn-danger:active {
+            transform: translateY(0);
+        }
+    </style>
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+
+    <!-- Add Patient Modal -->
+    <div id="addPatientModal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeAddPatientModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-i18n="add_new_patient">Add New Patient</h3>
+                <button class="modal-close" onclick="closeAddPatientModal()">&times;</button>
+            </div>
+            <form class="modal-form" onsubmit="handleAddPatient(event)">
+                <div class="form-group">
+                    <label for="patientName" data-i18n="patient_name">Patient Name</label>
+                    <input type="text" id="patientName" name="name" required placeholder="Full name">
+                </div>
+                <div class="form-group">
+                    <label for="patientPhone" data-i18n="phone">Phone</label>
+                    <input type="tel" id="patientPhone" name="phone" placeholder="+20 1234567890">
+                </div>
+                <div class="form-group">
+                    <label for="patientGender" data-i18n="gender">Gender</label>
+                    <select id="patientGender" name="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="patientBirthday" data-i18n="birthday">Birthday</label>
+                    <input type="date" id="patientBirthday" name="birthday">
+                </div>
+                <div class="form-group">
+                    <label for="patientDoctor" data-i18n="doctor">Assign to Doctor</label>
+                    <select id="patientDoctor" name="doctor_id" required>
+                        <option value="">Select Doctor</option>
+                        {% for doctor in doctors if doctor.role == 'doctor' %}
+                        <option value="{{ doctor.id }}">Dr. {{ doctor.username }} ({{ doctor.email }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-add" data-i18n="add">Add</button>
+                    <button type="button" class="btn-cancel" onclick="closeAddPatientModal()" data-i18n="cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Patient Confirmation Modal -->
+    <div id="deleteConfirmModal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeDeleteConfirm()"></div>
+        <div class="modal-content modal-confirmation">
+            <div class="confirmation-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <h2 class="confirmation-title" data-i18n="confirm_delete">Confirm Delete</h2>
+            <p class="confirmation-message" id="deleteConfirmMessage">Are you sure?</p>
+            <div class="confirmation-actions">
+                <button class="btn-secondary" onclick="closeDeleteConfirm()" data-i18n="cancel">Cancel</button>
+                <button class="btn-danger" onclick="confirmDeletePatient()" data-i18n="delete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state for delete confirmation
+        let pendingDelete = { patientId: null, patientName: null };
+
+        function deletePatient(patientId, patientName) {
+            pendingDelete.patientId = patientId;
+            pendingDelete.patientName = patientName;
+            
+            const confirmMessage = document.getElementById('deleteConfirmMessage');
+            if (confirmMessage) {
+                confirmMessage.innerText = `هل تريد حذف المريض ${patientName}؟\n\nسيتم حذف جميع سجلات ECG والتنبيهات الخاصة به.\n\nهذا الإجراء لا يمكن التراجع عنه!`;
+            }
+            
+            const modal = document.getElementById('deleteConfirmModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            } else {
+                // Fallback to confirm if modal doesn't exist
+                if (confirm(`حذف المريض "${patientName}"؟ سيتم حذف جميع السجلات!`)) {
+                    confirmDeletePatient();
+                }
+            }
+        }
+
+        function confirmDeletePatient() {
+            const patientId = pendingDelete.patientId;
+            if (!patientId) return;
+
+            const modal = document.getElementById('deleteConfirmModal');
+            if (modal) modal.style.display = 'none';
+
+            fetch(`/api/patient/${patientId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('تم حذف المريض بنجاح ✓', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showNotification('خطأ: ' + (data.message || 'فشل الحذف'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('حدث خطأ أثناء الحذف: ' + error.message, 'error');
+            });
+        }
+
+        function closeDeleteConfirm() {
+            const modal = document.getElementById('deleteConfirmModal');
+            if (modal) modal.style.display = 'none';
+            pendingDelete = { patientId: null, patientName: null };
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `flash-message flash-${type}`;
+            notification.innerHTML = `
+                ${message}
+                <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+            `;
+
+            let container = document.getElementById('notificationContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'notificationContainer';
+                container.className = 'notification-container';
+                document.body.prepend(container);
+            }
+
+            container.appendChild(notification);
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.opacity = '0';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 4000);
+        }
+
+        function openAddPatientModal() {
+            document.getElementById('addPatientModal').style.display = 'flex';
+        }
+
+        function closeAddPatientModal() {
+            document.getElementById('addPatientModal').style.display = 'none';
+            document.querySelector('.modal-form').reset();
+        }
+
+        function handleAddPatient(event) {
+            event.preventDefault();
+            const formData = new FormData(document.querySelector('.modal-form'));
+            const data = {
+                name: formData.get('name'),
+                phone: formData.get('phone') || null,
+                gender: formData.get('gender'),
+                birthday: formData.get('birthday') || null,
+                doctor_id: parseInt(formData.get('doctor_id'))
+            };
+
+            fetch('/api/patient', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(`تم إضافة المريض ${data.patient.name} بنجاح ✓`, 'success');
+                    closeAddPatientModal();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showNotification(`خطأ: ${data.message}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('حدث خطأ أثناء إضافة المريض: ' + error.message, 'error');
+            });
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('DOMContentLoaded', function() {
+            const addModal = document.getElementById('addPatientModal');
+            addModal?.addEventListener('click', function(e) {
+                if (e.target === addModal) {
+                    closeAddPatientModal();
+                }
+            });
+
+            const deleteModal = document.getElementById('deleteConfirmModal');
+            deleteModal?.addEventListener('click', function(e) {
+                if (e.target === deleteModal) {
+                    closeDeleteConfirm();
+                }
+            });
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+</body>
+</html>
+
+

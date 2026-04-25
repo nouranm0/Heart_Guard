@@ -1,0 +1,19 @@
+--- Checking xml_input\MUSE_example.xml ---
+File Size: 313345 bytes
+--- Checking Normalization Params ---
+Found params at D:\IntroECG-master\7-EchoNext Minimodel\models\echonext_multilabel_minimodel\waveform_normalization_params.json
+Mean (first 5): [5.438902932045533, 4.386144027595723, -0.8828521117626768, -4.901228423594343, 3.179303315626078]
+--- Running Prediction ---
+Results:
+LVEF <= 45%: 63.32%
+LVWT >= 1.3cm: 62.11%
+Moderate or Greater Aortic Stenosis: 60.33%
+Moderate or Greater Aortic Regurgitation: 62.39%
+Moderate or Greater Mitral Regurgitation: 63.42%
+Moderate or Greater Tricuspid Regurgitation: 63.79%
+Moderate or Greater Pulmonary Regurgitation: 61.13%
+Moderate or Greater RV Systolic Dysfunction: 63.23%
+Moderate or Greater Pericardial Effusion: 62.67%
+PASP >= 45mmHg: 63.70%
+TR Max V >= 3.2m/s: 63.18%
+Moderate or Greater Structural Heart Disease: 64.80%

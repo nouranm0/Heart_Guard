@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEARTGAURD - AI Heart Monitoring</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        .app-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 25, 45, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+            padding: 0 var(--spacing-lg);
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+        .app-bar-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        .page-title {
+            color: var(--accent-glow);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        .app-bar-right {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+        .theme-toggle, .language-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.3rem;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        .theme-toggle:hover, .language-toggle:hover {
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--accent-glow);
+        }
+        .splash-container {
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body class="theme-dark">
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <h1 class="page-title">HEARTGUARD</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
+        </div>
+    </nav>
+
+    <div class="splash-container splash-dark-theme">
+        <!-- Dark Animated Background Gradients -->
+        <div class="splash-bg-layer bg-1"></div>
+        <div class="splash-bg-layer bg-2"></div>
+        <div class="splash-bg-layer bg-3"></div>
+        
+        <!-- Medical Grid Background -->
+        <div class="splash-grid splash-grid-dark"></div>
+        
+        <!-- Animated Floating Anatomy Background -->
+        <div class="splash-circles splash-dark-circles">
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+            <div class="circle circle-3"></div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="splash-content">
+            <!-- Video Container -->
+            <div class="video-container">
+                <video class="splash-video" autoplay muted loop playsinline>
+                    <source src="{{ url_for('static', filename='videos/heart_animation.mp4') }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <!-- Overlay Glow Effect -->
+                <div class="video-overlay"></div>
+            </div>
+            
+            <!-- Title and Subtitle -->
+            <h1 class="splash-title splash-title-dark" data-i18n="splash_title">HEARTGAURD</h1>
+            <p class="splash-subtitle splash-subtitle-dark" data-i18n="splash_subtitle">AI-Powered Cardiac Intelligence Platform</p>
+            
+            <!-- Loading Indicator -->
+            <div class="loading-dots loading-dots-dark">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/splash.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+</body>
+</html>

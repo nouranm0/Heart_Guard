@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Patient - Heart Guard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <style>
+        .patient-form-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 217, 255, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-glow);
+            box-shadow: 0 0 12px rgba(0, 217, 255, 0.3);
+            background: var(--input-bg-focus);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--accent-glow), var(--heart-glow));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.3);
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px 24px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent-glow);
+        }
+
+        .form-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .form-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        body.light-mode .form-group input,
+        body.light-mode .form-group select {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 217, 255, 0.2);
+        }
+
+        body.light-mode .form-group input:focus,
+        body.light-mode .form-group select:focus {
+            background: white;
+            border-color: var(--accent-glow);
+        }
+    </style>
+</head>
+<body class="theme-dark">
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <button class="back-button" onclick="window.location.href='/dashboard'">←</button>
+            <h1 class="page-title" data-i18n="add_patient">Add Patient</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <aside class="dashboard-sidebar">
+    <nav class="sidebar-nav">
+        {% if user.role == 'admin' %}
+            <!-- Admin Dashboard -->
+            <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" title="Dashboard" data-tooltip="Dashboard" data-i18n-tooltip="dashboard_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span class="nav-tooltip" data-i18n="dashboard_tooltip">Dashboard</span>
+            </a>
+
+            <!-- Doctors Management -->
+            <a href="/doctor-dashboard" class="nav-item {% if request.path == '/doctor-dashboard' %}active{% endif %}" title="Doctors" data-tooltip="Doctors" data-i18n-tooltip="doctors_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="doctors_tooltip">Doctors</span>
+            </a>
+
+            <!-- Patients Overview -->
+            <a href="/all-patients" class="nav-item {% if request.path == '/all-patients' %}active{% endif %}" title="Patients" data-tooltip="Patients" data-i18n-tooltip="patients_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="patients_tooltip">Patients</span>
+            </a>
+
+            <!-- Alerts -->
+            <a href="/alerts" class="nav-item {% if request.path == '/alerts' %}active{% endif %}" title="Alerts" data-tooltip="Alerts" data-i18n-tooltip="alerts_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="alerts_tooltip">Alerts</span>
+            </a>
+
+            <!-- Settings -->
+            <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}" title="Settings" data-tooltip="Settings" data-i18n-tooltip="settings_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24M19.78 19.78l-4.24-4.24M1 12h6m6 0h6"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="settings_tooltip">Settings</span>
+            </a>
+        {% else %}
+            <!-- Doctor Dashboard -->
+            <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" title="Dashboard" data-tooltip="Dashboard" data-i18n-tooltip="dashboard_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span class="nav-tooltip" data-i18n="dashboard_tooltip">Dashboard</span>
+            </a>
+
+            <!-- Doctor Dashboard -->
+            <a href="/doctor-dashboard" class="nav-item {% if request.path == '/doctor-dashboard' %}active{% endif %}" title="My Patients" data-tooltip="My Patients" data-i18n-tooltip="my_patients_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="my_patients_tooltip">My Patients</span>
+            </a>
+
+            <!-- Alerts -->
+            <a href="/alerts" class="nav-item {% if request.path == '/alerts' %}active{% endif %}" title="Alerts" data-tooltip="Alerts" data-i18n-tooltip="alerts_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="alerts_tooltip">Alerts</span>
+            </a>
+
+            <!-- New Assessment -->
+            <a href="/new-assessment" class="nav-item {% if request.path == '/new-assessment' %}active{% endif %}" title="New Assessment" data-tooltip="New Assessment" data-i18n-tooltip="new_assessment_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="new_assessment_tooltip">New Assessment</span>
+            </a>
+
+            <!-- Settings -->
+            <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}" title="Settings" data-tooltip="Settings" data-i18n-tooltip="settings_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24M19.78 19.78l-4.24-4.24M1 12h6m6 0h6"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="settings_tooltip">Settings</span>
+            </a>
+
+            <!-- Add Patient -->
+            <a href="/add-patient" class="nav-item {% if request.path == '/add-patient' %}active{% endif %}" title="Add Patient" data-tooltip="Add Patient" data-i18n-tooltip="add_patient_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="add_patient_tooltip">Add Patient</span>
+            </a>
+        {% endif %}
+
+        <!-- Profile -->
+        <a href="/profile" class="nav-item {% if request.path == '/profile' %}active{% endif %}" title="Profile" data-tooltip="Profile" data-i18n-tooltip="profile_tooltip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span class="nav-tooltip" data-i18n="profile_tooltip">Profile</span>
+        </a>
+    </nav>
+</aside>
+
+        <main class="assessment-content">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="patient-form-container">
+            <h2 class="form-title" data-i18n="register_patient">Register New Patient</h2>
+            <p class="form-subtitle" data-i18n="add_new_patient">Add a new patient to your care</p>
+
+            <form method="POST">
+                <div class="form-group">
+                    <label for="name" data-i18n="patient_name">Patient Name *</label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        placeholder="Enter patient's full name"
+                        required
+                        data-i18n-placeholder="enter_patient_name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="phone" data-i18n="phone_number">Phone Number</label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        name="phone" 
+                        placeholder="Enter patient's phone number"
+                        data-i18n-placeholder="enter_phone_number"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="gender" data-i18n="gender">Gender</label>
+                    <select id="gender" name="gender">
+                        <option value="" data-i18n="select_gender">Select gender</option>
+                        <option value="Male" data-i18n="male">Male</option>
+                        <option value="Female" data-i18n="female">Female</option>
+                        <option value="Other" data-i18n="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="birthday" data-i18n="date_of_birth">Date of Birth</label>
+                    <input 
+                        type="date" 
+                        id="birthday" 
+                        name="birthday"
+                    >
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit" data-i18n="add_patient">Add Patient</button>
+                    <button type="button" class="btn-cancel" data-i18n="cancel" onclick="window.location.href='/dashboard'">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Login - Heart Guard</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+	<style>
+		.login-theme-container {
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: var(--bg-dark);
+		}
+		.login-card {
+			background: var(--gradient-card);
+			border-radius: 18px;
+			box-shadow: 0 0 40px rgba(0,217,255,0.15), 0 0 80px rgba(255,46,99,0.08);
+			padding: 40px 32px;
+			width: 350px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		.login-logo {
+			margin-bottom: 24px;
+		}
+		.login-title {
+			font-size: 2rem;
+			color: var(--accent-glow);
+			margin-bottom: 16px;
+		}
+		.login-form {
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			gap: 18px;
+		}
+		.login-form label {
+			color: var(--text-secondary);
+			font-weight: 500;
+		}
+		.login-form input {
+			padding: 10px;
+			border-radius: 8px;
+			border: 1px solid var(--border-color);
+			background: var(--bg-dark);
+            color: #ffffff;
+			font-size: 1rem;
+			transition: var(--transition);
+		}
+		.login-form input::placeholder {
+          color: #8aa0c4;
+		}
+		.login-form input:focus {
+			outline: none;
+			border-color: var(--accent-glow);
+		}
+		.login-btn {
+			background: var(--gradient-primary);
+			color: #fff;
+			border: none;
+			border-radius: 8px;
+			padding: 12px;
+			font-size: 1.1rem;
+			font-weight: 600;
+			cursor: pointer;
+			transition: var(--transition);
+		}
+		.login-btn:hover {
+			background: var(--gradient-accent);
+		}
+		.flashes {
+			margin-bottom: 16px;
+			width: 100%;
+			list-style: none;
+			padding: 0;
+		}
+		.flashes li {
+			padding: 8px 12px;
+			border-radius: 6px;
+			margin-bottom: 6px;
+			font-size: 1rem;
+		}
+		.flashes .success {
+			background: var(--success);
+			color: #fff;
+		}
+		.flashes .error {
+			background: var(--danger);
+			color: #fff;
+		}
+	</style>
+</head>
+<body>
+	<div class="login-theme-container">
+		<div class="login-card">
+			<div class="login-logo">
+				<svg viewBox="0 0 100 100" width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+					<path d="M50,15 Q35,30 25,45 Q20,52 25,60 Q35,70 50,85 Q65,70 75,60 Q80,52 75,45 Q65,30 50,15 Z" fill="url(#heartGradient)" stroke="currentColor" stroke-width="1.5"/>
+					<defs>
+						<linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+							<stop offset="0%" style="stop-color:#00D9FF;stop-opacity:1" />
+							<stop offset="100%" style="stop-color:#FF6B9D;stop-opacity:1" />
+						</linearGradient>
+					</defs>
+				</svg>
+			</div>
+			<div class="login-title" data-i18n="login_title">HEARTGUARD Login</div>
+			<div style="position:absolute;top:20px;right:20px;">
+				<button type="button" class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">☀️</button>
+				<button type="button" class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language" style="background:none;border:none;font-size:1.5rem;cursor:pointer;margin-left:10px;">ع</button>
+			</div>
+			{% with messages = get_flashed_messages(with_categories=true) %}
+				{% if messages %}
+					<ul class="flashes">
+					{% for category, message in messages %}
+						<li class="{{ category }}">{{ message }}</li>
+					{% endfor %}
+					</ul>
+				{% endif %}
+			{% endwith %}
+			<form class="login-form" method="POST" action="/login">
+				<label for="email" data-i18n="email_label">Email</label>
+				<input type="email" id="email" name="email" required autocomplete="username" placeholder="Enter your email" aria-label="Email" data-i18n-placeholder="email_placeholder">
+				<label for="password" data-i18n="password_label">Password</label>
+				<div style="position:relative;">
+					<input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password" aria-label="Password" style="width:100%;" data-i18n-placeholder="password_placeholder">
+					<button type="button" onclick="togglePassword()" style="position:absolute;top:50%;right:8px;transform:translateY(-50%);background:none;border:none;color:var(--accent-glow);font-size:1.1rem;cursor:pointer;">👁️</button>
+				</div>
+				<button class="login-btn" type="submit" data-i18n="login_button">Login</button>
+			</form>
+			<script>
+			function togglePassword() {
+				var pw = document.getElementById('password');
+				pw.type = pw.type === 'password' ? 'text' : 'password';
+			}
+			</script>
+		</div>
+	</div>
+	<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/language.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+</body>
+</html>
