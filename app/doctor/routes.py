@@ -260,9 +260,9 @@ def all_patients():
     # Assign risk levels
     for p in patients:
         assessment_count = len(p.ecg_records)
-        if assessment_count >= 5:
+        if assessment_count >= 3:
             p.risk = 'high'
-        elif assessment_count >= 2:
+        elif assessment_count >= 1:
             p.risk = 'medium'
         else:
             p.risk = 'low'
@@ -559,7 +559,7 @@ def view_patient_details(patient_id):
 
 # -----------------------------------------
 # View Assessment Results
-@doctor_bp.route('/assessment/<int:assessment_id>')
+@doctor_bp.route('/assessment/<int:assessment_id>', methods=['GET', 'POST'])
 def view_assessment(assessment_id):
     if 'user_id' not in session:
         return redirect(url_for('doctor.login'))
@@ -572,6 +572,29 @@ def view_assessment(assessment_id):
     if user.role != 'admin' and assessment.doctor_id != user.id:
         flash('Access denied.', 'error')
         return redirect(url_for('doctor.doctor_dashboard'))
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'approve':
+            assessment.doctor_approved = True
+            assessment.doctor_diagnosis = assessment.top_diagnosis  # Use AI diagnosis
+            assessment.doctor_note = None
+            assessment.approved_at = datetime.utcnow()
+            db.session.commit()
+            flash('Assessment approved successfully!', 'success')
+        elif action == 'manual':
+            manual_diagnosis = request.form.get('manual_diagnosis', '').strip()
+            doctor_note = request.form.get('doctor_note', '').strip()
+            if not manual_diagnosis:
+                flash('Please select or enter a diagnosis.', 'error')
+                return redirect(url_for('doctor.view_assessment', assessment_id=assessment_id))
+            assessment.doctor_approved = True
+            assessment.doctor_diagnosis = manual_diagnosis
+            assessment.doctor_note = doctor_note if doctor_note else None
+            assessment.approved_at = datetime.utcnow()
+            db.session.commit()
+            flash('Manual diagnosis saved successfully!', 'success')
+        return redirect(url_for('doctor.view_assessment', assessment_id=assessment_id))
     
     return render_template('assessment_results.html', assessment=assessment, patient=patient, user=user)
 
