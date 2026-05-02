@@ -265,6 +265,34 @@
             color: var(--accent-glow);
         }
 
+        .filter-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding: 0 var(--spacing-lg);
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid transparent;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: var(--accent-glow);
+            color: var(--accent-glow);
+            transform: translateY(-1px);
+        }
+
         .patients-table {
             margin-top: var(--spacing-xl);
             animation: slideInUp 0.6s ease-out;
