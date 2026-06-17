@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Heart Guard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <style>
+        .profile-section {
+            padding: 20px;
+        }
+        .profile-card {
+            background: var(--gradient-card);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,217,255,0.1);
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+        .profile-avatar img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+        .profile-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .detail-item label {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .detail-item span {
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        .detail-item ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .detail-item li {
+            padding: 5px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .profile-actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .btn-danger {
+            background: var(--danger);
+        }
+        .btn-danger:hover {
+            background: #ff4757;
+        }
+    </style>
+</head>
+<body class="theme-dark">
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <button class="back-button" onclick="window.location.href='/intro'">←</button>
+            <h1 class="page-title">Profile</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Professional Left Sidebar Navigation -->
+        <aside class="dashboard-sidebar">
+            <!-- Logo Section -->
+            <div class="sidebar-logo-section">
+                <div class="sidebar-logo" onclick="window.location.href='/intro'">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50,15 Q35,30 25,45 Q20,52 25,60 Q35,70 50,85 Q65,70 75,60 Q80,52 75,45 Q65,30 50,15 Z" fill="url(#heartGradient)" stroke="currentColor" stroke-width="1.5"/>
+                        <defs>
+                            <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--accent-glow);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:var(--heart-glow);stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Navigation Items -->
+            <nav class="sidebar-nav">
+                <!-- Dashboard -->
+                <a href="/dashboard" class="nav-item" data-tooltip="Dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span class="nav-tooltip">Dashboard</span>
+                </a>
+
+                <!-- Patients/Doctors -->
+                <a href="/doctor-dashboard" class="nav-item" data-tooltip="{% if user.role == 'admin' %}Doctors{% else %}Patients{% endif %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span class="nav-tooltip">{% if user.role == 'admin' %}Doctors{% else %}Patients{% endif %}</span>
+                </a>
+
+                <!-- Alerts -->
+                <a href="/alerts" class="nav-item" data-tooltip="Alerts">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="nav-tooltip">Alerts</span>
+                </a>
+
+                <!-- New Assessment -->
+                {% if session.get('role') != 'admin' %}
+                <a href="/new-assessment" class="nav-item" data-tooltip="New Assessment">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M12 5v14"></path>
+                        <path d="M5 12h14"></path>
+                        <circle cx="12" cy="12" r="10"></circle>
+                    </svg>
+                    <span class="nav-tooltip">New Assessment</span>
+                </a>
+                {% endif %}
+
+                <!-- Profile (Active) -->
+                <a href="/profile" class="nav-item active" data-tooltip="Profile">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span class="nav-tooltip">Profile</span>
+                </a>
+
+                <!-- Settings -->
+                <a href="/settings" class="nav-item" data-tooltip="Settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6m-16.78 7.78l4.24-4.24m3.08-3.08l4.24-4.24"></path>
+                    </svg>
+                    <span class="nav-tooltip">Settings</span>
+                </a>
+
+                <!-- Add Patient -->
+                {% if session.get('role') == 'doctor' %}
+                <a href="/add-patient" class="nav-item" data-tooltip="Add Patient">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <line x1="19" y1="8" x2="19" y2="14"></line>
+                        <line x1="22" y1="11" x2="16" y2="11"></line>
+                    </svg>
+                    <span class="nav-tooltip">Add Patient</span>
+                </a>
+                {% endif %}
+            </nav>
+
+            <!-- User Profile at Bottom -->
+            <div class="sidebar-bottom">
+                <div class="user-avatar-container">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ user.username|default('User') }}" alt="Profile" class="user-avatar">
+                    <div class="user-status"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="patient-dashboard">
+            <!-- Profile Content -->
+            <div class="profile-section">
+                <h2 class="section-title">Your Profile</h2>
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ user.username|default('User') }}" alt="Profile Icon">
+                    </div>
+                    <div class="profile-details">
+                        <div class="detail-item">
+                            <label>Name:</label>
+                            <span>{{ user.username }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Email:</label>
+                            <span>{{ user.email }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Role:</label>
+                            <span>{{ user.role|title }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Account Created:</label>
+                            <span>{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Description:</label>
+                            <span>{% if user.role == 'admin' %}Admin user. You can add doctors to the system.{% else %}Doctor user. You can view and assess patients.{% endif %}</span>
+                        </div>
+                        {% if user.role == 'doctor' %}
+                        <div class="detail-item">
+                            <label>Patients:</label>
+                            <span>{{ user.patients|length }} patients assigned</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <a href="/logout" class="btn btn-danger">Logout</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+</body>
+</html>

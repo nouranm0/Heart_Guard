@@ -1,0 +1,22 @@
+Failed to process xml_input\MUSE_example.xml.
+Error: Error(s) in loading state_dict for ResNet1dWithTabular:
+	size mismatch for output.weight: copying a param with shape torch.Size([12, 263]) from checkpoint, the shape in current model is torch.Size([1, 263]).
+	size mismatch for output.bias: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([1]).
+Traceback (most recent call last):
+  File "D:\IntroECG-master\7-EchoNext Minimodel\debug_inference.py", line 19, in test_file
+    results = predict(filepath, checkpoint_path)
+  File "D:\IntroECG-master\7-EchoNext Minimodel\flask_app\model_inference.py", line 380, in predict
+    module, device = load_model(checkpoint_path, model_kwargs)
+                     ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\IntroECG-master\7-EchoNext Minimodel\flask_app\model_inference.py", line 327, in load_model
+    raise e
+  File "D:\IntroECG-master\7-EchoNext Minimodel\flask_app\model_inference.py", line 318, in load_model
+    module.model.load_state_dict(weights["model"])
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Fix-Dell\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\torch\nn\modules\module.py", line 2629, in load_state_dict
+    raise RuntimeError(
+    ...<3 lines>...
+    )
+RuntimeError: Error(s) in loading state_dict for ResNet1dWithTabular:
+	size mismatch for output.weight: copying a param with shape torch.Size([12, 263]) from checkpoint, the shape in current model is torch.Size([1, 263]).
+	size mismatch for output.bias: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([1]).

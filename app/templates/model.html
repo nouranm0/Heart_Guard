@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Model - HEARTGAURD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <button class="back-button" onclick="window.location.href='/intro'">←</button>
+            <h1 class="page-title" data-i18n="model_title">AI Analysis Pipeline</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme">☀️</button>
+            <button class="language-toggle" title="Toggle Language">ع</button>
+        </div>
+    </nav>
+
+    <!-- Model Container -->
+    <div class="model-container">
+        <div class="model-content">
+            <!-- Main Heading -->
+            <h2 class="model-heading">Diagnostic AI Pipeline</h2>
+
+            <!-- Introduction -->
+            <div class="model-section intro-section">
+                <p class="model-description">
+                    HEARTGAURD employs a sophisticated multi-stage signal processing and machine learning pipeline to analyze electrocardiographic data and generate diagnostic predictions with clinical-grade accuracy.
+                </p>
+            </div>
+
+            <!-- Pipeline Diagram -->
+            <div class="model-section">
+                <h3 class="section-title">🔄 Processing Pipeline</h3>
+                <div class="pipeline-diagram animated-pipeline">
+                    <div class="pipeline-step animate-step-1">
+                        <div class="pipeline-icon">📊</div>
+                        <div class="pipeline-label">ECG Acquisition</div>
+                    </div>
+
+                    <div class="pipeline-arrow">→</div>
+
+                    <div class="pipeline-step animate-step-2">
+                        <div class="pipeline-icon">🔧</div>
+                        <div class="pipeline-label">Signal Processing</div>
+                    </div>
+
+                    <div class="pipeline-arrow">→</div>
+
+                    <div class="pipeline-step animate-step-3">
+                        <div class="pipeline-icon">🧠</div>
+                        <div class="pipeline-label">Feature Extraction</div>
+                    </div>
+
+                    <div class="pipeline-arrow">→</div>
+
+                    <div class="pipeline-step animate-step-4">
+                        <div class="pipeline-icon">⚡</div>
+                        <div class="pipeline-label">Deep Learning</div>
+                    </div>
+
+                    <div class="pipeline-arrow">→</div>
+
+                    <div class="pipeline-step animate-step-5">
+                        <div class="pipeline-icon">✓</div>
+                        <div class="pipeline-label">Diagnosis</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key ECG Parameters Section -->
+            <div class="model-section">
+                <h3 class="section-title">📈 Cardiac Parameters Analyzed</h3>
+                <div class="parameters-grid animated-parameters">
+                    <!-- Heart Rate -->
+                    <div class="parameter-item animate-param-1">
+                        <div class="param-name">Heart Rate (HR)</div>
+                        <div class="param-description">
+                            Measured in beats per minute (bpm). Normal range: 60-100 bpm. Bradycardia (<60) or tachycardia (>100) detection.
+                        </div>
+                        <div class="param-range">Range: 30-200 bpm</div>
+                    </div>
+
+                    <!-- P Wave -->
+                    <div class="parameter-item animate-param-2">
+                        <div class="param-name">P Wave</div>
+                        <div class="param-description">
+                            Represents atrial depolarization. Duration: 80-120ms. Abnormalities indicate atrial pathology or enlargement.
+                        </div>
+                        <div class="param-range">Duration: 40-120 ms</div>
+                    </div>
+
+                    <!-- PR Interval -->
+                    <div class="parameter-item animate-param-3">
+                        <div class="param-name">PR Interval</div>
+                        <div class="param-description">
+                            Measures AV nodal conduction time. Normal: 120-200ms. Prolongation suggests AV block; shortening may indicate pre-excitation.
+                        </div>
+                        <div class="param-range">Range: 120-200 ms</div>
+                    </div>
+
+                    <!-- QRS Complex -->
+                    <div class="parameter-item animate-param-4">
+                        <div class="param-name">QRS Duration</div>
+                        <div class="param-description">
+                            Represents ventricular depolarization. Normal: <120ms. Widening indicates bundle branch block or ventricular pathology.
+                        </div>
+                        <div class="param-range">Normal: 60-120 ms</div>
+                    </div>
+
+                    <!-- ST Segment -->
+                    <div class="parameter-item animate-param-5">
+                        <div class="param-name">ST Segment</div>
+                        <div class="param-description">
+                            Baseline between QRS and T-wave. Elevation or depression indicates myocardial infarction or ischemia.
+                        </div>
+                        <div class="param-range">Reference: 0 mm baseline</div>
+                    </div>
+
+                    <!-- QT Interval -->
+                    <div class="parameter-item animate-param-6">
+                        <div class="param-name">QT Interval</div>
+                        <div class="param-description">
+                            Measures ventricular repolarization duration. Corrected QT (QTc) <440ms. Prolongation increases arrhythmia risk.
+                        </div>
+                        <div class="param-range">Corrected: <440 ms</div>
+                    </div>
+
+                    <!-- T Wave -->
+                    <div class="parameter-item animate-param-7">
+                        <div class="param-name">T Wave</div>
+                        <div class="param-description">
+                            Represents ventricular repolarization. Inversion may indicate ischemia, myocarditis, or pulmonary embolism.
+                        </div>
+                        <div class="param-range">Amplitude: ±5 mm</div>
+                    </div>
+
+                    <!-- Arrhythmia Detection -->
+                    <div class="parameter-item animate-param-8">
+                        <div class="param-name">Arrhythmia Detection</div>
+                        <div class="param-description">
+                            Identifies irregular rhythms: Atrial Fibrillation, Premature beats, Ventricular tachycardia, Heart blocks.
+                        </div>
+                        <div class="param-range">Real-time classification</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnostic Capabilities -->
+            <div class="model-section">
+                <h3 class="section-title">🔬 Detectable Conditions</h3>
+                <div class="conditions-grid">
+                    <div class="condition-card">
+                        <div class="condition-icon">⚠️</div>
+                        <div class="condition-name">Myocardial Infarction</div>
+                        <div class="condition-detail">ST-elevation and T-wave inversions</div>
+                    </div>
+                    <div class="condition-card">
+                        <div class="condition-icon">💔</div>
+                        <div class="condition-name">Arrhythmias</div>
+                        <div class="condition-detail">AFib, Ectopy, Bradycardia, Tachycardia</div>
+                    </div>
+                    <div class="condition-card">
+                        <div class="condition-icon">📍</div>
+                        <div class="condition-name">Heart Blocks</div>
+                        <div class="condition-detail">First, second, third degree blocks</div>
+                    </div>
+                    <div class="condition-card">
+                        <div class="condition-icon">🧬</div>
+                        <div class="condition-name">Structural Abnormalities</div>
+                        <div class="condition-detail">LVH, RVH, Chamber enlargement</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Algorithm Accuracy -->
+            <div class="model-section">
+                <h3 class="section-title">📊 Model Performance Metrics</h3>
+                <div class="metrics-container">
+                    <div class="metric-box">
+                        <div class="metric-value">98.5%</div>
+                        <div class="metric-label">Sensitivity</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-value">97.2%</div>
+                        <div class="metric-label">Specificity</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-value">98.1%</div>
+                        <div class="metric-label">Accuracy</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-value">0.98</div>
+                        <div class="metric-label">AUC-ROC</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clinical Application -->
+            <div class="model-section">
+                <h3 class="section-title">🏥 Clinical Application</h3>
+                <p class="model-description">
+                    The HEARTGAURD AI model serves as a clinical decision support tool, assisting physicians in screening large patient populations for cardiac abnormalities. Real-time flagging of high-risk patients enables prioritization for further specialist evaluation and intervention. The system is designed to complement, not replace, clinical judgment and standard diagnostic procedures.
+                </p>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="model-cta-section">
+                <a href="/dashboard" class="cta-button">Access Dashboard</a>
+                <a href="/intro" class="cta-button-secondary">Back to Overview</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ecg.js') }}"></script>
+</body>
+</html>

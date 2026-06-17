@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EchoNext Minimodel Inference</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EchoNext Application</h1>
+            <p>Upload an ECG file (XML, PDF, JPG, PNG) for AI analysis.</p>
+        </header>
+
+        <main>
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div class="flash-messages">
+                  {% for message in messages %}
+                    <div class="alert">{{ message }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <div class="upload-section">
+                <form method="post" enctype="multipart/form-data" class="upload-form">
+                    <div class="file-input-wrapper">
+                        <input type="file" name="file" id="file" class="file-input" accept=".xml,.pdf,.png,.jpg,.jpeg">
+                        <label for="file" class="file-label">
+                            <span class="icon">📂</span>
+                            <span class="text">Choose a file or drag it here</span>
+                        </label>
+                    </div>
+                    <button type="submit" class="submit-btn">Analyze ECG</button>
+                </form>
+            </div>
+
+            {% if results %}
+            <div class="results-section">
+                <h2>Analysis Results for {{ filename }}</h2>
+                <div class="results-grid">
+                    {% for label, probability in results.items() %}
+                    <div class="result-card">
+                        <span class="label">{{ label }}</span>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: {{ probability * 100 }}%"></div>
+                        </div>
+                        <span class="probability">{{ "%.1f"|format(probability * 100) }}%</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </main>
+        
+        <footer>
+            <p>Powered by EchoNext Minimodel & Flask</p>
+        </footer>
+    </div>
+</body>
+</html>

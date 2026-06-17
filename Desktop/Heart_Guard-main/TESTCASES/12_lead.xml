@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ECG>
+    <Metadata>
+        <Samples>2500</Samples>
+        <Leads>12</Leads>
+    </Metadata>
+
+    <Data>
+        <Lead name="I">
+            <Values>
+                0 0 0 0 0 0 0 0 0 0
+                <!-- repeat until 2500 values -->
+            </Values>
+        </Lead>
+
+        <Lead name="II">
+            <Values>
+                0 0 0 0 0 0 0 0 0 0
+            </Values>
+        </Lead>
+
+        <Lead name="III">
+            <Values>0 0 0 0 0 0 0 0 0 0</Values>
+        </Lead>
+
+        <Lead name="aVR">
+            <Values>0 0 0 0 0 0 0 0 0 0</Values>
+        </Lead>
+
+        <Lead name="aVL">
+            <Values>0 0 0 0 0 0 0 0 0 0</Values>
+        </Lead>
+
+        <Lead name="aVF">
+            <Values>0 0 0 0 0 0 0 0 0 0</Values>
+        </Lead>
+
+        <Lead name="V1">
+            <Values>0 0 0 0 0 0 0 0 0 0</Values>
+        </Lead>
+
+        <Lead name="V2">
+            <Values>0 0 0 0 0 0 0 0 0 0</Values>
+        </Lead>
+
+        <Lead name="V3">
+            <Values>0 0 0 0 0 0 0 0 0 0</Values>
+        </Lead>
+
+        <Lead name="V4">
+            <Values>0 0 0 0 0 0 0 0 0 0</Values>
+        </Lead>
+
+        <Lead name="V5">
+            <Values>0 0 0 0 0 0 0 0 0 0</Values>
+        </Lead>
+
+        <Lead name="V6">
+            <Values>0 0 0 0 0 0 0 0 0 0</Values>
+        </Lead>
+    </Data>
+</ECG>

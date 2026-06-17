@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. {{ doctor.username }} - Patients - HEARTGAURD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="theme-dark">
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <button class="back-button" onclick="window.location.href='/doctor-dashboard'">←</button>
+            <h1 class="page-title">Dr. {{ doctor.username }} - Patients</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+            <button class="language-toggle" title="Toggle Language">ع</button>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Professional Left Sidebar Navigation -->
+        <aside class="dashboard-sidebar">
+            <!-- Logo Section -->
+            <div class="sidebar-logo-section">
+                <div class="sidebar-logo" onclick="window.location.href='/dashboard'">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50,15 Q35,30 25,45 Q20,52 25,60 Q35,70 50,85 Q65,70 75,60 Q80,52 75,45 Q65,30 50,15 Z"
+                              fill="url(#heartGradient)" stroke="currentColor" stroke-width="1.5"/>
+                        <defs>
+                            <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--accent-glow);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:var(--heart-glow);stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Navigation Items -->
+            <nav class="sidebar-nav">
+                <!-- Dashboard -->
+                <a href="/dashboard" class="nav-item" data-tooltip="Dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span class="nav-tooltip">Dashboard</span>
+                </a>
+
+                <!-- Patients (Active) -->
+                <a href="/doctor-dashboard" class="nav-item active" data-tooltip="Doctors">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span class="nav-tooltip">Doctors</span>
+                </a>
+
+                <!-- Alerts -->
+                <a href="/alerts" class="nav-item" data-tooltip="Alerts">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="nav-tooltip">Alerts</span>
+                </a>
+
+                <!-- Settings -->
+                <a href="/settings" class="nav-item" data-tooltip="Settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6m-16.78 7.78l4.24-4.24m3.08-3.08l4.24-4.24"></path>
+                    </svg>
+                    <span class="nav-tooltip">Settings</span>
+                </a>
+            </nav>
+
+            <!-- User Profile at Bottom -->
+            <div class="sidebar-bottom">
+                <div class="user-avatar-container">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" alt="Admin Profile" class="user-avatar">
+                    <div class="user-status"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="doctor-dashboard-content">
+            <!-- Header Section -->
+            <section class="dashboard-header">
+                <div class="header-title">
+                    <h2>Dr. {{ doctor.username }}'s Patients</h2>
+                    <p class="subtitle">Monitor and manage patients under Dr. {{ doctor.username }}</p>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-badge">
+                        <span class="badge-label">Total Patients</span>
+                        <span class="badge-value">{{ patients|length }}</span>
+                    </div>
+                    <div class="stat-badge alert-high">
+                        <span class="badge-label">High Risk</span>
+                        <span class="badge-value">2</span>
+                    </div>
+                    <div class="stat-badge alert-medium">
+                        <span class="badge-label">Medium Risk</span>
+                        <span class="badge-value">3</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Search and Filter Section -->
+            <section class="filter-section">
+                <input type="search" class="search-input" placeholder="Search patients..." data-i18n="search_placeholder">
+                <select class="filter-select">
+                    <option data-i18n="all_patients">All Patients</option>
+                    <option data-i18n="high_risk">High Risk</option>
+                    <option data-i18n="medium_risk">Medium Risk</option>
+                    <option data-i18n="low_risk">Low Risk</option>
+                </select>
+            </section>
+
+            <!-- Patients List -->
+            <section class="patients-list">
+                {% if patients %}
+                    {% for patient in patients %}
+                    <div class="patient-card">
+                        <div class="patient-header">
+                            <div class="patient-avatar">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ patient.name }}" alt="Patient">
+                            </div>
+                            <div class="patient-info">
+                                <h3>{{ patient.name }}</h3>
+                                <p class="patient-id">
+                                    {% if patient.birthday %}
+                                        {{ ((current_date - patient.birthday).days // 365) }} years old
+                                    {% else %}
+                                        Age not specified
+                                    {% endif %}
+                                    {% if patient.phone %} | {{ patient.phone }}{% endif %}
+                                </p>
+                            </div>
+                            <div class="patient-status">
+                                <span class="status-badge success">Active</span>
+                            </div>
+                        </div>
+                        <div class="patient-metrics">
+                            <div class="metric">
+                                <span class="metric-icon">👤</span>
+                                <span class="metric-label">Gender</span>
+                                <span class="metric-value">{{ patient.gender or 'Not specified' }}</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-icon">📅</span>
+                                <span class="metric-label">Registered</span>
+                                <span class="metric-value">{{ patient.created_at.strftime('%b %d, %Y') }}</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-icon">🏥</span>
+                                <span class="metric-label">Doctor</span>
+                                <span class="metric-value">Dr. {{ doctor.username }}</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-icon">📊</span>
+                                <span class="metric-label">Assessments</span>
+                                <span class="metric-value">{{ patient.ecg_records|length }}</span>
+                            </div>
+                        </div>
+                        <div class="patient-actions">
+                            <button class="btn-action btn-view" data-i18n="view_details">View Details</button>
+                            <button class="btn-action btn-monitor" data-i18n="monitor">Monitor</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-data">
+                        <p>Dr. {{ doctor.username }} has no patients yet.</p>
+                    </div>
+                {% endif %}
+            </section>
+        </main>
+    </div>
+
+    <!-- Styles -->
+    <style>
+        .doctor-dashboard-content {
+            flex: 1;
+            padding: var(--spacing-xl);
+            overflow-y: auto;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+            flex-wrap: wrap;
+            gap: var(--spacing-lg);
+        }
+
+        .header-title h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 var(--spacing-sm) 0;
+        }
+
+        .header-title .subtitle {
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .stat-badge {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(0, 217, 255, 0.05));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            text-align: center;
+        }
+
+        .stat-badge.alert-high {
+            background: linear-gradient(135deg, rgba(255, 71, 87, 0.1), rgba(255, 71, 87, 0.05));
+            border-color: rgba(255, 71, 87, 0.3);
+        }
+
+        .stat-badge.alert-medium {
+            background: linear-gradient(135deg, rgba(255, 184, 28, 0.1), rgba(255, 184, 28, 0.05));
+            border-color: rgba(255, 184, 28, 0.3);
+        }
+
+        .badge-label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .badge-value {
+            display: block;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .filter-section {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .patients-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .patient-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .patient-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 217, 255, 0.15);
+            border-color: var(--accent-glow);
+        }
+
+        .patient-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .patient-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--accent-glow);
+        }
+
+        .patient-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .patient-info h3 {
+            margin: 0 0 4px 0;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .patient-id {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .patient-status {
+            margin-left: auto;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.success {
+            background: rgba(0, 217, 142, 0.2);
+            color: #00d98e;
+        }
+
+        .patient-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .metric-icon {
+            font-size: 1.2rem;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .patient-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .btn-action {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, var(--accent-glow), var(--heart-glow));
+            color: white;
+        }
+
+        .btn-view:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3);
+        }
+
+        .btn-monitor {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-monitor:hover {
+            background: var(--card-bg);
+            border-color: var(--accent-glow);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--text-secondary);
+            grid-column: 1 / -1;
+        }
+
+        .no-data p {
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-stats {
+                width: 100%;
+            }
+
+            .patients-list {
+                grid-template-columns: 1fr;
+            }
+
+            .patient-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ecg.js') }}"></script>
+</body>
+</html>

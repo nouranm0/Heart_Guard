@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts - HeartGaurd</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body class="theme-dark">
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <button class="back-button" onclick="window.location.href='/dashboard'">←</button>
+            <h1 class="page-title" data-i18n="alerts">Health Alerts</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
+            <button class="language-toggle" title="Toggle Language">ع</button>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Professional Left Sidebar Navigation -->
+        <aside class="dashboard-sidebar">
+            <!-- Logo Section -->
+            <div class="sidebar-logo-section">
+                <div class="sidebar-logo" onclick="window.location.href='/dashboard'">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50,15 Q35,30 25,45 Q20,52 25,60 Q35,70 50,85 Q65,70 75,60 Q80,52 75,45 Q65,30 50,15 Z" fill="url(#heartGradient)" stroke="currentColor" stroke-width="1.5"/>
+                        <defs>
+                            <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--accent-glow);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:var(--heart-glow);stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Navigation Items -->
+            <nav class="sidebar-nav">
+                <!-- Dashboard -->
+                <a href="/dashboard" class="nav-item" data-tooltip="Dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span class="nav-tooltip">Dashboard</span>
+                </a>
+
+                <!-- Patients -->
+                <a href="/doctor-dashboard" class="nav-item" data-tooltip="Patients">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span class="nav-tooltip">Patients</span>
+                </a>
+
+                <!-- Alerts (Active) -->
+                <a href="/alerts" class="nav-item active" data-tooltip="Alerts">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="nav-tooltip">Alerts</span>
+                </a>
+
+                <!-- Settings -->
+                <a href="/settings" class="nav-item" data-tooltip="Settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6m-16.78 7.78l4.24-4.24m3.08-3.08l4.24-4.24"></path>
+                    </svg>
+                    <span class="nav-tooltip">Settings</span>
+                </a>
+            </nav>
+
+            <!-- User Profile at Bottom -->
+            <div class="sidebar-bottom">
+                <div class="user-avatar-container">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Doctor" alt="Doctor Profile" class="user-avatar">
+                    <div class="user-status"></div>
+                </div>
+            </div>
+        </aside>
+
+    <!-- Main Content -->
+    <main class="alerts-container">
+        <div class="alerts-content">
+            <header class="page-header">
+                <h1>Health Alerts</h1>
+                <p class="subtitle">Important notifications and warnings</p>
+            </header>
+
+            <!-- Alert Filters -->
+            <section class="alert-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="critical">🔴 Critical</button>
+                <button class="filter-btn" data-filter="warning">🟠 Warning</button>
+                <button class="filter-btn" data-filter="info">🔵 Info</button>
+            </section>
+
+            <!-- Sample Alerts -->
+            <section class="alerts-list">
+                <div class="alert-item alert-critical">
+                    <div class="alert-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                        </svg>
+                    </div>
+                    <div class="alert-body">
+                        <h3>High Heart Rate Detected</h3>
+                        <p>Your heart rate reached 145 bpm at 14:32. Consider resting.</p>
+                        <small>2 hours ago</small>
+                    </div>
+                    <button class="alert-dismiss">×</button>
+                </div>
+
+                <div class="alert-item alert-warning">
+                    <div class="alert-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                        </svg>
+                    </div>
+                    <div class="alert-body">
+                        <h3>Irregular Heart Rhythm Detected</h3>
+                        <p>Possible arrhythmia pattern detected in ECG reading.</p>
+                        <small>5 hours ago</small>
+                    </div>
+                    <button class="alert-dismiss">×</button>
+                </div>
+
+                <div class="alert-item alert-info">
+                    <div class="alert-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        </svg>
+                    </div>
+                    <div class="alert-body">
+                        <h3>Daily Check-In Reminder</h3>
+                        <p>Don't forget to complete your daily health check-in today.</p>
+                        <small>12 hours ago</small>
+                    </div>
+                    <button class="alert-dismiss">×</button>
+                </div>
+            </section>
+
+            <!-- Coming Soon Message -->
+            <section class="coming-soon" style="margin-top: 40px;">
+                <div class="coming-soon-content">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="coming-soon-icon">
+                        <circle cx="50" cy="50" r="45" fill="rgba(0, 217, 255, 0.1)" stroke="var(--accent-glow)" stroke-width="2"/>
+                        <path d="M50 30 L65 45 L50 60 L35 45 Z" fill="var(--accent-glow)" opacity="0.7"/>
+                        <path d="M50 60 L65 75 L50 90 L35 75 Z" fill="var(--accent-glow)" opacity="0.5"/>
+                    </svg>
+                    <h2>Advanced Alert Management Coming Soon</h2>
+                    <p>Customizable alert rules and real-time notifications will be available here</p>
+                    <button class="btn btn-primary" onclick="window.location.href='/dashboard'">Back to Dashboard</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <style>
+        .alerts-container {
+            padding-top: 70px;
+            min-height: 100vh;
+            background-color: var(--bg-dark);
+            padding-left: var(--spacing-xl);
+            padding-right: var(--spacing-xl);
+            padding-bottom: var(--spacing-xl);
+        }
+
+        .alerts-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: var(--spacing-xl);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 var(--spacing-sm) 0;
+        }
+
+        .page-header .subtitle {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .alert-filters {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            flex-wrap: wrap;
+            animation: slideInUp 0.6s ease-out 0.1s both;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: var(--accent-glow);
+            color: var(--accent-glow);
+        }
+
+        .alerts-list {
+            animation: slideInUp 0.6s ease-out 0.2s both;
+        }
+
+        .alert-item {
+            display: flex;
+            gap: var(--spacing-lg);
+            padding: var(--spacing-lg);
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-glow);
+            border-radius: 12px;
+            margin-bottom: var(--spacing-lg);
+            transition: all 0.3s;
+        }
+
+        .alert-item:hover {
+            transform: translateX(4px);
+            border-color: var(--accent-glow);
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.12), rgba(0, 217, 255, 0.08));
+        }
+
+        .alert-item.alert-critical {
+            border-left-color: var(--danger);
+        }
+
+        .alert-item.alert-critical:hover {
+            background: linear-gradient(135deg, rgba(255, 71, 87, 0.12), rgba(255, 71, 87, 0.08));
+        }
+
+        .alert-item.alert-warning {
+            border-left-color: var(--warning);
+        }
+
+        .alert-item.alert-warning:hover {
+            background: linear-gradient(135deg, rgba(255, 184, 28, 0.12), rgba(255, 184, 28, 0.08));
+        }
+
+        .alert-item.alert-info {
+            border-left-color: var(--accent-glow);
+        }
+
+        .alert-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .alert-item.alert-critical .alert-icon {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--danger);
+        }
+
+        .alert-item.alert-warning .alert-icon {
+            background: rgba(255, 184, 28, 0.2);
+            color: var(--warning);
+        }
+
+        .alert-item.alert-info .alert-icon {
+            background: rgba(0, 217, 255, 0.2);
+            color: var(--accent-glow);
+        }
+
+        .alert-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .alert-body {
+            flex: 1;
+        }
+
+        .alert-body h3 {
+            margin: 0 0 var(--spacing-sm) 0;
+            color: var(--text-primary);
+            font-size: 1.05rem;
+        }
+
+        .alert-body p {
+            margin: 0 0 var(--spacing-sm) 0;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .alert-body small {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .alert-dismiss {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-dismiss:hover {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--danger);
+        }
+
+        .coming-soon {
+            text-align: center;
+            padding: var(--spacing-xl);
+        }
+
+        .coming-soon-content {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: var(--spacing-xl);
+            animation: slideInUp 0.6s ease-out 0.3s both;
+        }
+
+        .coming-soon-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--spacing-lg);
+        }
+
+        .coming-soon-content h2 {
+            color: var(--text-primary);
+            margin: 0 0 var(--spacing-sm) 0;
+        }
+
+        .coming-soon-content p {
+            color: var(--text-secondary);
+            margin: 0 0 var(--spacing-lg) 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .alerts-container {
+                padding-left: var(--spacing-lg);
+                padding-right: var(--spacing-lg);
+            }
+
+            .alert-item {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            .alert-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+</body>
+</html>
