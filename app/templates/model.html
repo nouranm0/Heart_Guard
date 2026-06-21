@@ -14,8 +14,8 @@
             <h1 class="page-title" data-i18n="model_title">AI Analysis Pipeline</h1>
         </div>
         <div class="app-bar-right">
-            <button class="theme-toggle" title="Toggle Theme">☀️</button>
-            <button class="language-toggle" title="Toggle Language">ع</button>
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme">☀️</button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
         </div>
     </nav>
 
@@ -154,22 +154,22 @@
                 <h3 class="section-title">🔬 Detectable Conditions</h3>
                 <div class="conditions-grid">
                     <div class="condition-card">
-                        <div class="condition-icon">⚠️</div>
+                        <div class="condition-icon">MI</div>
                         <div class="condition-name">Myocardial Infarction</div>
                         <div class="condition-detail">ST-elevation and T-wave inversions</div>
                     </div>
                     <div class="condition-card">
-                        <div class="condition-icon">💔</div>
+                        <div class="condition-icon">AR</div>
                         <div class="condition-name">Arrhythmias</div>
                         <div class="condition-detail">AFib, Ectopy, Bradycardia, Tachycardia</div>
                     </div>
                     <div class="condition-card">
-                        <div class="condition-icon">📍</div>
+                        <div class="condition-icon">HB</div>
                         <div class="condition-name">Heart Blocks</div>
                         <div class="condition-detail">First, second, third degree blocks</div>
                     </div>
                     <div class="condition-card">
-                        <div class="condition-icon">🧬</div>
+                        <div class="condition-icon">SA</div>
                         <div class="condition-name">Structural Abnormalities</div>
                         <div class="condition-detail">LVH, RVH, Chamber enlargement</div>
                     </div>
@@ -209,7 +209,7 @@
 
             <!-- CTA Section -->
             <div class="model-cta-section">
-                <a href="/dashboard" class="cta-button">Access Dashboard</a>
+                <a href="{{ home_url }}" class="cta-button">Access Dashboard</a>
                 <a href="/intro" class="cta-button-secondary">Back to Overview</a>
             </div>
         </div>

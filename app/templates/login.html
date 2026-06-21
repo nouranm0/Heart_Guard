@@ -3,9 +3,12 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Login - Heart Guard</title>
+	<title data-i18n="login_title">HEARTGUARD Login</title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 	<style>
+		body {
+			margin: 0;
+		}
 		.login-theme-container {
 			min-height: 100vh;
 			display: flex;
@@ -15,13 +18,14 @@
 		}
 		.login-card {
 			background: var(--gradient-card);
-			border-radius: 18px;
+			border-radius: 24px;
 			box-shadow: 0 0 40px rgba(0,217,255,0.15), 0 0 80px rgba(255,46,99,0.08);
 			padding: 40px 32px;
-			width: 350px;
+			width: min(420px, calc(100vw - 32px));
 			display: flex;
 			flex-direction: column;
 			align-items: center;
+			position: relative;
 		}
 		.login-logo {
 			margin-bottom: 24px;
@@ -71,6 +75,29 @@
 		.login-btn:hover {
 			background: var(--gradient-accent);
 		}
+		.login-links {
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+			gap: 12px;
+			align-items: center;
+			font-size: 0.92rem;
+		}
+		.login-links a {
+			color: var(--accent-glow);
+			text-decoration: none;
+			font-weight: 600;
+		}
+		.login-links a:hover {
+			text-decoration: underline;
+		}
+		.login-support {
+			width: 100%;
+			color: var(--text-secondary);
+			font-size: 0.9rem;
+			line-height: 1.5;
+			margin-top: 6px;
+		}
 		.flashes {
 			margin-bottom: 16px;
 			width: 100%;
@@ -93,7 +120,7 @@
 		}
 	</style>
 </head>
-<body>
+	<body class="theme-dark">
 	<div class="login-theme-container">
 		<div class="login-card">
 			<div class="login-logo">
@@ -107,9 +134,10 @@
 					</defs>
 				</svg>
 			</div>
-			<div class="login-title">HEARTGUARD Login</div>
+			<div class="login-title" data-i18n="login_title">HEARTGUARD Login</div>
 			<div style="position:absolute;top:20px;right:20px;">
-				<button type="button" class="theme-toggle" title="Toggle Theme" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">☀️</button>
+				<button type="button" class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">☀️</button>
+				<button type="button" class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language" style="background:none;border:none;font-size:1.5rem;cursor:pointer;margin-left:10px;">ع</button>
 			</div>
 			{% with messages = get_flashed_messages(with_categories=true) %}
 				{% if messages %}
@@ -120,15 +148,19 @@
 					</ul>
 				{% endif %}
 			{% endwith %}
-			<form class="login-form" method="POST" action="/login">
-				<label for="email">Email</label>
-				<input type="email" id="email" name="email" required autocomplete="username" placeholder="Enter your email" aria-label="Email">
-				<label for="password">Password</label>
+			<form class="login-form" method="POST" action="{{ url_for('doctor.login') }}">
+				<label for="email" data-i18n="email_label">Email</label>
+				<input type="email" id="email" name="email" required autocomplete="username" placeholder="Enter your email" aria-label="Email" data-i18n-placeholder="email_placeholder">
+				<label for="password" data-i18n="password_label">Password</label>
 				<div style="position:relative;">
-					<input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password" aria-label="Password" style="width:100%;">
+					<input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password" aria-label="Password" style="width:100%;" data-i18n-placeholder="password_placeholder">
 					<button type="button" onclick="togglePassword()" style="position:absolute;top:50%;right:8px;transform:translateY(-50%);background:none;border:none;color:var(--accent-glow);font-size:1.1rem;cursor:pointer;">👁️</button>
 				</div>
-				<button class="login-btn" type="submit">Login</button>
+				<button class="login-btn" type="submit" data-i18n="login_button">Login</button>
+				<div class="login-links">
+					<a href="{{ url_for('doctor.forgot_password') }}" data-i18n="forgot_password">Forgot password?</a>
+					<span data-i18n="login_support_text" class="login-support">Use your active admin or doctor account.</span>
+				</div>
 			</form>
 			<script>
 			function togglePassword() {
@@ -138,6 +170,16 @@
 			</script>
 		</div>
 	</div>
+	<script>
+		(function syncThemeBeforeUI() {
+			const savedTheme = localStorage.getItem('theme') || 'dark';
+			document.body.classList.toggle('light-mode', savedTheme === 'light');
+			document.body.classList.toggle('theme-dark', savedTheme !== 'light');
+		})();
+	</script>
 	<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/language.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>

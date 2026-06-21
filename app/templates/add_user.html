@@ -3,11 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add User - Heart Guard</title>
+    <title data-i18n="add_user_title">Add User - Heart Guard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <style>
+        .app-bar {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 var(--spacing-lg);
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .app-bar-right {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+        .theme-toggle, .language-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.3rem;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        .theme-toggle:hover, .language-toggle:hover {
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--accent-glow);
+        }
         .add-user-container {
-            min-height: 100vh;
+            min-height: calc(100vh - 60px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -87,10 +115,21 @@
         }
     </style>
 </head>
-<body>
+<body class="theme-dark">
+    <!-- App Bar -->
+    <nav class="app-bar">
+        <div class="app-bar-left">
+            <h1 class="page-title" data-i18n="add_user">Add User</h1>
+        </div>
+        <div class="app-bar-right">
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
+        </div>
+    </nav>
+
     <div class="add-user-container">
         <div class="add-user-card">
-            <div class="add-user-title">Add New User</div>
+            <div class="add-user-title" data-i18n="add_new_user">Add New User</div>
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     <ul class="flashes">
@@ -101,23 +140,27 @@
                 {% endif %}
             {% endwith %}
             <form class="add-user-form" method="POST" action="/add-user">
-                <label for="username">Username</label>
+                <label for="username" data-i18n="username">Username</label>
                 <input type="text" id="username" name="username" required>
-                <label for="email">Email</label>
+                <label for="email" data-i18n="email">Email</label>
                 <input type="email" id="email" name="email" required>
-                <label for="password">Password</label>
+                <label for="password" data-i18n="password_label">Password</label>
                 <input type="password" id="password" name="password" required>
-                <label for="role">Role</label>
+                <label for="role" data-i18n="role">Role</label>
                 <select id="role" name="role">
-                    <option value="doctor">Doctor</option>
-                    <option value="admin">Admin</option>
+                    <option value="doctor" data-i18n="doctor">Doctor</option>
+                    <option value="admin" data-i18n="admin">Admin</option>
                 </select>
-                <button class="add-user-btn" type="submit">Add User</button>
-                {% if session['role'] == 'admin' %}
-                <a href="/add-user?role=doctor" class="add-user-btn" style="margin-top:12px;text-align:center;display:block;">Add Doctor</a>
+                <button class="add-user-btn" type="submit" data-i18n="add_user">Add User</button>
+                {% if session.get('role') == 'admin' %}
+                <a href="/add-user?role=doctor" class="add-user-btn" style="margin-top:12px;text-align:center;display:block;" data-i18n="add_doctor">Add Doctor</a>
                 {% endif %}
             </form>
         </div>
     </div>
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>

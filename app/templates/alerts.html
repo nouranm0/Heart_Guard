@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alerts - HeartGaurd</title>
+    <title data-i18n="alerts">Alerts - HeartGaurd</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 </head>
@@ -11,160 +11,108 @@
     <!-- App Bar -->
     <nav class="app-bar">
         <div class="app-bar-left">
-            <button class="back-button" onclick="window.location.href='/dashboard'">←</button>
+            <button class="back-button" onclick="window.location.href='{{ home_url }}'">←</button>
             <h1 class="page-title" data-i18n="alerts">Health Alerts</h1>
         </div>
         <div class="app-bar-right">
-            <button class="theme-toggle" title="Toggle Theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
-            <button class="language-toggle" title="Toggle Language">ع</button>
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
         </div>
     </nav>
 
     <!-- Dashboard Container -->
     <div class="dashboard-container">
-        <!-- Professional Left Sidebar Navigation -->
-        <aside class="dashboard-sidebar">
-            <!-- Logo Section -->
-            <div class="sidebar-logo-section">
-                <div class="sidebar-logo" onclick="window.location.href='/dashboard'">
-                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M50,15 Q35,30 25,45 Q20,52 25,60 Q35,70 50,85 Q65,70 75,60 Q80,52 75,45 Q65,30 50,15 Z" fill="url(#heartGradient)" stroke="currentColor" stroke-width="1.5"/>
-                        <defs>
-                            <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:var(--accent-glow);stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:var(--heart-glow);stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-            </div>
-
-            <!-- Navigation Items -->
-            <nav class="sidebar-nav">
-                <!-- Dashboard -->
-                <a href="/dashboard" class="nav-item" data-tooltip="Dashboard">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <rect x="3" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="14" width="7" height="7"></rect>
-                        <rect x="3" y="14" width="7" height="7"></rect>
-                    </svg>
-                    <span class="nav-tooltip">Dashboard</span>
-                </a>
-
-                <!-- Patients -->
-                <a href="/doctor-dashboard" class="nav-item" data-tooltip="Patients">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                    <span class="nav-tooltip">Patients</span>
-                </a>
-
-                <!-- Alerts (Active) -->
-                <a href="/alerts" class="nav-item active" data-tooltip="Alerts">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                    <span class="nav-tooltip">Alerts</span>
-                </a>
-
-                <!-- Settings -->
-                <a href="/settings" class="nav-item" data-tooltip="Settings">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6m-16.78 7.78l4.24-4.24m3.08-3.08l4.24-4.24"></path>
-                    </svg>
-                    <span class="nav-tooltip">Settings</span>
-                </a>
-            </nav>
-
-            <!-- User Profile at Bottom -->
-            <div class="sidebar-bottom">
-                <div class="user-avatar-container">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Doctor" alt="Doctor Profile" class="user-avatar">
-                    <div class="user-status"></div>
-                </div>
-            </div>
-        </aside>
+        {% include '_sidebar.html' %}
 
     <!-- Main Content -->
     <main class="alerts-container">
         <div class="alerts-content">
             <header class="page-header">
-                <h1>Health Alerts</h1>
-                <p class="subtitle">Important notifications and warnings</p>
+                <div class="page-header-title-row">
+                    <h1 data-i18n="alerts">Health Alerts</h1>
+                    {% if unread_alert_count is defined and unread_alert_count > 0 %}
+                    <span class="alerts-count-pill" aria-label="{{ unread_alert_count }} unread alerts" data-alert-summary-pill>{{ unread_alert_count }} <span data-i18n="new_notifications">new</span></span>
+                    {% endif %}
+                </div>
+                <p class="subtitle" data-i18n="page_subtitle">Important notifications and warnings</p>
+                <div class="alerts-metrics">
+                    <div class="alerts-metric-card alerts-metric-live">
+                        <span class="alerts-metric-label" data-i18n="live_sync">Live sync</span>
+                        <strong data-alert-live-state data-i18n="active_status">Active</strong>
+                    </div>
+                    <div class="alerts-metric-card">
+                        <span class="alerts-metric-label" data-i18n="unread_count_label">Unread</span>
+                        <strong data-alert-unread-count>{{ unread_alert_count if unread_alert_count is defined else 0 }}</strong>
+                    </div>
+                    <div class="alerts-metric-card">
+                        <span class="alerts-metric-label" data-i18n="total_count_label">Total</span>
+                        <strong data-alert-total-count>{{ alerts|length if alerts is defined else 0 }}</strong>
+                    </div>
+                </div>
             </header>
 
             <!-- Alert Filters -->
             <section class="alert-filters">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="critical">🔴 Critical</button>
-                <button class="filter-btn" data-filter="warning">🟠 Warning</button>
-                <button class="filter-btn" data-filter="info">🔵 Info</button>
+                <button class="filter-btn active" data-filter="all" data-alert-filter-btn="all">
+                    <span class="filter-btn-label" data-i18n="alert_all">All</span>
+                    <span class="filter-btn-count" data-alert-type-count="all">0</span>
+                </button>
+                <button class="filter-btn" data-filter="critical" data-alert-filter-btn="critical">
+                    <span class="filter-dot filter-dot-critical" aria-hidden="true"></span>
+                    <span class="filter-btn-label" data-i18n="alert_critical">Critical</span>
+                    <span class="filter-btn-count" data-alert-type-count="critical">0</span>
+                </button>
+                <button class="filter-btn" data-filter="warning" data-alert-filter-btn="warning">
+                    <span class="filter-dot filter-dot-warning" aria-hidden="true"></span>
+                    <span class="filter-btn-label" data-i18n="alert_warning">Warning</span>
+                    <span class="filter-btn-count" data-alert-type-count="warning">0</span>
+                </button>
+                <button class="filter-btn" data-filter="info" data-alert-filter-btn="info">
+                    <span class="filter-dot filter-dot-info" aria-hidden="true"></span>
+                    <span class="filter-btn-label" data-i18n="alert_info">Info</span>
+                    <span class="filter-btn-count" data-alert-type-count="info">0</span>
+                </button>
             </section>
 
-            <!-- Sample Alerts -->
-            <section class="alerts-list">
-                <div class="alert-item alert-critical">
-                    <div class="alert-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
-                        </svg>
+            <!-- Alerts Feed -->
+            <section class="alerts-list" id="alertsList">
+                {% if alerts %}
+                    {% for alert in alerts %}
+                    <article class="alert-item alert-{{ alert.alert_type }} {% if alert.is_read %}is-read{% endif %}" data-filter="{{ alert.alert_type }}" data-alert-id="{{ alert.id }}" data-alert-read="{{ 'true' if alert.is_read else 'false' }}">
+                        <div class="alert-icon">
+                            {% if alert.alert_type == 'critical' %}
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                            {% elif alert.alert_type == 'warning' %}
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                            {% else %}
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                            {% endif %}
+                        </div>
+                        <div class="alert-body">
+                            <h3>{{ alert.title }}</h3>
+                            <p>{{ alert.message }}</p>
+                            <small>
+                                {% if alert.patient %}
+                                    {{ alert.patient.name }} ·
+                                {% endif %}
+                                {{ alert.created_at.strftime('%Y-%m-%d %H:%M') }}
+                            </small>
+                        </div>
+                        <div class="alert-actions">
+                            {% if not alert.is_read %}
+                            <button class="alert-action-btn" type="button" data-alert-action="read" data-alert-id="{{ alert.id }}" data-i18n="mark_read">Mark Read</button>
+                            {% endif %}
+                            <button class="alert-action-btn alert-action-danger" type="button" data-alert-action="dismiss" data-alert-id="{{ alert.id }}" data-i18n="dismiss">Dismiss</button>
+                        </div>
+                    </article>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-data" style="text-align:center; padding: 2rem;">
+                        <p data-i18n="no_alerts">No alerts yet.</p>
                     </div>
-                    <div class="alert-body">
-                        <h3>High Heart Rate Detected</h3>
-                        <p>Your heart rate reached 145 bpm at 14:32. Consider resting.</p>
-                        <small>2 hours ago</small>
-                    </div>
-                    <button class="alert-dismiss">×</button>
-                </div>
-
-                <div class="alert-item alert-warning">
-                    <div class="alert-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
-                        </svg>
-                    </div>
-                    <div class="alert-body">
-                        <h3>Irregular Heart Rhythm Detected</h3>
-                        <p>Possible arrhythmia pattern detected in ECG reading.</p>
-                        <small>5 hours ago</small>
-                    </div>
-                    <button class="alert-dismiss">×</button>
-                </div>
-
-                <div class="alert-item alert-info">
-                    <div class="alert-icon">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                        </svg>
-                    </div>
-                    <div class="alert-body">
-                        <h3>Daily Check-In Reminder</h3>
-                        <p>Don't forget to complete your daily health check-in today.</p>
-                        <small>12 hours ago</small>
-                    </div>
-                    <button class="alert-dismiss">×</button>
-                </div>
+                {% endif %}
             </section>
 
-            <!-- Coming Soon Message -->
-            <section class="coming-soon" style="margin-top: 40px;">
-                <div class="coming-soon-content">
-                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="coming-soon-icon">
-                        <circle cx="50" cy="50" r="45" fill="rgba(0, 217, 255, 0.1)" stroke="var(--accent-glow)" stroke-width="2"/>
-                        <path d="M50 30 L65 45 L50 60 L35 45 Z" fill="var(--accent-glow)" opacity="0.7"/>
-                        <path d="M50 60 L65 75 L50 90 L35 75 Z" fill="var(--accent-glow)" opacity="0.5"/>
-                    </svg>
-                    <h2>Advanced Alert Management Coming Soon</h2>
-                    <p>Customizable alert rules and real-time notifications will be available here</p>
-                    <button class="btn btn-primary" onclick="window.location.href='/dashboard'">Back to Dashboard</button>
-                </div>
-            </section>
         </div>
     </main>
 
@@ -201,6 +149,43 @@
             font-size: 1rem;
         }
 
+        .alerts-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .alerts-metric-card {
+            padding: 16px 18px;
+            border-radius: 18px;
+            border: 1px solid rgba(0, 217, 255, 0.12);
+            background: linear-gradient(180deg, rgba(12, 20, 45, 0.94), rgba(11, 16, 35, 0.86));
+            box-shadow: 0 16px 30px rgba(0, 0, 0, 0.12);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .alerts-metric-live {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.18), rgba(0, 217, 255, 0.06));
+        }
+
+        .alerts-metric-label {
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent-glow);
+        }
+
+        .alerts-metric-card strong {
+            color: var(--text-primary);
+            font-size: 1.4rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
         .alert-filters {
             display: flex;
             gap: var(--spacing-md);
@@ -210,12 +195,15 @@
         }
 
         .filter-btn {
-            padding: 8px 16px;
-            background: rgba(0, 217, 255, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1rem;
+            background: rgba(0, 217, 255, 0.08);
             border: 2px solid transparent;
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-weight: 600;
+            border-radius: 999px;
+            color: var(--text-primary);
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
         }
@@ -225,6 +213,53 @@
             background: rgba(0, 217, 255, 0.2);
             border-color: var(--accent-glow);
             color: var(--accent-glow);
+        }
+
+        .filter-btn-label {
+            line-height: 1;
+        }
+
+        .filter-btn-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.6rem;
+            height: 1.6rem;
+            padding: 0 0.45rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            font-weight: 800;
+        }
+
+        .filter-btn.active .filter-btn-count,
+        .filter-btn:hover .filter-btn-count {
+            background: rgba(0, 217, 255, 0.18);
+            color: var(--accent-glow);
+        }
+
+        .filter-dot {
+            width: 0.65rem;
+            height: 0.65rem;
+            border-radius: 50%;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.04);
+            flex-shrink: 0;
+        }
+
+        .filter-dot-critical {
+            background: var(--danger);
+            box-shadow: 0 0 12px rgba(255, 71, 87, 0.55);
+        }
+
+        .filter-dot-warning {
+            background: var(--warning);
+            box-shadow: 0 0 12px rgba(255, 184, 28, 0.55);
+        }
+
+        .filter-dot-info {
+            background: var(--accent-glow);
+            box-shadow: 0 0 12px rgba(0, 217, 255, 0.55);
         }
 
         .alerts-list {
@@ -267,6 +302,18 @@
 
         .alert-item.alert-info {
             border-left-color: var(--accent-glow);
+        }
+
+        .alert-item .alert-body {
+            min-width: 0;
+        }
+
+        .alert-item .alert-body h3 {
+            margin-bottom: 0.35rem;
+        }
+
+        .alert-item .alert-body p {
+            line-height: 1.6;
         }
 
         .alert-icon {
@@ -321,101 +368,368 @@
             opacity: 0.7;
         }
 
-        .alert-dismiss {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            font-size: 1.5rem;
-            cursor: pointer;
-            border-radius: 50%;
-            transition: all 0.3s;
+        .alert-item .alert-body {
+            min-width: 0;
+        }
+
+        .alert-item .alert-body h3 {
+            margin-bottom: 0.35rem;
+        }
+
+        .alert-item .alert-body p {
+            line-height: 1.6;
+        }
+
+        .alert-actions {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: flex-start;
         }
 
-        .alert-dismiss:hover {
-            background: rgba(255, 71, 87, 0.2);
-            color: var(--danger);
-        }
-
-        .coming-soon {
-            text-align: center;
-            padding: var(--spacing-xl);
-        }
-
-        .coming-soon-content {
-            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: var(--spacing-xl);
-            animation: slideInUp 0.6s ease-out 0.3s both;
-        }
-
-        .coming-soon-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto var(--spacing-lg);
-        }
-
-        .coming-soon-content h2 {
+        .alert-action-btn {
+            border: 1px solid rgba(0, 217, 255, 0.25);
+            background: rgba(0, 217, 255, 0.08);
             color: var(--text-primary);
-            margin: 0 0 var(--spacing-sm) 0;
+            border-radius: 999px;
+            padding: 0.55rem 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .coming-soon-content p {
+        .alert-action-btn:hover {
+            border-color: var(--accent-glow);
+            transform: translateY(-1px);
+        }
+
+        .alert-action-danger {
+            border-color: rgba(255, 82, 82, 0.3);
+            background: rgba(255, 82, 82, 0.08);
+        }
+
+        .alert-item.is-read {
+            opacity: 0.72;
+        }
+
+        .alert-item.is-read .alert-body h3,
+        .alert-item.is-read .alert-body p {
             color: var(--text-secondary);
-            margin: 0 0 var(--spacing-lg) 0;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        body.light-mode .alerts-container {
+            background: linear-gradient(180deg, #f6fbff 0%, #eef4fb 100%);
         }
 
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        body.light-mode .alert-item,
+        body.light-mode .no-data {
+            background: #ffffff;
+            border-color: rgba(10, 14, 39, 0.08);
+            box-shadow: 0 16px 30px rgba(10, 14, 39, 0.06);
         }
 
-        @media (max-width: 768px) {
-            .alerts-container {
-                padding-left: var(--spacing-lg);
-                padding-right: var(--spacing-lg);
+        body.light-mode .page-header h1,
+        body.light-mode .alert-body h3 {
+            color: #0a0e27;
+        }
+
+        @media (max-width: 760px) {
+            .alerts-metrics {
+                grid-template-columns: 1fr;
             }
 
             .alert-item {
                 flex-direction: column;
-                gap: var(--spacing-md);
             }
 
-            .alert-icon {
-                width: 40px;
-                height: 40px;
+            .alert-actions {
+                width: 100%;
             }
 
-            .page-header h1 {
-                font-size: 1.5rem;
+            .alert-action-btn {
+                flex: 1 1 100%;
+            }
+        }
+
+        body.light-mode .alerts-container {
+            background: linear-gradient(180deg, #f6fbff 0%, #eef4fb 100%);
+        }
+
+        body.light-mode .alerts-metric-card,
+        body.light-mode .alert-item,
+        body.light-mode .no-data {
+            background: #ffffff;
+            border-color: rgba(10, 14, 39, 0.08);
+            box-shadow: 0 16px 30px rgba(10, 14, 39, 0.06);
+        }
+
+        body.light-mode .alerts-metric-card strong,
+        body.light-mode .page-header h1,
+        body.light-mode .alert-body h3 {
+            color: #0a0e27;
+        }
+
+        @media (max-width: 760px) {
+            .alerts-metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .alert-item {
+                flex-direction: column;
+            }
+
+            .alert-actions {
+                width: 100%;
+            }
+
+            .alert-action-btn {
+                flex: 1 1 100%;
             }
         }
     </style>
 
-    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+
+    <script>
+        const ALERTS_ENDPOINT = '/api/alerts';
+        const ALERTS_COUNT_ENDPOINT = '/api/alerts/count';
+
+        function t(key, fallback) {
+            if (window.languageManager && typeof window.languageManager.getText === 'function') {
+                return window.languageManager.getText(key) || fallback;
+            }
+            return fallback;
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function formatTime(isoDate) {
+            const date = new Date(isoDate);
+            if (Number.isNaN(date.getTime())) {
+                return isoDate;
+            }
+
+            return date.toLocaleString(undefined, {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function alertIcon(type) {
+            if (type === 'critical') {
+                return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>';
+            }
+
+            if (type === 'warning') {
+                return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 1 21h22L12 2zm1 15h-2v-2h2v2zm0-4h-2V9h2v4z"/></svg>';
+            }
+
+            return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>';
+        }
+
+        function buildAlertCard(alert) {
+            const isRead = Boolean(alert.is_read);
+            const patientLabel = alert.patient_name ? `<small>${t('patient_label', 'Patient:')} ${escapeHtml(alert.patient_name)} · </small>` : '';
+            const markReadButton = isRead ? '' : `<button class="alert-action-btn" type="button" data-alert-action="read" data-alert-id="${alert.id}" data-i18n="mark_read">${t('mark_read', 'Mark Read')}</button>`;
+
+            return `
+                <article class="alert-item alert-${alert.alert_type || 'info'} ${isRead ? 'is-read' : ''}" data-filter="${escapeHtml(alert.alert_type || 'info')}" data-alert-id="${alert.id}" data-alert-read="${isRead ? 'true' : 'false'}">
+                    <div class="alert-icon">${alertIcon(alert.alert_type)}</div>
+                    <div class="alert-body">
+                        <h3>${escapeHtml(alert.title || '')}</h3>
+                        <p>${escapeHtml(alert.message || '')}</p>
+                        <small>${patientLabel}${formatTime(alert.created_at)}</small>
+                    </div>
+                    <div class="alert-actions">
+                        ${markReadButton}
+                        <button class="alert-action-btn alert-action-danger" type="button" data-alert-action="dismiss" data-alert-id="${alert.id}" data-i18n="dismiss">${t('dismiss', 'Dismiss')}</button>
+                    </div>
+                </article>
+            `;
+        }
+
+        function getActiveFilter() {
+            const activeButton = document.querySelector('.filter-btn.active');
+            return activeButton ? activeButton.getAttribute('data-filter') || 'all' : 'all';
+        }
+
+        function applyFilter(filter) {
+            const cards = document.querySelectorAll('.alert-item[data-filter]');
+            cards.forEach((card) => {
+                const cardFilter = card.getAttribute('data-filter');
+                card.style.display = filter === 'all' || filter === cardFilter ? '' : 'none';
+            });
+        }
+
+        function updateFilterCounts(typeCounts = {}) {
+            const normalizedCounts = {
+                all: Number(typeCounts.all) || 0,
+                critical: Number(typeCounts.critical) || 0,
+                warning: Number(typeCounts.warning) || 0,
+                info: Number(typeCounts.info) || 0,
+            };
+
+            Object.entries(normalizedCounts).forEach(([type, count]) => {
+                const badge = document.querySelector(`[data-alert-type-count="${type}"]`);
+                if (badge) {
+                    badge.textContent = String(count);
+                }
+            });
+        }
+
+        function updateUnreadCount(unreadCount) {
+            const count = Number(unreadCount) || 0;
+            const summary = document.querySelector('[data-alert-summary-pill]');
+            const badges = document.querySelectorAll('[data-alert-count-badge]');
+            const unreadMetric = document.querySelector('[data-alert-unread-count]');
+
+            if (summary) {
+                if (count > 0) {
+                    summary.innerHTML = `${count} <span data-i18n="new_notifications">${t('new_notifications', 'new')}</span>`;
+                } else {
+                    summary.remove();
+                }
+            }
+
+            badges.forEach((badge) => {
+                if (count > 0) {
+                    badge.textContent = String(count);
+                } else {
+                    badge.remove();
+                }
+            });
+
+            if (unreadMetric) {
+                unreadMetric.textContent = String(count);
+            }
+        }
+
+        function updateTotalCount(totalCount) {
+            const totalMetric = document.querySelector('[data-alert-total-count]');
+            if (totalMetric) {
+                totalMetric.textContent = String(Number(totalCount) || 0);
+            }
+        }
+
+        async function loadAlertCount() {
+            const response = await fetch(ALERTS_COUNT_ENDPOINT, {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                return;
+            }
+
+            const data = await response.json();
+            if (data && data.success) {
+                updateUnreadCount(data.unread || 0);
+            }
+        }
+
+        let currentAlertFilter = 'all';
+
+        async function loadAlerts(filter = currentAlertFilter) {
+            currentAlertFilter = filter || 'all';
+            try {
+                const response = await fetch(`${ALERTS_ENDPOINT}?limit=50&type=${encodeURIComponent(currentAlertFilter)}`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    const alertsList = document.getElementById('alertsList');
+                    if (alertsList) {
+                        alertsList.innerHTML = `<div class="no-data" style="text-align:center; padding: 2rem;"><p data-i18n="no_alerts">${t('no_alerts', 'No alerts yet.')}</p></div>`;
+                    }
+                    return;
+                }
+
+                const data = await response.json();
+                displayAlerts(data.alerts);
+                updateTotalCount(Number(data.total) || (Array.isArray(data.alerts) ? data.alerts.length : 0));
+                updateFilterCounts(data.type_counts || {});
+                await loadAlertCount();
+            } catch (error) {
+                console.error('Failed to load alerts:', error);
+            }
+        }
+
+        function displayAlerts(alerts) {
+            const alertsList = document.getElementById('alertsList');
+            if (!alertsList) return;
+
+            const activeFilter = getActiveFilter();
+            
+            if (alerts.length === 0) {
+                alertsList.innerHTML = `<div class="no-data" style="text-align:center; padding: 2rem;"><p data-i18n="no_alerts">${t('no_alerts', 'No alerts yet.')}</p></div>`;
+                return;
+            }
+
+            alertsList.innerHTML = alerts.map(buildAlertCard).join('');
+            applyFilter(activeFilter);
+        }
+
+        async function updateAlert(alertId, method) {
+            try {
+                const endpoint = method === 'DELETE' ? `${ALERTS_ENDPOINT}/${alertId}` : `${ALERTS_ENDPOINT}/${alertId}/read`;
+                const response = await fetch(endpoint, {
+                    method,
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    await loadAlerts();
+                }
+            } catch (error) {
+                console.error('Failed to update alert:', error);
+            }
+        }
+
+        document.addEventListener('click', (event) => {
+            const actionButton = event.target.closest('[data-alert-action]');
+            if (!actionButton) return;
+
+            const alertId = actionButton.getAttribute('data-alert-id');
+            const action = actionButton.getAttribute('data-alert-action');
+
+            if (!alertId) return;
+
+            if (action === 'read') {
+                updateAlert(alertId, 'PUT');
+            } else if (action === 'dismiss') {
+                updateAlert(alertId, 'DELETE');
+            }
+        });
+
+        document.addEventListener('click', (event) => {
+            const filterButton = event.target.closest('.filter-btn');
+            if (!filterButton) return;
+
+            document.querySelectorAll('.filter-btn').forEach((button) => button.classList.remove('active'));
+            filterButton.classList.add('active');
+            loadAlerts(filterButton.getAttribute('data-filter') || 'all');
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAlerts();
+        });
+
+        window.addEventListener('alerts-updated', () => {
+            loadAlerts();
+        });
+    </script>
 </body>
 </html>

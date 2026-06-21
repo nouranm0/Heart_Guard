@@ -243,17 +243,23 @@
 .assessment-content {
     flex: 1;
     margin-left: 100px;
-    padding: var(--spacing-xl);
+    padding: clamp(20px, 3vw, 40px);
     overflow-y: auto;
     overflow-x: hidden;
     animation: fadeInUp 0.6s ease-out;
     position: relative;
     margin-top: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 }
 /* Header Section */
 .assessment-header {
     margin-bottom: var(--spacing-xl);
     animation: slideIn 0.5s ease-out;
+    width: min(100%, 860px);
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .header-title h2 {
@@ -320,6 +326,9 @@
     border-radius: 20px;
     padding: var(--spacing-xl);
     margin-bottom: var(--spacing-lg);
+    width: min(100%, 860px);
+    margin-left: auto;
+    margin-right: auto;
     animation: fadeIn 0.4s ease-out;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     display: none;
@@ -620,6 +629,13 @@
     justify-content: flex-end;
 }
 
+.results-container,
+.no-results {
+    width: min(100%, 860px);
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .btn {
     padding: var(--spacing-md) var(--spacing-lg);
     border: none;
@@ -702,6 +718,7 @@
 @media (max-width: 768px) {
     .assessment-content {
         padding: var(--spacing-lg);
+        margin-left: 0;
     }
 
     .header-title h2 {
@@ -715,6 +732,13 @@
 
     .assessment-card {
         padding: var(--spacing-lg);
+        width: 100%;
+    }
+
+    .assessment-header,
+    .results-container,
+    .no-results {
+        width: 100%;
     }
 
     .vital-grid {

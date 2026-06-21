@@ -5,7 +5,8 @@ from automatic_ecg_diagnosis_master.universal_processor import universal_loader_
 from tensorflow.keras.models import load_model
 from tensorflow.keras.optimizers import Adam
 
-MODEL_PATH = os.path.join("model", "model.hdf5")
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+MODEL_PATH = os.path.join(BASE_DIR, "model", "model.hdf5")
 _prediction_model = None
 
 def get_prediction_model():

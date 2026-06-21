@@ -1,0 +1,138 @@
+<!-- Header Section -->
+<section class="dashboard-header">
+    <div class="header-title">
+        <h2 data-i18n="all_patients_systemwide">All Patients System-wide</h2>
+        <p class="subtitle" data-i18n="all_patients_subtitle">View and manage all patients across all doctors</p>
+    </div>
+    {% if user.role == 'admin' %}
+    <button class="btn-add-patient" onclick="openAddPatientModal()" data-i18n="add_patient">+ Add Patient</button>
+    {% endif %}
+    <div class="header-stats">
+        <div class="stat-badge">
+            <span class="badge-label" data-i18n="total_patients">Total Patients</span>
+            <span class="badge-value">{{ risk_counts.total }}</span>
+        </div>
+        <div class="stat-badge alert-high">
+            <span class="badge-label" data-i18n="high_risk">High Risk</span>
+            <span class="badge-value">{{ risk_counts.high }}</span>
+        </div>
+        <div class="stat-badge alert-medium">
+            <span class="badge-label" data-i18n="medium_risk">Medium Risk</span>
+            <span class="badge-value">{{ risk_counts.medium }}</span>
+        </div>
+        <div class="stat-badge alert-low">
+            <span class="badge-label" data-i18n="low_risk">Low Risk</span>
+            <span class="badge-value">{{ risk_counts.low }}</span>
+        </div>
+    </div>
+</section>
+
+<!-- Search and Filter Section -->
+<section class="filter-section">
+    <form method="get" action="/all-patients" class="search-form" data-live-search="true">
+        <div class="search-shell">
+            <div class="search-field">
+                <svg class="search-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="search" name="q" value="{{ query or '' }}" class="search-input" placeholder="Search by name or phone..." data-i18n-placeholder="search_by_name_or_phone" data-search-input>
+                <button type="button" class="search-clear" data-search-clear aria-label="Clear search" title="Clear search" data-i18n-title="clear_search">×</button>
+            </div>
+            <span class="search-status" data-search-status aria-live="polite"></span>
+        </div>
+        <input type="hidden" name="risk" value="{{ risk_filter }}">
+        <input type="hidden" name="sort" value="{{ sort_by }}">
+        <button type="submit" class="btn-search" title="Search" data-i18n-title="search">
+            <span data-i18n="search">Search</span>
+        </button>
+    </form>
+
+    <div class="filter-group">
+        <a href="/all-patients?q={{ query|urlencode }}&risk=all&sort={{ sort_by }}" class="filter-btn {% if risk_filter == 'all' %}active{% endif %}" data-i18n="all_patients_option">All</a>
+        <a href="/all-patients?q={{ query|urlencode }}&risk=high&sort={{ sort_by }}" class="filter-btn {% if risk_filter == 'high' %}active{% endif %}" data-i18n="high_risk_option">High Risk</a>
+        <a href="/all-patients?q={{ query|urlencode }}&risk=medium&sort={{ sort_by }}" class="filter-btn {% if risk_filter == 'medium' %}active{% endif %}" data-i18n="medium_risk_option">Medium Risk</a>
+        <a href="/all-patients?q={{ query|urlencode }}&risk=low&sort={{ sort_by }}" class="filter-btn {% if risk_filter == 'low' %}active{% endif %}" data-i18n="low_risk_option">Low Risk</a>
+    </div>
+
+    <div class="sort-selector">
+        <label data-i18n="sort_by">Sort by:</label>
+        <div class="sort-options">
+            <a href="/all-patients?q={{ query|urlencode }}&risk={{ risk_filter }}&sort=recent" class="sort-btn {% if sort_by == 'recent' %}active{% endif %}" data-i18n="recent">Recent</a>
+            <a href="/all-patients?q={{ query|urlencode }}&risk={{ risk_filter }}&sort=oldest" class="sort-btn {% if sort_by == 'oldest' %}active{% endif %}" data-i18n="oldest">Oldest</a>
+            <a href="/all-patients?q={{ query|urlencode }}&risk={{ risk_filter }}&sort=name" class="sort-btn {% if sort_by == 'name' %}active{% endif %}" data-i18n="name">Name</a>
+            <a href="/all-patients?q={{ query|urlencode }}&risk={{ risk_filter }}&sort=doctor" class="sort-btn {% if sort_by == 'doctor' %}active{% endif %}" data-i18n="doctor">Doctor</a>
+        </div>
+    </div>
+</section>
+
+<!-- Patients Table View -->
+<section class="patients-table">
+    {% if patients|length > 0 %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th data-i18n="patient_name">Patient Name</th>
+                    <th data-i18n="phone">Phone</th>
+                    <th data-i18n="age">Age</th>
+                    <th data-i18n="doctor">Doctor</th>
+                    <th data-i18n="risk_level">Risk Level</th>
+                    <th data-i18n="assessments">Assessments</th>
+                    <th data-i18n="registered">Registered</th>
+                    <th data-i18n="action">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr class="risk-{{ patient.risk }}">
+                    <td class="patient-name">
+                        <strong>{{ patient.name }}</strong>
+                    </td>
+                    <td>{% if patient.phone %}{{ patient.phone }}{% else %}<span data-i18n="not_available">N/A</span>{% endif %}</td>
+                    <td>
+                        {% if patient.birthday %}
+                            {{ ((current_date - patient.birthday).days // 365) }} <span data-i18n="years">years</span>
+                        {% else %}
+                            <span data-i18n="not_available">N/A</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if patient.doctor %}
+                            <span data-i18n="doctor_abbr">Dr.</span> {{ patient.doctor.username }}
+                        {% else %}
+                            <span data-i18n="not_assigned">Not assigned</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="risk-badge risk-{{ patient.risk }}">
+                            {% if patient.risk == 'high' %}
+                                <span data-i18n="risk_high">High</span>
+                            {% elif patient.risk == 'medium' %}
+                                <span data-i18n="risk_medium">Medium</span>
+                            {% else %}
+                                <span data-i18n="risk_low">Low</span>
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td>{{ patient.ecg_records|length }}</td>
+                    <td>{{ patient.created_at.strftime('%b %d, %Y') }}</td>
+                    <td>
+                        <div class="action-links">
+                            <a href="{{ url_for('doctor.view_patient_details', patient_id=patient.id) }}" class="action-link" data-i18n="view_details">View</a>
+                            <button type="button" class="action-link delete-link delete-patient-btn" data-patient-id="{{ patient.id }}" data-patient-name="{{ patient.name|e }}" data-i18n="delete">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="no-data">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="empty-icon">
+                <circle cx="50" cy="50" r="45" fill="rgba(0, 217, 255, 0.1)" stroke="var(--accent-glow)" stroke-width="2"/>
+                <path d="M35 40 Q50 35 65 40" stroke="var(--accent-glow)" stroke-width="2" fill="none"/>
+                <circle cx="40" cy="35" r="2" fill="var(--accent-glow)"/>
+                <circle cx="60" cy="35" r="2" fill="var(--accent-glow)"/>
+                <path d="M40 55 Q50 60 60 55" stroke="var(--accent-glow)" stroke-width="2" fill="none"/>
+            </svg>
+            <p>No patients found matching your filters.</p>
+        </div>
+    {% endif %}
+</section>
