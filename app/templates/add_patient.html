@@ -122,11 +122,11 @@
     <!-- App Bar -->
     <nav class="app-bar">
         <div class="app-bar-left">
-            <button class="back-button" onclick="window.location.href='/intro'">←</button>
-            <h1 class="page-title">Add Patient</h1>
+            <button class="back-button" onclick="window.location.href='{{ home_url }}'">←</button>
+            <h1 class="page-title" data-i18n="add_patient">Add Patient</h1>
         </div>
         <div class="app-bar-right">
-            <button class="theme-toggle" title="Toggle Theme">
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="5"></circle>
                     <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -139,63 +139,69 @@
                     <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                 </svg>
             </button>
-            <button class="language-toggle" title="Toggle Language">ع</button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
         </div>
     </nav>
 
-    <main class="assessment-content">
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                <div class="flash-message flash-{{ category }}">
-                    {{ message }}
-                    <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-        {% endwith %}
+    <div class="dashboard-container">
+        {% include '_sidebar.html' %}
 
-        <div class="patient-form-container">
-            <h2 class="form-title">Register New Patient</h2>
-            <p class="form-subtitle">Add a new patient to your care</p>
+
+        <main class="assessment-content">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="patient-form-container">
+            <h2 class="form-title" data-i18n="register_patient">Register New Patient</h2>
+            <p class="form-subtitle" data-i18n="add_new_patient">Add a new patient to your care</p>
 
             <form method="POST">
                 <div class="form-group">
-                    <label for="name">Patient Name *</label>
+                    <label for="name" data-i18n="patient_name">Patient Name *</label>
                     <input 
                         type="text" 
                         id="name" 
                         name="name" 
                         placeholder="Enter patient's full name"
                         required
+                        data-i18n-placeholder="enter_patient_name"
                     >
                 </div>
 
                 <div class="form-group">
-                    <label for="phone">Phone Number</label>
+                    <label for="phone" data-i18n="phone_number">Phone Number</label>
                     <input 
                         type="tel" 
                         id="phone" 
                         name="phone" 
                         placeholder="Enter patient's phone number"
+                        data-i18n-placeholder="enter_phone_number"
                     >
                 </div>
 
                 <div class="form-group">
-                    <label for="gender">Gender</label>
+                    <label for="gender" data-i18n="gender">Gender</label>
                     <select id="gender" name="gender">
-                        <option value="">Select gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
+                        <option value="" data-i18n="select_gender">Select gender</option>
+                        <option value="Male" data-i18n="male">Male</option>
+                        <option value="Female" data-i18n="female">Female</option>
+                        <option value="Other" data-i18n="other">Other</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="birthday">Date of Birth</label>
+                    <label for="birthday" data-i18n="date_of_birth">Date of Birth</label>
                     <input 
                         type="date" 
                         id="birthday" 
@@ -204,13 +210,19 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn-submit">Add Patient</button>
-                    <button type="button" class="btn-cancel" onclick="window.location.href='/intro'">Cancel</button>
+                    <button type="submit" class="btn-submit" data-i18n="add_patient">Add Patient</button>
+                    <button type="button" class="btn-cancel" data-i18n="cancel" onclick="window.location.href='{{ home_url }}'">Cancel</button>
                 </div>
             </form>
         </div>
     </main>
+    </div>
 
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 </body>
 </html>
+
+

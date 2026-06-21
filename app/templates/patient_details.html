@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ patient.name }} - Patient Details - HEARTGAURD</title>
+    <title data-i18n="patient_details_title">Patient Details - HEARTGAURD</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="theme-dark">
     <!-- App Bar -->
     <nav class="app-bar">
         <div class="app-bar-left">
-            <button class="back-button" onclick="window.location.href='/doctor-dashboard'">←</button>
-            <h1 class="page-title">{{ patient.name }} - Patient Details</h1>
+            {% if user.role == 'admin' %}
+                <button class="back-button" onclick="window.location.href='/all-patients'">←</button>
+            {% else %}
+                <button class="back-button" onclick="window.location.href='{{ url_for('doctor.doctor_dashboard') }}'">←</button>
+            {% endif %}
+            <h1 class="page-title" data-i18n="patient_details">Patient Details</h1>
         </div>
         <div class="app-bar-right">
-            <button class="theme-toggle" title="Toggle Theme">
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="5"></circle>
                     <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -29,434 +32,502 @@
                     <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                 </svg>
             </button>
-            <button class="language-toggle" title="Toggle Language">ع</button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="detail-page-content">
-        <!-- Patient Info Panel -->
-        <section class="patient-info-panel">
-            <div class="patient-header">
-                <div class="patient-avatar-large">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ patient.name }}" alt="Patient">
-                </div>
-                <div class="patient-header-info">
-                    <h1>{{ patient.name }}</h1>
-                    {% if patient.birthday %}
-                        <p class="patient-age">{{ ((current_date - patient.birthday).days // 365) }} years old</p>
-                    {% endif %}
-                </div>
-            </div>
+    <div class="dashboard-container">
+        {% include '_sidebar.html' %}
 
-            <div class="patient-info-grid">
-                <div class="info-card">
-                    <span class="info-icon">👤</span>
-                    <span class="info-label">Gender</span>
-                    <span class="info-value">{{ patient.gender or 'Not specified' }}</span>
-                </div>
-                <div class="info-card">
-                    <span class="info-icon">📞</span>
-                    <span class="info-label">Phone</span>
-                    <span class="info-value">{{ patient.phone or 'Not provided' }}</span>
-                </div>
-                <div class="info-card">
-                    <span class="info-icon">📅</span>
-                    <span class="info-label">Registered</span>
-                    <span class="info-value">{{ patient.created_at.strftime('%b %d, %Y') }}</span>
-                </div>
-                <div class="info-card">
-                    <span class="info-icon">📊</span>
-                    <span class="info-label">Total Assessments</span>
-                    <span class="info-value">{{ assessments|length }}</span>
-                </div>
-            </div>
-        </section>
+        <!-- Main Content -->
+        <main class="doctor-dashboard-content details-page-content">
+            <div class="details-grid-container">
+                <!-- Left Column: Patient Profile Card -->
+                <section class="patient-profile-card">
+                    <div class="profile-avatar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h2 class="patient-fullname">{{ patient.name }}</h2>
+                    <div class="risk-badge-wrapper">
+                        <span class="risk-badge risk-{{ patient.risk }}">
+                            {% if patient.risk == 'high' %}
+                                <span data-i18n="risk_high">High Risk</span>
+                            {% elif patient.risk == 'medium' %}
+                                <span data-i18n="risk_medium">Medium Risk</span>
+                            {% else %}
+                                <span data-i18n="risk_low">Low Risk</span>
+                            {% endif %}
+                        </span>
+                    </div>
 
-        <!-- Assessment History -->
-        <section class="assessment-history">
-            <h2>Assessment History</h2>
-            {% if assessments %}
-                <div class="assessments-timeline">
-                    {% for assessment in assessments %}
-                    <div class="assessment-item">
-                        <div class="assessment-date">
-                            {{ assessment.created_at.strftime('%b %d, %Y') }}<br>
-                            <small>{{ assessment.created_at.strftime('%H:%M') }}</small>
+                    <hr class="profile-divider">
+
+                    <div class="profile-info-list">
+                        <div class="info-item">
+                            <span class="info-label" data-i18n="gender">Gender</span>
+                            <strong class="info-value">
+                                {% if patient.gender == 'male' %}
+                                    <span data-i18n="male">Male</span>
+                                {% elif patient.gender == 'female' %}
+                                    <span data-i18n="female">Female</span>
+                                {% else %}
+                                    <span data-i18n="not_specified">Not specified</span>
+                                {% endif %}
+                            </strong>
                         </div>
-                        <div class="assessment-content">
-                            <div class="assessment-header">
-                                <h3>{{ assessment.file_name }}</h3>
-                                <span class="file-type-badge">{{ assessment.file_type|upper }}</span>
-                            </div>
-                            <div class="assessment-body">
-                                <div class="diagnosis-box">
-                                    <p class="diagnosis-label">Top Diagnosis</p>
-                                    <p class="diagnosis-result">{{ assessment.top_diagnosis or 'N/A' }}</p>
-                                    {% if assessment.top_confidence %}
-                                        <div class="confidence-bar" style="--confidence: {{ (assessment.top_confidence * 100)|round(1) }}%">
-                                            <div class="confidence-fill"></div>
-                                        </div>
-                                        <p class="confidence-text">Confidence: {{ (assessment.top_confidence * 100)|round(1) }}%</p>
-                                    {% endif %}
-                                </div>
-                                <div class="assessment-meta">
-                                    <p><strong>File Size:</strong> {{ (assessment.file_size / 1024)|round(2) }} KB</p>
-                                    <p><strong>Status:</strong> <span class="status-badge success">{{ assessment.validation_status }}</span></p>
-                                </div>
-                            </div>
-                            <div class="assessment-actions">
-                                <a href="/assessment/{{ assessment.id }}" class="btn-action btn-view-results">
-                                    View Full Results
-                                </a>
-                            </div>
+                        <div class="info-item">
+                            <span class="info-label" data-i18n="age">Age</span>
+                            <strong class="info-value">
+                                {% if patient.birthday %}
+                                    {{ ((current_date - patient.birthday).days // 365) }} <span data-i18n="years_old">years old</span>
+                                {% else %}
+                                    <span data-i18n="not_specified">Not specified</span>
+                                {% endif %}
+                            </strong>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label" data-i18n="phone">Phone</span>
+                            <strong class="info-value">
+                                {% if patient.phone %}
+                                    {{ patient.phone }}
+                                {% else %}
+                                    <span data-i18n="not_provided">Not provided</span>
+                                {% endif %}
+                            </strong>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label" data-i18n="registered">Registered</span>
+                            <strong class="info-value">{{ patient.created_at.strftime('%b %d, %Y') }}</strong>
+                        </div>
+                        {% if user.role == 'admin' or user.id != patient.doctor_id %}
+                        <div class="info-item">
+                            <span class="info-label" data-i18n="doctor">Doctor</span>
+                            <strong class="info-value">
+                                {% if patient.doctor %}
+                                    <span data-i18n="doctor_abbr">Dr.</span> {{ patient.doctor.username }}
+                                {% else %}
+                                    <span data-i18n="not_assigned">Not assigned</span>
+                                {% endif %}
+                            </strong>
+                        </div>
+                        {% endif %}
+                        <div class="info-item">
+                            <span class="info-label" data-i18n="total_assessments">Total Assessments</span>
+                            <strong class="info-value">{{ assessments|length }}</strong>
                         </div>
                     </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="no-assessments">
-                    <p>No assessments yet for this patient.</p>
-                    <a href="/new-assessment" class="btn-action btn-primary">Create Assessment</a>
-                </div>
-            {% endif %}
-        </section>
-    </main>
+                </section>
 
+                <!-- Right Column: Assessment History -->
+                <section class="assessment-history-panel">
+                    <div class="panel-header">
+                        <h2 data-i18n="assessment_history">Assessment History</h2>
+                        {% if user.role != 'admin' %}
+                            <a href="{{ url_for('doctor.new_assessment', patient=patient.id) }}" class="btn-action btn-primary" data-i18n="new_assessment">+ New Assessment</a>
+                        {% endif %}
+                    </div>
+
+                    {% if assessments|length > 0 %}
+                        <div class="assessments-list">
+                            {% for assessment in assessments %}
+                                <div class="assessment-card card-risk-{{ patient.risk if loop.first else 'normal' }}">
+                                    <div class="card-left">
+                                        <div class="card-datetime">
+                                            {{ assessment.created_at.strftime('%b %d, %Y - %I:%M %p') }}
+                                        </div>
+                                        <div class="card-file-details">
+                                            <span class="file-type-pill">{{ assessment.file_type|upper }}</span>
+                                            <span class="file-name-label" title="{{ assessment.file_name }}">{{ assessment.file_name }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-center">
+                                        <div class="diagnosis-info">
+                                            <span class="diagnosis-label" data-i18n="top_diagnosis">Top Diagnosis:</span>
+                                            <strong class="diagnosis-val">{{ assessment.top_diagnosis or 'N/A' }}</strong>
+                                        </div>
+                                        {% if assessment.top_confidence is not none %}
+                                            <div class="confidence-info">
+                                                <span class="confidence-label" data-i18n="confidence">Confidence:</span>
+                                                <div class="confidence-bar-wrapper">
+                                                    <div class="confidence-bar" style="width: {{ (assessment.top_confidence * 100)|round(0) }}%"></div>
+                                                </div>
+                                                <strong class="confidence-val">{{ (assessment.top_confidence * 100)|round(1) }}%</strong>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-right">
+                                        <a href="{{ url_for('doctor.view_assessment', assessment_id=assessment.id) }}" class="btn-action btn-view-details" data-i18n="view_details">View Details</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-assessments">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <h3 data-i18n="no_assessments_yet">No assessments yet</h3>
+                            <p>There are no ECG records or assessments recorded for this patient.</p>
+                            {% if user.role != 'admin' %}
+                                <a href="{{ url_for('doctor.new_assessment', patient=patient.id) }}" class="btn-action btn-primary" style="margin-top: 15px;" data-i18n="new_assessment">New Assessment</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Custom CSS styling for premium look and layout -->
     <style>
-        .detail-page-content {
-            flex: 1;
-            padding: 40px;
-            overflow-y: auto;
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        .patient-info-panel {
-            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 40px;
-        }
-
-        .patient-header {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .patient-avatar-large {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid var(--accent-glow);
-            box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
-        }
-
-        .patient-avatar-large img {
+        .details-page-content {
+            padding: var(--spacing-lg);
+            max-width: 1400px;
+            margin: 0 auto;
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            animation: fadeIn 0.5s ease-out;
         }
 
-        .patient-header-info h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 0 0 8px 0;
-        }
-
-        .patient-age {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin: 0;
-        }
-
-        .patient-info-grid {
+        .details-grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: 350px 1fr;
+            gap: var(--spacing-lg);
+            align-items: start;
         }
 
-        .info-card {
-            background: rgba(0, 217, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 10px;
-        }
-
-        .info-icon {
-            font-size: 2rem;
-        }
-
-        .info-label {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
-
-        .info-value {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .assessment-history {
-            background: transparent;
-        }
-
-        .assessment-history h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 0 0 30px 0;
-        }
-
-        .assessments-timeline {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .assessment-item {
-            display: grid;
-            grid-template-columns: 150px 1fr;
-            gap: 20px;
-            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
+        /* Patient Profile Card CSS */
+        .patient-profile-card {
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            padding: 20px;
-            transition: all 0.3s ease;
-            animation: slideInUp 0.6s ease-out;
-        }
-
-        .assessment-item:hover {
-            transform: translateX(8px);
-            border-color: var(--accent-glow);
-            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.15);
-        }
-
-        .assessment-date {
+            padding: var(--spacing-lg);
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
-            background: rgba(0, 217, 255, 0.1);
-            border-radius: 12px;
-            font-weight: 600;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+
+        .patient-profile-card:hover {
+            border-color: rgba(0, 217, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.08);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(0, 217, 255, 0.08);
+            border: 2px solid var(--accent-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--spacing-md);
             color: var(--accent-glow);
+        }
+
+        .profile-avatar svg {
+            width: 50px;
+            height: 50px;
+        }
+
+        .patient-fullname {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
             text-align: center;
+            color: var(--text-primary);
         }
 
-        .assessment-date small {
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            font-weight: 400;
+        .risk-badge-wrapper {
+            margin-bottom: var(--spacing-md);
         }
 
-        .assessment-content {
+        .profile-divider {
+            width: 100%;
+            border: 0;
+            height: 1px;
+            background: var(--border-color);
+            margin: var(--spacing-md) 0;
+        }
+
+        .profile-info-list {
+            width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: var(--spacing-md);
         }
 
-        .assessment-header {
+        .info-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 15px;
+            font-size: 0.95rem;
         }
 
-        .assessment-header h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
+        .info-label {
+            color: var(--text-secondary);
+        }
+
+        .info-value {
             color: var(--text-primary);
-            margin: 0;
-            word-break: break-word;
-        }
-
-        .file-type-badge {
-            background: linear-gradient(135deg, var(--accent-glow), var(--heart-glow));
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
             font-weight: 600;
-            white-space: nowrap;
         }
 
-        .assessment-body {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+        /* Assessment History CSS */
+        .assessment-history-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: var(--spacing-lg);
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(10px);
+            min-height: 500px;
         }
 
-        .diagnosis-box {
-            background: rgba(0, 217, 255, 0.05);
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .panel-header h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .assessments-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .assessment-card {
+            background: rgba(20, 28, 58, 0.4);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 15px;
+            padding: var(--spacing-md) var(--spacing-lg);
+            display: grid;
+            grid-template-columns: 1.2fr 1.5fr 1fr;
+            align-items: center;
+            gap: var(--spacing-md);
+            transition: var(--transition);
+        }
+
+        .assessment-card:hover {
+            transform: translateY(-2px);
+            background: rgba(20, 28, 58, 0.7);
+            border-color: rgba(0, 217, 255, 0.25);
+            box-shadow: 0 5px 15px rgba(0, 217, 255, 0.05);
+        }
+
+        /* Card Highlight for latest high risk */
+        .card-risk-high {
+            border-left: 4px solid var(--danger);
+        }
+        .card-risk-medium {
+            border-left: 4px solid var(--warning);
+        }
+        .card-risk-low {
+            border-left: 4px solid var(--success);
+        }
+
+        .card-datetime {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .card-file-details {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .file-type-pill {
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--accent-glow);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 217, 255, 0.2);
+        }
+
+        .file-name-label {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+
+        .diagnosis-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-xs);
         }
 
         .diagnosis-label {
             font-size: 0.85rem;
             color: var(--text-secondary);
-            margin: 0 0 8px 0;
-            font-weight: 600;
         }
 
-        .diagnosis-result {
-            font-size: 1.3rem;
-            font-weight: 700;
+        .diagnosis-val {
+            font-size: 0.95rem;
             color: var(--accent-glow);
-            margin: 0 0 10px 0;
+        }
+
+        .confidence-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .confidence-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .confidence-bar-wrapper {
+            flex: 1;
+            max-width: 100px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
         }
 
         .confidence-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(0, 217, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-
-        .confidence-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--accent-glow), var(--heart-glow));
-            transition: width 0.3s ease;
-            width: var(--confidence, 0%);
+            background: linear-gradient(90deg, var(--accent-glow), var(--accent-secondary));
+            border-radius: 3px;
         }
 
-        .confidence-text {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin: 0;
+        .confidence-val {
+            font-size: 0.85rem;
+            color: var(--text-primary);
         }
 
-        .assessment-meta {
+        .card-right {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-view-details {
+            background: rgba(0, 217, 255, 0.08);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            color: var(--accent-glow);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .btn-view-details:hover {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(0, 217, 255, 0.2);
+        }
+
+        /* Empty Assessments State styling */
+        .empty-assessments {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-
-        .assessment-meta p {
-            margin: 0;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-xl) 0;
             color: var(--text-secondary);
+            text-align: center;
         }
 
-        .status-badge {
+        .empty-assessments svg {
+            width: 80px;
+            height: 80px;
+            color: var(--border-color);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .empty-assessments h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        /* Risk Badges */
+        .risk-badge {
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
             text-transform: uppercase;
-            background: rgba(0, 217, 142, 0.2);
-            color: #00d98e;
         }
 
-        .assessment-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
+        .risk-badge.risk-high {
+            background: rgba(255, 71, 87, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(255, 71, 87, 0.2);
         }
 
-        .btn-view-results {
-            flex: 1;
-            padding: 10px 16px;
-            background: linear-gradient(135deg, var(--accent-glow), var(--heart-glow));
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            text-align: center;
-            display: block;
+        .risk-badge.risk-medium {
+            background: rgba(255, 184, 28, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(255, 184, 28, 0.2);
         }
 
-        .btn-view-results:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.3);
+        .risk-badge.risk-low {
+            background: rgba(0, 217, 142, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(0, 217, 142, 0.2);
         }
 
-        .no-assessments {
-            text-align: center;
-            padding: 40px;
-            background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(0, 217, 255, 0.04));
-            border: 1px dashed var(--border-color);
-            border-radius: 16px;
-        }
-
-        .no-assessments p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .detail-page-content {
-                padding: 20px;
-            }
-
-            .patient-header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .patient-header-info h1 {
-                font-size: 1.5rem;
-            }
-
-            .assessment-item {
+        /* Responsive Layouts */
+        @media (max-width: 992px) {
+            .details-grid-container {
                 grid-template-columns: 1fr;
             }
+        }
 
-            .assessment-body {
-                grid-template-columns: 1fr;
-            }
+        /* RTL Layout Overrides */
+        body.rtl .details-page-content {
+            direction: rtl;
+        }
+        body.rtl .info-item {
+            flex-direction: row-reverse;
+        }
+        body.rtl .panel-header {
+            flex-direction: row-reverse;
+        }
+        body.rtl .assessment-card {
+            grid-template-columns: 1.2fr 1.5fr 1fr;
+        }
+        body.rtl .card-left {
+            text-align: right;
+        }
+        body.rtl .card-right {
+            justify-content: flex-start;
+        }
+        body.rtl .confidence-info {
+            flex-direction: row-reverse;
         }
     </style>
 
-    <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/language.js') }}"></script>
 </body>
 </html>

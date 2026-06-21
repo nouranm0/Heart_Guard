@@ -27,69 +27,70 @@
     <!-- App Bar -->
     <nav class="app-bar">
         <div class="app-bar-left">
-            <button class="back-button" onclick="window.location.href='/intro'">←</button>
+            <button class="back-button" onclick="window.location.href='{{ home_url }}'">←</button>
             <h1 class="page-title" data-i18n="new_assessment">New Assessment</h1>
         </div>
         <div class="app-bar-right">
-            <button class="theme-toggle" title="Toggle Theme">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </button>
-            <button class="language-toggle" title="Toggle Language">ع</button>
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
         </div>
     </nav>
 
-    <!-- Main Content Area -->
-    <main class="assessment-content">
+    <div class="dashboard-container">
+        {% include '_sidebar.html' %}
        
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                <div class="flash-message flash-{{ category }}">
-                    {{ message }}
-                    <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+        <main class="assessment-content">
+            <section class="assessment-header">
+                <div class="header-title">
+                    <h2 data-i18n="new_assessment">New Assessment</h2>
+                    <p data-i18n="assessment_upload_hint">Upload an ECG file, analyze it with the model, and save the result to the database.</p>
                 </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-        {% endwith %}
+                <div class="step-indicator">
+                    <div class="step active"><span class="step-number">1</span></div>
+                    <div class="step-line"></div>
+                    <div class="step"><span class="step-number">2</span></div>
+                </div>
+            </section>
 
-        <!-- Main Assessment Card -->
-        <div class="assessment-card active-step">
-            <h3 class="card-title">
-                <span class="step-badge">1</span>
-                <span>ECG File Analysis</span>
-            </h3>
-            
-            <!-- Upload Section -->
-            <form id="uploadForm" method="POST" enctype="multipart/form-data">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {{ message }}
+                        <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Main Assessment Card -->
+            <div class="assessment-card active-step">
+                <h3 class="card-title">
+                    <span class="step-badge">1</span>
+                    <span data-i18n="ecg_file_analysis">ECG File Analysis</span>
+                </h3>
+
+                <!-- Upload Section -->
+                <form id="uploadForm" method="POST" enctype="multipart/form-data" action="{{ url_for('doctor.new_assessment') }}">
                 <!-- Patient Selection -->
                 <div class="patient-selection" style="margin-bottom: 25px;">
-                    <label for="patientSelect" style="display: block; margin-bottom: 10px; color: var(--text-primary); font-weight: 600;">Select Patient *</label>
+                    <label for="patientSelect" style="display: block; margin-bottom: 10px; color: var(--text-primary); font-weight: 600;" data-i18n="select_patient">Select Patient *</label>
                     <select id="patientSelect" name="patient_id" required style="width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--input-bg); color: var(--text-primary); font-size: 1rem;">
-                        <option value="">-- Choose a patient --</option>
+                        <option value="" data-i18n="choose_patient">-- Choose a patient --</option>
                         {% if patients %}
                             {% for patient in patients %}
                             <option value="{{ patient.id }}" {% if selected_patient and selected_patient.id == patient.id %}selected{% endif %}>{{ patient.name }} ({{ patient.phone or 'No phone' }})</option>
                             {% endfor %}
                         {% else %}
-                            <option value="">No patients available. Add patients first.</option>
+                            <option value="" data-i18n="no_patients_available">No patients available. Add patients first.</option>
                         {% endif %}
                     </select>
                     {% if not patients %}
                     <p style="margin-top: 10px; color: var(--text-secondary); font-size: 0.9rem;">
-                        <a href="/add-patient" style="color: var(--accent-glow); text-decoration: none; font-weight: 600;">Add a patient</a> before creating an assessment.
+                        <a href="/add-patient" style="color: var(--accent-glow); text-decoration: none; font-weight: 600;" data-i18n="add_a_patient">Add a patient</a> before creating an assessment.
                     </p>
                     {% endif %}
                 </div>
@@ -139,15 +140,15 @@
 
                     <!-- Action Buttons -->
                     <div class="card-actions">
-                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/dashboard'">
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='{{ home_url }}'">
                             Cancel
                         </button>
-                        <button type="submit" class="btn btn-primary" id="analyzeBtn" disabled>
+                        <button type="submit" class="btn btn-primary" id="analyzeBtn" disabled data-default-text="Analyze ECG" data-loading-text="Analyzing...">
                             Analyze ECG
                         </button>
                     </div>
                 </div>
-            </form>
+                </form>
      
 
             <!-- Results Section -->
@@ -185,32 +186,42 @@
             The AI model has analyzed the uploaded ECG file and detected patterns associated with various cardiac conditions. 
         </p>
         {% if max_prob > 0.7 %}
-            <p class="summary-text">✅ High likelihood detected. Review closely.</p>
+            <p class="summary-text">High likelihood detected. Review closely.</p>
         {% elif max_prob > 0.3 %}
-            <p class="summary-text">⚠️ Moderate likelihood detected. Consider follow-up tests.</p>
+            <p class="summary-text">Moderate likelihood detected. Consider follow-up tests.</p>
         {% else %}
-            <p class="summary-text">ℹ️ Low likelihood detected. Patterns inconclusive.</p>
+            <p class="summary-text">Low likelihood detected. Patterns inconclusive.</p>
         {% endif %}
     </div>
 </div>
 {% elif request.method == 'POST' %}
 <div class="no-results">
-    <h4>Analysis Unsuccessful</h4>
-    <p>We couldn't analyze the uploaded file. Please make sure it's a valid ECG file format.</p>
+    <h4 data-i18n="analysis_unsuccessful">Analysis Unsuccessful</h4>
+    <p data-i18n="analysis_unsuccessful_message">We couldn't analyze the uploaded file. Please make sure it's a valid ECG file format.</p>
 </div>
 {% endif %}
 
-        </div>
-    </main>
+            </div>
+        </main>
+    </div>
 
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/language.js') }}"></script>
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
     <script>
+        function t(key, fallback) {
+            if (window.languageManager && typeof window.languageManager.getText === 'function') {
+                return window.languageManager.getText(key) || fallback;
+            }
+            return fallback;
+        }
+
         class AssessmentManager {
             constructor() {
                 this.currentFile = null;
+                this.isSubmitting = false;
                 this.init();
             }
 
@@ -225,10 +236,29 @@
                 const filePreview = document.getElementById('filePreview');
                 const analyzeBtn = document.getElementById('analyzeBtn');
                 const removeFile = document.getElementById('removeFile');
+                const uploadForm = document.getElementById('uploadForm');
 
                 if (!uploadArea || !fileInput) {
                     console.error('Upload elements not found!');
                     return;
+                }
+
+                if (uploadForm) {
+                    uploadForm.addEventListener('submit', (event) => {
+                        if (!this.currentFile) {
+                            event.preventDefault();
+                            this.showNotification(t('please_select_file', 'Please select a file first.'), 'error');
+                            return;
+                        }
+
+                        if (!analyzeBtn || this.isSubmitting) {
+                            return;
+                        }
+
+                        this.isSubmitting = true;
+                        analyzeBtn.disabled = true;
+                        analyzeBtn.textContent = analyzeBtn.dataset.loadingText || 'Analyzing...';
+                    });
                 }
 
                 console.log('Setting up file upload...');
@@ -271,9 +301,11 @@
                         console.log('Remove file clicked');
                         fileInput.value = '';
                         this.currentFile = null;
+                        this.isSubmitting = false;
                         filePreview.style.display = 'none';
                         uploadArea.style.display = 'block';
                         analyzeBtn.disabled = true;
+                        analyzeBtn.textContent = analyzeBtn.dataset.defaultText || 'Analyze ECG';
                     });
                 }
             }
@@ -290,12 +322,12 @@
                 console.log('File size:', (file.size / 1024 / 1024).toFixed(2), 'MB');
 
                 if (!allowedExtensions.includes(fileExt)) {
-                    this.showNotification(`Invalid file format (.${fileExt}). Supported: xml, jpg, png, pdf`, 'error');
+                    this.showNotification(`${t('invalid_file_format_prefix', 'Invalid file format')} (.${fileExt}). ${t('supported_formats', 'Supported: xml, jpg, png, pdf')}`, 'error');
                     return;
                 }
 
                 if (file.size > maxSize) {
-                    this.showNotification(`File is too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Maximum size is 10MB.`, 'error');
+                    this.showNotification(`${t('file_too_large_prefix', 'File is too large')} (${(file.size / 1024 / 1024).toFixed(2)}MB). ${t('max_file_size_10mb', 'Maximum size is 10MB.')}`, 'error');
                     return;
                 }
 
@@ -316,10 +348,11 @@
                 // Enable analyze button
                 if (analyzeBtn) {
                     analyzeBtn.disabled = false;
+                    analyzeBtn.textContent = analyzeBtn.dataset.defaultText || 'Analyze ECG';
                     console.log('Analyze button enabled');
                 }
                 
-                this.showNotification(`File "${file.name}" uploaded successfully!`, 'success');
+                this.showNotification(`${t('file_uploaded_prefix', 'File')} "${file.name}" ${t('uploaded_successfully', 'uploaded successfully!')}`, 'success');
             }
 
             showNotification(message, type = 'info') {
@@ -367,5 +400,6 @@
             window.location.href = '/new-assessment';
         }
     </script>
+    </div>
 </body>
 </html>

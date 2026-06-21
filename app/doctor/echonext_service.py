@@ -4,10 +4,25 @@ from PIL import Image
 import torch
 from transformers import CLIPProcessor, CLIPModel
 from IntroECG_master.EchoNext_Minimodel.flask_app.model_inference import predict
-clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
-CHECKPOINT_PATH = os.path.join("model", "weights.pt")
+# Lazy load CLIP models to avoid startup delays
+clip_model = None
+clip_processor = None
+
+def get_clip_model():
+    global clip_model
+    if clip_model is None:
+        clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+    return clip_model
+
+def get_clip_processor():
+    global clip_processor
+    if clip_processor is None:
+        clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+    return clip_processor
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+CHECKPOINT_PATH = os.path.join(BASE_DIR, "model", "weights.pt")
 
 
 def is_ecg_image(filepath):
@@ -18,13 +33,15 @@ def is_ecg_image(filepath):
 
     # لو صورة
     image = Image.open(filepath).convert("RGB")
-    inputs = clip_processor(
+    clip_proc = get_clip_processor()
+    clip_mdl = get_clip_model()
+    inputs = clip_proc(
         text=["ECG medical waveform", "non medical image"],
         images=image,
         return_tensors="pt",
         padding=True
     )
-    outputs = clip_model(**inputs)
+    outputs = clip_mdl(**inputs)
     probs = outputs.logits_per_image.softmax(dim=1)
     return probs[0][0].item() > 0.7
 

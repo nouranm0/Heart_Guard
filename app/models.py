@@ -50,14 +50,16 @@ class ECGRecord(db.Model):
     top_diagnosis = db.Column(db.String(255))
     top_confidence = db.Column(db.Float)
     full_results = db.Column(db.JSON)
-    doctor_approved = db.Column(db.Boolean, default=False)
-    doctor_diagnosis = db.Column(db.Text)
-    doctor_note = db.Column(db.Text)
-    approved_at = db.Column(db.DateTime)
+    review_status = db.Column(db.String(20), default='pending')
+    doctor_report = db.Column(db.Text)
+    reviewed_at = db.Column(db.DateTime)
+    reviewed_by_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='SET NULL'))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     patient = db.relationship('Patient', backref='ecg_records')
-    doctor = db.relationship('User', backref='ecg_records')
+    doctor = db.relationship('User', backref='ecg_records', foreign_keys=[doctor_id])
+    reviewed_by = db.relationship('User', foreign_keys=[reviewed_by_id])
+
 
 
 class AuditLog(db.Model):
@@ -116,3 +118,33 @@ class UserSettings(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     user = db.relationship('User', backref='settings')
+
+
+class PasswordResetToken(db.Model):
+    __tablename__ = 'password_reset_tokens'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    token_hash = db.Column(db.String(64), unique=True, nullable=False, index=True)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    used_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='password_reset_tokens')
+
+
+class EmailOutbox(db.Model):
+    __tablename__ = 'email_outbox'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    recipient_email = db.Column(db.String(100), nullable=False)
+    subject = db.Column(db.String(255), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+    related_type = db.Column(db.String(50), nullable=False)
+    related_id = db.Column(db.Integer)
+    status = db.Column(db.String(20), default='queued')
+    sent_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='email_outbox')

@@ -11,14 +11,27 @@ Design System with Dark/Light Theme Support
     /* Dark Mode (default) - Professional Medical Color Scheme */
     --bg-dark: #0A0E27;
     --bg-light: #E8F4FF;
+    --bg-secondary: #151C3A;
     --text-primary: #F0F4FB;
     --text-secondary: #A0B4D4;
+    --card-bg: rgba(20, 28, 58, 0.8);
+    --input-bg: rgba(10, 14, 39, 0.9);
+    --input-bg-focus: rgba(20, 28, 58, 0.95);
     --accent-glow: #00D9FF;
     --accent-secondary: #0099CC;
     --accent-tertiary: #FF2E63;
     --border-color: #1E3A4E;
     --heart-color: #FF2E63;
     --heart-glow: #FF6B9D;
+    --header-bg: linear-gradient(135deg, rgba(8, 18, 40, 0.96), rgba(12, 28, 55, 0.95));
+    --header-border: rgba(0, 217, 255, 0.18);
+    --header-shadow: 0 18px 45px rgba(0, 95, 176, 0.22);
+    --card-hover-bg: rgba(0, 217, 255, 0.12);
+    --card-hover-shadow: 0 15px 40px rgba(0, 217, 255, 0.22);
+    --card-shadow: 0 18px 45px rgba(0, 96, 178, 0.08);
+    --card-border: rgba(0, 217, 255, 0.14);
+    --card-icon-bg: rgba(0, 217, 255, 0.05);
+    --card-icon-border: rgba(0, 217, 255, 0.1);
     
     /* Semantic colors */
     --success: #00D98E;
@@ -43,22 +56,60 @@ Design System with Dark/Light Theme Support
     --transition-smooth: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
+/* Light Mode */
 body.light-mode {
     --bg-dark: #F8FBFF;
     --bg-light: #0A0E27;
+    --bg-secondary: #E8F4FF;
     --text-primary: #0A0E27;
     --text-secondary: #4A5F7F;
+    --card-bg: rgba(248, 251, 255, 0.95);
+    --input-bg: rgba(255, 255, 255, 0.9);
+    --input-bg-focus: rgba(232, 244, 255, 0.95);
     --accent-glow: #0099CC;
     --accent-secondary: #00D9FF;
     --border-color: #CDE4F4;
+    --header-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(233, 244, 255, 0.95));
+    --header-border: rgba(29, 83, 130, 0.14);
+    --header-shadow: 0 18px 45px rgba(20, 90, 140, 0.12);
+    --card-hover-bg: rgba(255, 255, 255, 0.85);
+    --card-hover-shadow: 0 15px 40px rgba(12, 41, 76, 0.08);
+    --card-shadow: 0 18px 45px rgba(12, 41, 76, 0.08);
+    --card-border: rgba(205, 228, 244, 0.9);
+    --card-icon-bg: rgba(0, 217, 255, 0.04);
+    --card-icon-border: rgba(0, 217, 255, 0.06);
 }
 /* here */
 body.light-mode .intro-container {
-    background: linear-gradient(180deg, #F8FBFF 0%, rgba(250, 253, 254, 0.8) 100%);
+    background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-secondary) 100%);
+}
+
+/* Ensure body always has proper background */
+body {
+    background-color: var(--bg-dark) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Force dashboard elements to use theme variables */
+.dashboard-container {
+    background-color: var(--bg-dark) !important;
+}
+
+.dashboard-content {
+    background-color: var(--bg-dark) !important;
 }
 
 body.rtl {
     direction: rtl;
+    text-align: right;
+}
+
+/* RTL specific adjustments */
+body.rtl .app-bar-right {
+    flex-direction: row-reverse;
+}
+
+body.rtl .login-form input {
     text-align: right;
 }
 
@@ -1401,27 +1452,39 @@ body.rtl .back-button:hover {
 }
 
 .theme-toggle, .language-toggle {
-    width: 40px;
-    height: 40px;
-    border: none;
-    background: rgba(0, 217, 255, 0.1);
-    border-radius: 8px;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(0, 217, 255, 0.16);
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.12), rgba(0, 153, 204, 0.08));
+    border-radius: 14px;
     color: var(--accent-glow);
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     cursor: pointer;
     transition: var(--transition);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(10px);
 }
 
 .theme-toggle:hover, .language-toggle:hover {
-    background: rgba(0, 217, 255, 0.2);
-    transform: scale(1.1);
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(255, 255, 255, 0.04));
+    transform: translateY(-1px) scale(1.04);
+    box-shadow: 0 12px 24px rgba(0, 217, 255, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .theme-toggle.active {
     animation: rotateMoon 0.5s ease-out;
+}
+
+.theme-toggle svg,
+.language-toggle svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    flex-shrink: 0;
 }
 
 @keyframes rotateMoon {
@@ -2424,9 +2487,115 @@ body.rtl .pipeline-arrow {
 
 /* ========== ASSESSMENT PAGE LIGHT MODE OVERRIDES ========== */
 body.light-mode .result-item {
-    background: linear-gradient(135deg, rgba(250, 250, 250, 0.95), rgba(245, 245, 245, 0.95));
+    background: var(--card-bg);
 }
 
 body.light-mode .assessment-card {
-    background: linear-gradient(135deg, rgba(250, 250, 250, 0.95), rgba(245, 245, 245, 0.95));
+    background: var(--card-bg);
+}
+
+body.light-mode .dashboard-container,
+body.light-mode .dashboard-content,
+body.light-mode .doctor-dashboard-content,
+body.light-mode .patient-dashboard,
+body.light-mode .results-page-content {
+    background: linear-gradient(180deg, #f8fbff 0%, #eef6fd 100%) !important;
+    color: #0a0e27 !important;
+}
+
+body.light-mode .dashboard-header,
+body.light-mode .toolbar-panel,
+body.light-mode .patient-card,
+body.light-mode .empty-state,
+body.light-mode .stat-card,
+body.light-mode .assessment-card,
+body.light-mode .result-item,
+body.light-mode .results-container,
+body.light-mode .no-results,
+body.light-mode .results-actions,
+body.light-mode .review-panel,
+body.light-mode .pending-review-card,
+body.light-mode .assessment-info,
+body.light-mode .detailed-results,
+body.light-mode .top-diagnosis-card,
+body.light-mode .result-card {
+    background: #ffffff !important;
+    color: #0a0e27 !important;
+    border-color: #cfe3f3 !important;
+    box-shadow: 0 18px 45px rgba(10, 34, 66, 0.08) !important;
+}
+
+body.light-mode .dashboard-header::before,
+body.light-mode .dashboard-header::after,
+body.light-mode .patient-card::before,
+body.light-mode .stat-card::before,
+body.light-mode .results-page-content::before,
+body.light-mode .results-page-content::after {
+    opacity: 0.35;
+}
+
+body.light-mode .dashboard-container *,
+body.light-mode .doctor-dashboard-content *,
+body.light-mode .patient-dashboard *,
+body.light-mode .results-page-content * {
+    color: inherit;
+}
+
+body.light-mode .page-title,
+body.light-mode .header-title h2,
+body.light-mode .hero-copy h2,
+body.light-mode .hero-text,
+body.light-mode .patient-info h3,
+body.light-mode .patient-id,
+body.light-mode .patient-details,
+body.light-mode .metric-label,
+body.light-mode .metric-value,
+body.light-mode .meta-label,
+body.light-mode .info-label,
+body.light-mode .info-value,
+body.light-mode .results-page-content h1,
+body.light-mode .results-page-content h2,
+body.light-mode .results-page-content h3,
+body.light-mode .results-page-content h4,
+body.light-mode .results-page-content p,
+body.light-mode .results-page-content span,
+body.light-mode .results-page-content label,
+body.light-mode .results-page-content td,
+body.light-mode .results-page-content th,
+body.light-mode .dashboard-hero,
+body.light-mode .toolbar-panel,
+body.light-mode .patient-card,
+body.light-mode .empty-state,
+body.light-mode .review-panel,
+body.light-mode .pending-review-card,
+body.light-mode .assessment-info,
+body.light-mode .detailed-results,
+body.light-mode .top-diagnosis-card,
+body.light-mode .result-card,
+body.light-mode .doctor-report-box {
+    color: #0a0e27 !important;
+}
+
+body.light-mode .btn-action,
+body.light-mode .btn-view,
+body.light-mode .btn-monitor,
+body.light-mode .btn-search,
+body.light-mode .toolbar-link,
+body.light-mode .filter-btn,
+body.light-mode .sort-btn,
+body.light-mode .btn-add-patient,
+body.light-mode .results-actions .btn-primary,
+body.light-mode .results-actions .btn-secondary {
+    color: #0a0e27 !important;
+}
+
+body.light-mode .nav-item,
+body.light-mode .nav-tooltip,
+body.light-mode .btn-search svg,
+body.light-mode .toolbar-link svg,
+body.light-mode .btn-action svg,
+body.light-mode .filter-btn,
+body.light-mode .sort-btn {
+    color: #0a0e27 !important;
+    stroke: currentColor;
 }

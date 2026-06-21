@@ -1,0 +1,55 @@
+body{
+    background-color: purple;
+}
+form h1{
+    text-transform: capitalize;
+    text-align: center;
+}
+form{
+    background-color: white;
+    border:8px solid yellow;
+    border-radius: 10px;
+    width: 300px;
+    height: 700px;
+    margin: auto;
+   
+}
+.kk , .buttons{
+    margin-top: 20px;
+    margin-left: 10px;
+    
+    
+}
+.kk .in{
+    width: 85%;
+    height: 20px;
+    border: 3px solid black;
+    border-radius: 20px;
+}
+.kk .la{
+    font-weight: bold;
+    font-size: medium;
+    font-style: italic;
+    text-transform: capitalize;
+}
+
+.buttons{
+    height: 20px;
+    margin-left: 80px;
+
+    
+
+}
+.buttons .sub{
+    margin-right: 15px;
+   
+}
+
+.buttons .sub , .clc{
+    background-color: blueviolet;
+    border: 5px solid yellow;
+    border-radius: 3px;
+    font-size: 20px;
+    font-weight: bold;
+
+}

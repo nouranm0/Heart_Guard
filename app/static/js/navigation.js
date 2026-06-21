@@ -16,19 +16,39 @@ class SidebarNavigationManager {
 
     setActiveNavItem() {
         const currentPath = window.location.pathname;
+        const currentSearch = window.location.search;
+        const hasDoctorId = currentSearch.includes('doctor_id');
         
         this.navItems.forEach(item => {
             item.classList.remove('active');
             
             const href = item.getAttribute('href');
             
-            // Check if nav item href matches current path
             if (href && href !== '#') {
-                // Normalize paths for comparison
                 const itemPath = new URL(href, window.location.origin).pathname;
                 
                 if (currentPath === itemPath) {
-                    item.classList.add('active');
+                    const isDoctorsManagementLink =
+                        item.querySelector('[data-i18n="doctors_management_tooltip"]') ||
+                        item.getAttribute('title') === 'Doctors Management';
+                    const isDashboardLink = item.querySelector('[data-i18n="dashboard_tooltip"]') || item.getAttribute('title') === 'Dashboard';
+                    const isDoctorsLink = item.querySelector('[data-i18n="doctors_tooltip"]') || item.getAttribute('title') === 'Doctors';
+                    
+                    if (isDoctorsManagementLink) {
+                        if (!hasDoctorId) {
+                            item.classList.add('active');
+                        }
+                    } else if (isDashboardLink) {
+                        if (!hasDoctorId) {
+                            item.classList.add('active');
+                        }
+                    } else if (isDoctorsLink) {
+                        if (hasDoctorId) {
+                            item.classList.add('active');
+                        }
+                    } else {
+                        item.classList.add('active');
+                    }
                 }
             }
         });
@@ -44,7 +64,316 @@ class SidebarNavigationManager {
 document.addEventListener('DOMContentLoaded', () => {
     new SidebarNavigationManager();
     initializeIconLabels();
+
+    document.addEventListener('click', (event) => {
+        const sidebarLink = event.target.closest('.dashboard-sidebar .nav-item');
+        if (!sidebarLink) {
+            return;
+        }
+
+        const href = sidebarLink.getAttribute('href');
+        if (!href || href === '#') {
+            return;
+        }
+
+        window.location.href = href;
+    }, true);
+
+    if (!window.searchFormManager) {
+        window.searchFormManager = new SearchFormManager();
+    }
+    if (!window.alertBadgeManager) {
+        window.alertBadgeManager = new AlertBadgeManager();
+    }
 });
+
+// ============================================
+// LIVE SEARCH FORM MANAGER
+// ============================================
+
+class SearchFormManager {
+    constructor() {
+        this.debounceMs = 280;
+        this.init();
+    }
+
+    init() {
+        const searchForms = document.querySelectorAll('[data-live-search="true"]');
+
+        searchForms.forEach((form) => this.attachForm(form));
+    }
+
+    attachForm(form) {
+        const searchInput = form.querySelector('[data-search-input]') || form.querySelector('input[type="search"][name="q"]');
+        const clearButton = form.querySelector('[data-search-clear]');
+        const statusNode = form.querySelector('[data-search-status]');
+        const submitButton = form.querySelector('button[type="submit"]');
+
+        if (!searchInput) {
+            return;
+        }
+
+        let debounceTimer = null;
+
+        const getFormSignature = () => {
+            const formData = new FormData(form);
+            return Array.from(formData.entries())
+                .map(([key, value]) => `${key}=${value}`)
+                .join('&');
+        };
+
+        let lastSubmittedSignature = getFormSignature();
+
+        const getSubmitLabel = () => {
+            if (window.languageManager && typeof window.languageManager.getText === 'function') {
+                return window.languageManager.getText('searching') || 'Searching...';
+            }
+
+            return 'Searching...';
+        };
+
+        const syncClearState = () => {
+            if (clearButton) {
+                clearButton.hidden = !searchInput.value.trim();
+            }
+        };
+
+        const setStatus = (isSearching) => {
+            if (statusNode) {
+                statusNode.textContent = isSearching ? getSubmitLabel() : '';
+            }
+
+            if (submitButton) {
+                submitButton.disabled = isSearching;
+                submitButton.setAttribute('aria-busy', isSearching ? 'true' : 'false');
+            }
+        };
+
+        const submitForm = () => {
+            const currentSignature = getFormSignature();
+
+            if (currentSignature === lastSubmittedSignature) {
+                syncClearState();
+                return;
+            }
+
+            lastSubmittedSignature = currentSignature;
+            setStatus(true);
+
+            if (typeof form.requestSubmit === 'function') {
+                form.requestSubmit();
+            } else {
+                form.submit();
+            }
+        };
+
+        searchInput.addEventListener('input', () => {
+            syncClearState();
+            setStatus(false);
+
+            if (debounceTimer) {
+                window.clearTimeout(debounceTimer);
+            }
+
+            debounceTimer = window.setTimeout(() => {
+                submitForm();
+            }, this.debounceMs);
+        });
+
+        searchInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                if (debounceTimer) {
+                    window.clearTimeout(debounceTimer);
+                }
+                submitForm();
+            }
+        });
+
+        if (clearButton) {
+            clearButton.addEventListener('click', () => {
+                searchInput.value = '';
+                syncClearState();
+                if (debounceTimer) {
+                    window.clearTimeout(debounceTimer);
+                }
+                submitForm();
+                searchInput.focus();
+            });
+        }
+
+        form.querySelectorAll('select').forEach((select) => {
+            select.addEventListener('change', () => {
+                submitForm();
+            });
+        });
+
+        syncClearState();
+    }
+}
+
+// ============================================
+// LIVE ALERT BADGE SYNC
+// ============================================
+
+class AlertBadgeManager {
+    constructor() {
+        this.streamUrl = '/api/alerts/stream';
+        this.countUrl = '/api/alerts/count';
+        this.pollIntervalMs = 15000;
+        this.isFetching = false;
+        this.pollTimer = null;
+        this.eventSource = null;
+
+        this.init();
+    }
+
+    init() {
+        this.startPollingFallback();
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.refresh();
+            }
+        });
+
+        window.addEventListener('focus', () => {
+            this.refresh();
+        });
+    }
+
+    connectStream() {
+        try {
+            this.eventSource = new EventSource(this.streamUrl, { withCredentials: true });
+
+            this.eventSource.addEventListener('alert-update', (event) => {
+                try {
+                    const payload = JSON.parse(event.data || '{}');
+                    this.applyCount(Number(payload.unread) || 0);
+                    window.dispatchEvent(new CustomEvent('alerts-updated', { detail: payload }));
+                } catch (error) {
+                    console.error('Failed to parse alert stream payload:', error);
+                }
+            });
+
+            this.eventSource.onerror = () => {
+                this.stopStream();
+                this.startPollingFallback();
+            };
+        } catch (error) {
+            console.error('Failed to open alert stream:', error);
+            this.startPollingFallback();
+        }
+    }
+
+    stopStream() {
+        if (this.eventSource) {
+            this.eventSource.close();
+            this.eventSource = null;
+        }
+    }
+
+    startPollingFallback() {
+        if (this.pollTimer) {
+            window.clearInterval(this.pollTimer);
+        }
+
+        this.refresh();
+        this.pollTimer = window.setInterval(() => this.refresh(), this.pollIntervalMs);
+    }
+
+    async refresh() {
+        if (this.isFetching) {
+            return;
+        }
+
+        this.isFetching = true;
+
+        try {
+            const response = await fetch(this.countUrl, {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                return;
+            }
+
+            const payload = await response.json();
+            if (!payload || !payload.success) {
+                return;
+            }
+
+            this.applyCount(Number(payload.unread) || 0);
+        } catch (error) {
+            console.error('Failed to refresh alert badges:', error);
+        } finally {
+            this.isFetching = false;
+        }
+    }
+
+    applyCount(count) {
+        const badges = document.querySelectorAll('[data-alert-count-badge]');
+        const alertLinks = document.querySelectorAll('a[href="/alerts"]');
+
+        if (count > 0) {
+            badges.forEach((badge) => {
+                badge.textContent = String(count);
+                badge.hidden = false;
+            });
+
+            alertLinks.forEach((link) => {
+                let badge = link.querySelector('[data-alert-count-badge]');
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'nav-item-badge';
+                    badge.setAttribute('data-alert-count-badge', 'true');
+                    link.appendChild(badge);
+                }
+
+                badge.textContent = String(count);
+                badge.hidden = false;
+            });
+
+            this.syncAlertsSummary(count);
+            return;
+        }
+
+        badges.forEach((badge) => badge.remove());
+        this.syncAlertsSummary(0);
+    }
+
+    syncAlertsSummary(count) {
+        const summary = document.querySelector('[data-alert-summary-pill]');
+        const newLabel = window.languageManager && typeof window.languageManager.getText === 'function'
+            ? window.languageManager.getText('new_notifications') || 'new'
+            : 'new';
+
+        if (count <= 0) {
+            if (summary) {
+                summary.remove();
+            }
+            return;
+        }
+
+        if (summary) {
+            summary.innerHTML = `${count} <span data-i18n="new_notifications">${newLabel}</span>`;
+            return;
+        }
+
+        const titleRow = document.querySelector('.page-header-title-row');
+        if (!titleRow) {
+            return;
+        }
+
+        const pill = document.createElement('span');
+        pill.className = 'alerts-count-pill';
+        pill.setAttribute('data-alert-summary-pill', 'true');
+        pill.setAttribute('aria-label', `${count} unread alerts`);
+        pill.innerHTML = `${count} <span data-i18n="new_notifications">${newLabel}</span>`;
+        titleRow.appendChild(pill);
+    }
+}
 
 // ============================================
 // ICON LABEL TOOLTIP SYSTEM
@@ -216,14 +545,13 @@ document.addEventListener('DOMContentLoaded', updatePageIndicators);
 
 const AppSettings = {
     STORAGE_KEYS: {
-        THEME: 'app_theme',
-        LANGUAGE: 'app_language'
+        THEME: 'theme',
+        LANGUAGE: 'language'
     },
 
     initializeSettings() {
         this.restoreTheme();
         this.restoreLanguage();
-        this.setupToggleListeners();
     },
 
     restoreTheme() {
@@ -240,42 +568,6 @@ const AppSettings = {
         document.documentElement.lang = savedLanguage;
         document.documentElement.dir = savedLanguage === 'ar' ? 'rtl' : 'ltr';
     },
-
-    setupToggleListeners() {
-        // Theme toggle
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('theme-toggle')) {
-                this.toggleTheme();
-            }
-        });
-
-        // Language toggle
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('language-toggle')) {
-                this.toggleLanguage();
-            }
-        });
-    },
-
-    toggleTheme() {
-        const currentTheme = localStorage.getItem(this.STORAGE_KEYS.THEME) || 'dark';
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        localStorage.setItem(this.STORAGE_KEYS.THEME, newTheme);
-        this.restoreTheme();
-        
-        // Dispatch event for other scripts to listen to
-        window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
-    },
-
-    toggleLanguage() {
-        const currentLanguage = localStorage.getItem(this.STORAGE_KEYS.LANGUAGE) || 'en';
-        const newLanguage = currentLanguage === 'en' ? 'ar' : 'en';
-        localStorage.setItem(this.STORAGE_KEYS.LANGUAGE, newLanguage);
-        this.restoreLanguage();
-        
-        // Dispatch event for other scripts to listen to
-        window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: newLanguage } }));
-    }
 };
 
 // Initialize on DOM load
@@ -340,8 +632,6 @@ const SettingsPage = {
         this.setupProfileForm();
         this.setupPasswordForm();
         this.setupNotificationToggles();
-        this.setupThemeToggle();
-        this.setupLanguageSelector();
         this.setupPrivacyToggles();
     },
 

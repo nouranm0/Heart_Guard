@@ -1,300 +1,469 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ settings.language or 'en' }}" dir="{{ 'rtl' if settings.language == 'ar' else 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - HEARTGAURD</title>
+    <title data-i18n="settings_title">Settings - HEARTGUARD</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
 </head>
-<body class="theme-dark">
-    <!-- App Bar -->
+<body class="{{ 'light-mode' if not settings.dark_mode else 'theme-dark' }}">
     <nav class="app-bar">
         <div class="app-bar-left">
-            <button class="back-button" onclick="window.location.href='/dashboard'">←</button>
+            <button class="back-button" onclick="window.location.href='{{ home_url }}'">←</button>
             <h1 class="page-title" data-i18n="settings">Settings</h1>
         </div>
         <div class="app-bar-right">
-            <button class="theme-toggle" title="Toggle Theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
-            <button class="language-toggle" title="Toggle Language">ع</button>
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
         </div>
     </nav>
 
-    <!-- Dashboard Container -->
+    {% set role_description = 'settings_subtitle_admin' if user.role == 'admin' else 'settings_subtitle_doctor' %}
+
     <div class="dashboard-container">
-        <!-- Professional Left Sidebar Navigation -->
-        <aside class="dashboard-sidebar">
-            <!-- Logo Section -->
-            <div class="sidebar-logo-section">
-                <div class="sidebar-logo" onclick="window.location.href='/dashboard'">
-                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M50,15 Q35,30 25,45 Q20,52 25,60 Q35,70 50,85 Q65,70 75,60 Q80,52 75,45 Q65,30 50,15 Z" fill="url(#heartGradient)" stroke="currentColor" stroke-width="1.5"/>
-                        <defs>
-                            <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:var(--accent-glow);stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:var(--heart-glow);stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-            </div>
+        {% include '_sidebar.html' %}
 
-            <!-- Navigation Items -->
-            <nav class="sidebar-nav">
-                <!-- Dashboard -->
-                <a href="/dashboard" class="nav-item" data-tooltip="Dashboard">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <rect x="3" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="14" width="7" height="7"></rect>
-                        <rect x="3" y="14" width="7" height="7"></rect>
-                    </svg>
-                    <span class="nav-tooltip">Dashboard</span>
-                </a>
 
-                <!-- Patients -->
-                <a href="/doctor-dashboard" class="nav-item" data-tooltip="Patients">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                    <span class="nav-tooltip">Patients</span>
-                </a>
-
-                <!-- Alerts -->
-                <a href="/alerts" class="nav-item" data-tooltip="Alerts">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                    <span class="nav-tooltip">Alerts</span>
-                </a>
-
-                <!-- Settings (Active) -->
-                <a href="/settings" class="nav-item active" data-tooltip="Settings">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6m-16.78 7.78l4.24-4.24m3.08-3.08l4.24-4.24"></path>
-                    </svg>
-                    <span class="nav-tooltip">Settings</span>
-                </a>
-            </nav>
-
-            <!-- User Profile at Bottom -->
-            <div class="sidebar-bottom">
-                <div class="user-avatar-container">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Doctor" alt="Doctor Profile" class="user-avatar">
-                    <div class="user-status"></div>
-                </div>
-            </div>
-        </aside>
-
-    <!-- Settings Container -->
-    <div class="settings-container">
+    <main class="settings-shell settings-container">
         <div class="settings-content">
-            <form method="post" action="{{ url_for('doctor.update_settings') }}">
-            <!-- Profile Section -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <h3 class="section-title">👤 <span data-i18n="profile_info">Profile Information</span></h3>
-                </div>
-                    <div class="form-group">
-                        <label data-i18n="first_name">First Name</label>
-                        <input type="text" name="first_name" placeholder="Ahmed" value="{{ settings.first_name or '' }}">
+                <section class="hero-card">
+                    <div class="hero-copy">
+                        <h1 class="hero-title" data-i18n="settings">Settings</h1>
+                        <p class="hero-subtitle" data-i18n="{{ role_description }}">{{ 'Manage staff, alerts, and clinical oversight from one place.' if user.role == 'admin' else 'Tune your clinical workflow, notifications, and language preferences.' }}</p>
                     </div>
-                    <div class="form-group">
-                        <label data-i18n="last_name">Last Name</label>
-                        <input type="text" name="last_name" placeholder="Hassan" value="{{ settings.last_name or '' }}">
-                    </div>
-                </div>
-
-                <div class="settings-group">
-                    <div class="form-group full">
-                        <label data-i18n="email">Email</label>
-                        <input type="email" name="email" placeholder="ahmed@example.com" value="{{ user.email }}" readonly>
-                    </div>
-                </div>
-
-                <div class="settings-group">
-                    <div class="form-group">
-                        <label data-i18n="phone">Phone</label>
-                        <input type="tel" name="phone" placeholder="+1 (555) 123-4567" value="{{ settings.phone or '' }}">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="date_of_birth">Date of Birth</label>
-                        <input type="date" name="date_of_birth" value="{{ settings.date_of_birth.strftime('%Y-%m-%d') if settings.date_of_birth else '' }}">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary" data-i18n="save_changes">Save Changes</button>
-            </div>
-
-            <!-- Notifications Section -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <h3 class="section-title">🔔 <span data-i18n="notifications">Notifications</span></h3>
-                </div>
-
-                <div class="settings-group">
-                    <div class="toggle-item">
-                        <div class="toggle-label">
-                            <span data-i18n="email_notif">Email Notifications</span>
-                            <p class="toggle-desc" data-i18n="email_notif_desc">Receive alerts via email</p>
+                    <div class="hero-meta">
+                        <div class="meta-chip">
+                            <span class="meta-value">{{ user.email }}</span>
                         </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" name="email_notifications" {{ 'checked' if settings.email_notifications else '' }}>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="toggle-item">
-                        <div class="toggle-label">
-                            <span data-i18n="push_notif">Push Notifications</span>
-                            <p class="toggle-desc" data-i18n="push_notif_desc">Get alerts on your device</p>
+                        <div class="meta-chip">
+                            <span class="meta-value">{{ settings.updated_at.strftime('%b %d, %Y %H:%M') if settings.updated_at else 'Just now' }}</span>
                         </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" name="push_notifications" {{ 'checked' if settings.push_notifications else '' }}>
-                            <span class="toggle-slider"></span>
-                        </label>
+                    </div>
+                </section>
+
+                <form id="settingsForm" class="settings-form">
+                    <div class="settings-grid">
+                        <section class="settings-card settings-card-wide">
+                            <div class="profile-grid">
+                                <div class="form-group">
+                                    <label data-i18n="first_name">First Name</label>
+                                    <input type="text" name="first_name" placeholder="Ahmed" data-i18n-placeholder="placeholder_first_name" value="{{ settings.first_name or '' }}" autocomplete="given-name">
+                                </div>
+                                <div class="form-group">
+                                    <label data-i18n="last_name">Last Name</label>
+                                    <input type="text" name="last_name" placeholder="Hassan" data-i18n-placeholder="placeholder_last_name" value="{{ settings.last_name or '' }}" autocomplete="family-name">
+                                </div>
+                                <div class="form-group form-group-wide">
+                                    <label data-i18n="email">Email</label>
+                                    <input type="email" name="email" placeholder="ahmed@example.com" data-i18n-placeholder="placeholder_email" value="{{ user.email }}" autocomplete="email">
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="settings-card">
+                            <div class="toggle-list">
+                                <label class="toggle-item">
+                                    <span class="toggle-copy">
+                                        <span class="toggle-title" data-i18n="dark_mode">Dark mode</span>
+                                        <span class="toggle-desc" data-i18n="dark_mode_desc">Use the medical dark theme across the app.</span>
+                                    </span>
+                                    <span class="toggle-switch">
+                                        <input type="checkbox" name="dark_mode" {{ 'checked' if settings.dark_mode else '' }}>
+                                        <span class="toggle-slider"></span>
+                                    </span>
+                                </label>
+
+                                <div class="form-group form-group-wide compact-field">
+                                    <label data-i18n="language">Language</label>
+                                    <select name="language">
+                                        <option value="en" {% if settings.language == 'en' %}selected{% endif %}>English</option>
+                                        <option value="ar" {% if settings.language == 'ar' %}selected{% endif %}>العربية</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="settings-card settings-card-wide">
+                            <div class="section-header section-header-row">
+                                <h3 class="section-title" data-i18n="password_access">Password & access</h3>
+                                <button type="button" class="save-password-button" id="savePasswordButton" data-i18n="save_password" disabled>Save password</button>
+                            </div>
+
+                            <div class="profile-grid password-grid">
+                                <div class="password-field">
+                                    <label data-i18n="current_password">Current Password</label>
+                                    <div class="password-input-wrap">
+                                        <input type="password" name="current_password" placeholder="••••••••" autocomplete="current-password">
+                                        <button type="button" class="password-visibility-toggle" data-target="current_password" aria-label="Show current password" title="Show password" data-show-title="show_password" data-hide-title="hide_password">
+                                            <svg class="icon-show" viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                                <circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="2"></circle>
+                                            </svg>
+                                            <svg class="icon-hide" viewBox="0 0 24 24" aria-hidden="true" hidden>
+                                                <path d="M3 3l18 18" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                                <path d="M10.6 10.6A3 3 0 0 0 13.4 13.4" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                                <path d="M9.9 5.2A10.5 10.5 0 0 1 22 12c-1.1 2.2-2.8 4.1-4.9 5.4" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                                <path d="M6.1 6.1A10.4 10.4 0 0 0 2 12c1.5 3 4.4 5.8 8 6.5" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="password-field">
+                                    <label data-i18n="new_password">New Password</label>
+                                    <div class="password-input-wrap">
+                                        <input type="password" name="new_password" placeholder="••••••••" autocomplete="new-password">
+                                        <button type="button" class="password-visibility-toggle" data-target="new_password" aria-label="Show new password" title="Show password" data-show-title="show_password" data-hide-title="hide_password">
+                                            <svg class="icon-show" viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                                <circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="2"></circle>
+                                            </svg>
+                                            <svg class="icon-hide" viewBox="0 0 24 24" aria-hidden="true" hidden>
+                                                <path d="M3 3l18 18" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                                <path d="M10.6 10.6A3 3 0 0 0 13.4 13.4" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                                <path d="M9.9 5.2A10.5 10.5 0 0 1 22 12c-1.1 2.2-2.8 4.1-4.9 5.4" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                                <path d="M6.1 6.1A10.4 10.4 0 0 0 2 12c1.5 3 4.4 5.8 8 6.5" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="password-field">
+                                    <label data-i18n="confirm_password">Confirm New Password</label>
+                                    <div class="password-input-wrap">
+                                        <input type="password" name="confirm_password" placeholder="••••••••" autocomplete="new-password">
+                                        <button type="button" class="password-visibility-toggle" data-target="confirm_password" aria-label="Show confirmation password" title="Show password" data-show-title="show_password" data-hide-title="hide_password">
+                                            <svg class="icon-show" viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                                <circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="2"></circle>
+                                            </svg>
+                                            <svg class="icon-hide" viewBox="0 0 24 24" aria-hidden="true" hidden>
+                                                <path d="M3 3l18 18" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                                <path d="M10.6 10.6A3 3 0 0 0 13.4 13.4" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                                <path d="M9.9 5.2A10.5 10.5 0 0 1 22 12c-1.1 2.2-2.8 4.1-4.9 5.4" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                                <path d="M6.1 6.1A10.4 10.4 0 0 0 2 12c1.5 3 4.4 5.8 8 6.5" fill="none" stroke="currentColor" stroke-width="2"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
 
-                    <div class="toggle-item">
-                        <div class="toggle-label">
-                            <span data-i18n="sms_notif">SMS Notifications</span>
-                            <p class="toggle-desc" data-i18n="sms_notif_desc">Critical alerts via SMS</p>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" name="sms_notifications" {{ 'checked' if settings.sms_notifications else '' }}>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Security Section -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <h3 class="section-title"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> <span data-i18n="security">Security</span></h3>
-                </div>
-
-                <div class="settings-group">
-                    <div class="password-field">
-                        <label data-i18n="current_password">Current Password</label>
-                        <input type="password" placeholder="••••••••">
-                    </div>
-                    <div class="password-field">
-                        <label data-i18n="new_password">New Password</label>
-                        <input type="password" placeholder="••••••••">
-                    </div>
-                    <div class="password-field">
-                        <label data-i18n="confirm_password">Confirm New Password</label>
-                        <input type="password" placeholder="••••••••">
-                    </div>
-                </div>
-
-                <button class="btn btn-primary" data-i18n="update_password">Update Password</button>
-
-                <div class="settings-group" style="margin-top: 2rem;">
-                    <p class="security-info" data-i18n="two_factor_info">Two-Factor Authentication</p>
-                    <button class="btn btn-secondary" data-i18n="enable_2fa">Enable 2FA</button>
-                </div>
-            </div>
-
-            <!-- Appearance Section -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <h3 class="section-title">🎨 <span data-i18n="appearance">Appearance</span></h3>
-                </div>
-
-                <div class="settings-group">
-                    <div class="toggle-item">
-                        <div class="toggle-label">
-                            <span data-i18n="dark_mode">Dark Mode</span>
-                            <p class="toggle-desc" data-i18n="dark_mode_desc">Use dark theme</p>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" name="dark_mode" {{ 'checked' if settings.dark_mode else '' }}>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label data-i18n="language">Language</label>
-                        <select name="language">
-                            <option value="en" {% if settings.language == 'en' %}selected{% endif %}>English</option>
-                            <option value="ar" {% if settings.language == 'ar' %}selected{% endif %}>العربية</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Privacy & Data Section -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <h3 class="section-title"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> <span data-i18n="privacy_data">Privacy & Data</span></h3>
-                </div>
-
-                <div class="settings-group">
-                    <div class="toggle-item">
-                        <div class="toggle-label">
-                            <span data-i18n="data_analytics">Data Analytics</span>
-                            <p class="toggle-desc" data-i18n="data_analytics_desc">Help improve our services</p>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="toggle-item">
-                        <div class="toggle-label">
-                            <span data-i18n="research">Research</span>
-                            <p class="toggle-desc" data-i18n="research_desc">Share data for research</p>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="settings-group" style="margin-top: 2rem;">
-                    <button class="btn btn-secondary" data-i18n="download_data">
-                        📥 Download My Data
-                    </button>
-                    <button class="btn btn-danger" data-i18n="delete_account">
-                        🗑️ Delete Account
-                    </button>
-                </div>
-            </div>
-
-            <!-- About Section -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <h3 class="section-title">ℹ️ <span data-i18n="about">About</span></h3>
-                </div>
-
-                <div class="about-info">
-                    <p><strong data-i18n="app_version">Application Version:</strong> 2.1</p>
-                    <p><strong data-i18n="last_update">Last Update:</strong> January 2026</p>
-                    <p><strong data-i18n="api_version">API Version:</strong> 1.0</p>
-                    <a href="#" data-i18n="view_license">View License</a> • 
-                    <a href="#" data-i18n="view_privacy">View Privacy Policy</a> • 
-                    <a href="#" data-i18n="view_terms">View Terms of Service</a>
-                </div>
-            </div>
+                </form>
         </div>
-        </form>
-        </div>
+    </main>
     </div>
 
-    <!-- Scripts -->
+    <script>
+        (function syncSettingsThemeAndLanguage() {
+            const savedTheme = {{ '"light"' if not settings.dark_mode else '"dark"' }};
+            const savedLanguage = {{ settings.language|tojson }};
+            localStorage.setItem('theme', savedTheme);
+            localStorage.setItem('language', savedLanguage);
+            document.documentElement.lang = savedLanguage;
+            document.documentElement.dir = savedLanguage === 'ar' ? 'rtl' : 'ltr';
+        })();
+    </script>
+
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <script src="{{ url_for('static', filename='js/language.js') }}"></script>
     <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
+
+    <script>
+        let isSavingPreferences = false;
+
+        function t(key, fallback) {
+            if (window.languageManager && typeof window.languageManager.getText === 'function') {
+                return window.languageManager.getText(key) || fallback;
+            }
+            return fallback;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('settingsForm');
+            if (!form) {
+                return;
+            }
+
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                await saveSettings(form);
+            });
+
+            const themeToggle = document.querySelector('.theme-toggle');
+            const languageToggle = document.querySelector('.language-toggle');
+            const darkModeInput = form.querySelector('input[name="dark_mode"]');
+            const languageSelect = form.querySelector('select[name="language"]');
+            let preferenceSyncTimer = null;
+            let autoSaveTimer = null;
+
+            const syncPreferencesFromToolbar = () => {
+                if (darkModeInput) {
+                    darkModeInput.checked = (localStorage.getItem('theme') || 'dark') !== 'light';
+                }
+                if (languageSelect) {
+                    languageSelect.value = localStorage.getItem('language') || 'en';
+                }
+            };
+
+            const saveToolbarPreferences = () => {
+                window.clearTimeout(preferenceSyncTimer);
+                preferenceSyncTimer = window.setTimeout(async () => {
+                    syncPreferencesFromToolbar();
+                    await saveSettings(form);
+                }, 180);
+            };
+
+            const scheduleAutoSave = (delay = 400) => {
+                window.clearTimeout(autoSaveTimer);
+                autoSaveTimer = window.setTimeout(async () => {
+                    if (isSavingPreferences) {
+                        return;
+                    }
+
+                    const currentPassword = (form.querySelector('input[name="current_password"]').value || '').trim();
+                    const newPassword = (form.querySelector('input[name="new_password"]').value || '').trim();
+                    const confirmPassword = (form.querySelector('input[name="confirm_password"]').value || '').trim();
+                    const passwordFieldsTouched = currentPassword || newPassword || confirmPassword;
+
+                    if (passwordFieldsTouched && (!currentPassword || !newPassword || !confirmPassword)) {
+                        return;
+                    }
+
+                    await saveSettings(form);
+                }, delay);
+            };
+
+            const autoSaveFields = form.querySelectorAll(
+                'input[name="first_name"], input[name="last_name"], input[name="email"]'
+            );
+
+            autoSaveFields.forEach((field) => {
+                field.addEventListener('change', () => scheduleAutoSave(250));
+            });
+
+            const passwordFields = form.querySelectorAll(
+                'input[name="current_password"], input[name="new_password"], input[name="confirm_password"]'
+            );
+            const savePasswordButton = document.getElementById('savePasswordButton');
+
+            const passwordVisibilityButtons = form.querySelectorAll('.password-visibility-toggle');
+
+            const updatePasswordActionState = () => {
+                if (!savePasswordButton) {
+                    return;
+                }
+
+                const currentPassword = (form.querySelector('input[name="current_password"]').value || '').trim();
+                const newPassword = (form.querySelector('input[name="new_password"]').value || '').trim();
+                const confirmPassword = (form.querySelector('input[name="confirm_password"]').value || '').trim();
+                const hasAnyPasswordInput = currentPassword || newPassword || confirmPassword;
+                const hasAllPasswordInputs = currentPassword && newPassword && confirmPassword;
+
+                savePasswordButton.disabled = !hasAllPasswordInputs;
+                savePasswordButton.classList.toggle('is-armed', hasAnyPasswordInput);
+            };
+
+            passwordVisibilityButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    const targetName = button.getAttribute('data-target');
+                    const targetInput = form.querySelector(`input[name="${targetName}"]`);
+                    if (!targetInput) {
+                        return;
+                    }
+
+                    const nextType = targetInput.type === 'password' ? 'text' : 'password';
+                    targetInput.type = nextType;
+                    button.classList.toggle('is-visible', nextType === 'text');
+
+                    const showIcon = button.querySelector('.icon-show');
+                    const hideIcon = button.querySelector('.icon-hide');
+                    if (showIcon && hideIcon) {
+                        showIcon.hidden = nextType === 'text';
+                        hideIcon.hidden = nextType !== 'text';
+                    }
+
+                    const titleKey = nextType === 'text' ? button.getAttribute('data-hide-title') : button.getAttribute('data-show-title');
+                    const translatedTitle = t(titleKey, nextType === 'text' ? 'Hide password' : 'Show password');
+                    button.setAttribute('aria-label', translatedTitle);
+                    button.title = translatedTitle;
+                });
+            });
+
+            passwordFields.forEach((field) => {
+                field.addEventListener('input', () => {
+                    updatePasswordActionState();
+                });
+            });
+
+            updatePasswordActionState();
+
+            if (savePasswordButton) {
+                savePasswordButton.addEventListener('click', async () => {
+                    await saveSettings(form, { passwordOnly: true });
+                });
+            }
+
+            if (darkModeInput) {
+                darkModeInput.addEventListener('change', () => {
+                    const nextTheme = darkModeInput.checked ? 'dark' : 'light';
+                    localStorage.setItem('theme', nextTheme);
+                    if (window.themeManager && typeof window.themeManager.applyTheme === 'function') {
+                        window.themeManager.currentTheme = nextTheme;
+                        window.themeManager.applyTheme(nextTheme);
+                        window.themeManager.updateThemeIcon();
+                    } else {
+                        document.body.classList.toggle('light-mode', nextTheme === 'light');
+                        document.body.classList.toggle('theme-dark', nextTheme === 'dark');
+                    }
+                    saveToolbarPreferences();
+                });
+            }
+
+            if (languageSelect) {
+                languageSelect.addEventListener('change', () => {
+                    const nextLanguage = languageSelect.value || 'en';
+                    localStorage.setItem('language', nextLanguage);
+                    document.documentElement.lang = nextLanguage;
+                    document.documentElement.dir = nextLanguage === 'ar' ? 'rtl' : 'ltr';
+                    if (window.languageManager && typeof window.languageManager.applyLanguage === 'function') {
+                        window.languageManager.currentLanguage = nextLanguage;
+                        window.languageManager.applyLanguage(nextLanguage);
+                        window.languageManager.updateLanguageIcon();
+                    }
+                    saveToolbarPreferences();
+                });
+            }
+
+            window.addEventListener('themeChanged', () => {
+                syncPreferencesFromToolbar();
+                if (!isSavingPreferences) {
+                    saveToolbarPreferences();
+                }
+            });
+
+            window.addEventListener('languageChanged', () => {
+                syncPreferencesFromToolbar();
+                if (!isSavingPreferences) {
+                    saveToolbarPreferences();
+                }
+            });
+        });
+
+        async function saveSettings(form, options = {}) {
+            const formData = new FormData(form);
+            const currentPassword = (formData.get('current_password') || '').trim();
+            const newPassword = (formData.get('new_password') || '').trim();
+            const confirmPassword = (formData.get('confirm_password') || '').trim();
+            const passwordOnly = Boolean(options.passwordOnly);
+
+            if ((currentPassword || newPassword || confirmPassword) && !currentPassword) {
+                showNotification(t('current_password_required', 'Please enter your current password to change your password.'), 'error');
+                return;
+            }
+
+            if ((newPassword || confirmPassword) && newPassword !== confirmPassword) {
+                showNotification(t('password_mismatch', 'New password and confirmation do not match.'), 'error');
+                return;
+            }
+
+            if (newPassword || confirmPassword || currentPassword) {
+                const policyMessage = t('password_policy_message', 'Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.');
+                const policyMatches = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/;
+                if (newPassword && !policyMatches.test(newPassword)) {
+                    showNotification(policyMessage, 'error');
+                    return;
+                }
+            }
+
+            if (passwordOnly && (!currentPassword || !newPassword || !confirmPassword)) {
+                showNotification(t('complete_password_fields', 'Please complete all password fields before saving.'), 'error');
+                return;
+            }
+
+            const payload = {
+                first_name: (formData.get('first_name') || '').trim(),
+                last_name: (formData.get('last_name') || '').trim(),
+                email: (formData.get('email') || '').trim(),
+                current_password: currentPassword,
+                new_password: newPassword,
+                confirm_password: confirmPassword,
+                dark_mode: form.querySelector('input[name="dark_mode"]').checked,
+                language: form.querySelector('select[name="language"]').value || 'en'
+            };
+
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalText = submitButton ? submitButton.textContent : '';
+
+            try {
+                isSavingPreferences = true;
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Saving...';
+                }
+
+                const response = await fetch('/api/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    localStorage.setItem('theme', payload.dark_mode ? 'dark' : 'light');
+                    localStorage.setItem('language', payload.language);
+                    document.body.classList.toggle('light-mode', !payload.dark_mode);
+                    document.body.classList.toggle('theme-dark', payload.dark_mode);
+                    document.documentElement.lang = payload.language;
+                    document.documentElement.dir = payload.language === 'ar' ? 'rtl' : 'ltr';
+                    if (passwordOnly) {
+                        form.querySelector('input[name="current_password"]').value = '';
+                        form.querySelector('input[name="new_password"]').value = '';
+                        form.querySelector('input[name="confirm_password"]').value = '';
+                        updatePasswordActionState();
+                    }
+                    showNotification(t('settings_saved', 'Settings updated successfully!'), 'success');
+                    return;
+                }
+
+                showNotification(t('error_prefix', 'Error: ') + (data.message || t('settings_save_failed', 'Failed to save settings')), 'error');
+            } catch (error) {
+                showNotification(t('unexpected_error_prefix', 'An error occurred: ') + error.message, 'error');
+            } finally {
+                isSavingPreferences = false;
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
+                }
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `flash-message flash-${type}`;
+            notification.innerHTML = `
+                <span class="flash-copy">${message}</span>
+                <button class="flash-close" type="button" aria-label="Close notification" onclick="this.parentElement.remove()">&times;</button>
+            `;
+
+            let container = document.getElementById('notificationContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'notificationContainer';
+                container.className = 'notification-container';
+                document.body.prepend(container);
+            }
+
+            container.appendChild(notification);
+            window.setTimeout(() => {
+                notification.classList.add('is-hidden');
+                window.setTimeout(() => notification.remove(), 260);
+            }, 3800);
+        }
+    </script>
 </body>
 </html>
