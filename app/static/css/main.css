@@ -11,14 +11,27 @@ Design System with Dark/Light Theme Support
     /* Dark Mode (default) - Professional Medical Color Scheme */
     --bg-dark: #0A0E27;
     --bg-light: #E8F4FF;
+    --bg-secondary: #151C3A;
     --text-primary: #F0F4FB;
     --text-secondary: #A0B4D4;
+    --card-bg: rgba(20, 28, 58, 0.8);
+    --input-bg: rgba(10, 14, 39, 0.9);
+    --input-bg-focus: rgba(20, 28, 58, 0.95);
     --accent-glow: #00D9FF;
     --accent-secondary: #0099CC;
     --accent-tertiary: #FF2E63;
     --border-color: #1E3A4E;
     --heart-color: #FF2E63;
     --heart-glow: #FF6B9D;
+    --header-bg: linear-gradient(135deg, rgba(8, 18, 40, 0.96), rgba(12, 28, 55, 0.95));
+    --header-border: rgba(0, 217, 255, 0.18);
+    --header-shadow: 0 18px 45px rgba(0, 95, 176, 0.22);
+    --card-hover-bg: rgba(0, 217, 255, 0.12);
+    --card-hover-shadow: 0 15px 40px rgba(0, 217, 255, 0.22);
+    --card-shadow: 0 18px 45px rgba(0, 96, 178, 0.08);
+    --card-border: rgba(0, 217, 255, 0.14);
+    --card-icon-bg: rgba(0, 217, 255, 0.05);
+    --card-icon-border: rgba(0, 217, 255, 0.1);
     
     /* Semantic colors */
     --success: #00D98E;
@@ -43,22 +56,60 @@ Design System with Dark/Light Theme Support
     --transition-smooth: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
+/* Light Mode */
 body.light-mode {
     --bg-dark: #F8FBFF;
     --bg-light: #0A0E27;
+    --bg-secondary: #E8F4FF;
     --text-primary: #0A0E27;
     --text-secondary: #4A5F7F;
+    --card-bg: rgba(248, 251, 255, 0.95);
+    --input-bg: rgba(255, 255, 255, 0.9);
+    --input-bg-focus: rgba(232, 244, 255, 0.95);
     --accent-glow: #0099CC;
     --accent-secondary: #00D9FF;
     --border-color: #CDE4F4;
+    --header-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(233, 244, 255, 0.95));
+    --header-border: rgba(29, 83, 130, 0.14);
+    --header-shadow: 0 18px 45px rgba(20, 90, 140, 0.12);
+    --card-hover-bg: rgba(255, 255, 255, 0.85);
+    --card-hover-shadow: 0 15px 40px rgba(12, 41, 76, 0.08);
+    --card-shadow: 0 18px 45px rgba(12, 41, 76, 0.08);
+    --card-border: rgba(205, 228, 244, 0.9);
+    --card-icon-bg: rgba(0, 217, 255, 0.04);
+    --card-icon-border: rgba(0, 217, 255, 0.06);
 }
 /* here */
 body.light-mode .intro-container {
-    background: linear-gradient(180deg, #F8FBFF 0%, rgba(250, 253, 254, 0.8) 100%);
+    background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-secondary) 100%);
+}
+
+/* Ensure body always has proper background */
+body {
+    background-color: var(--bg-dark) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Force dashboard elements to use theme variables */
+.dashboard-container {
+    background-color: var(--bg-dark) !important;
+}
+
+.dashboard-content {
+    background-color: var(--bg-dark) !important;
 }
 
 body.rtl {
     direction: rtl;
+    text-align: right;
+}
+
+/* RTL specific adjustments */
+body.rtl .app-bar-right {
+    flex-direction: row-reverse;
+}
+
+body.rtl .login-form input {
     text-align: right;
 }
 
@@ -2424,9 +2475,9 @@ body.rtl .pipeline-arrow {
 
 /* ========== ASSESSMENT PAGE LIGHT MODE OVERRIDES ========== */
 body.light-mode .result-item {
-    background: linear-gradient(135deg, rgba(250, 250, 250, 0.95), rgba(245, 245, 245, 0.95));
+    background: var(--card-bg);
 }
 
 body.light-mode .assessment-card {
-    background: linear-gradient(135deg, rgba(250, 250, 250, 0.95), rgba(245, 245, 245, 0.95));
+    background: var(--card-bg);
 }

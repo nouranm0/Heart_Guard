@@ -1,6 +1,6 @@
 # app/doctor/routes.py
-from werkzeug.security import generate_password_hash
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, g
+from flask_babel import get_locale, Babel
 from app.models import db, User, Patient, ECGRecord, Alert, UserSettings
 from werkzeug.security import check_password_hash
 import os
@@ -11,27 +11,42 @@ from datetime import datetime
 doctor_bp = Blueprint('doctor', __name__)
 ECHONEXT_MODEL = "model/weights.pt"
 
-# -----------------------------------------
-# Splash page -> redirect to login
-@doctor_bp.route('/')
-def splash_redirect():
-    return redirect(url_for('doctor.login'))
+@doctor_bp.url_defaults
+def add_language_code(endpoint, values):
+    values.setdefault('lang_code', g.get('lang_code', 'en'))
+
+@doctor_bp.url_value_preprocessor
+def pull_lang_code(endpoint, values):
+    g.lang_code = values.pop('lang_code', 'en')
+
+@doctor_bp.before_request
+def before_request():
+    g.lang_code = request.args.get('lang', session.get('lang', 'en'))
+    session['lang'] = g.lang_code
 
 # -----------------------------------------
-# Login page
+# Splash page -> render splash screen
+@doctor_bp.route('/')
+def splash_redirect():
+    return redirect(url_for('doctor.splash'))
+
+@doctor_bp.route('/set_language/<lang>')
+def set_language(lang):
+    session['lang'] = lang
+    return redirect(request.referrer or url_for('doctor.dashboard'))
 @doctor_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        
 
         user = User.query.filter_by(email=email).first()
         if user and check_password_hash(user.password_hash, password):
             session['user_id'] = user.id
             session['role'] = user.role
             flash('Login successful!', 'success')
-            return redirect(url_for('doctor.intro'))
+            # Both admin and doctor go to dashboard (render_template handles the difference)
+            return redirect(url_for('doctor.dashboard'))
         else:
             flash('Invalid email or password', 'error')
             return redirect(url_for('doctor.login'))
@@ -121,9 +136,9 @@ def splash():
 # Intro page
 @doctor_bp.route('/intro')
 def intro():
-    if 'user_id' not in session:
-        return redirect(url_for('doctor.login'))
-    user = User.query.get(session['user_id'])
+    user = None
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])
     return render_template('intro.html', user=user)
 
 # -----------------------------------------
@@ -170,17 +185,29 @@ def doctor_dashboard():
                 )
             )
         doctors = doctors_query.all()
+        
+        # Add patient count and ECG count for each doctor
+        for doctor in doctors:
+            doctor.patient_count = Patient.query.filter_by(doctor_id=doctor.id).count()
+            doctor.ecg_count = db.session.query(db.func.count(ECGRecord.id)).filter(
+                ECGRecord.doctor_id == doctor.id
+            ).scalar() or 0
+            print(f"[DOCTOR LIST] Doctor: {doctor.username}, ID: {doctor.id}, Type: {type(doctor.id).__name__}")
+            print(f"[DOCTOR LIST] Doctor ID: {doctor.id}, Type: {type(doctor)}, Has id attr: {hasattr(doctor, 'id')}, Username: {doctor.username}, Email: {doctor.email}")
 
-        patients = Patient.query.all()  # Need all patients for counting per doctor
+        print(f"[DOCTOR LIST] Total doctors: {len(doctors)}")
+        print(f"[DOCTOR LIST] First doctor: {doctors[0] if doctors else 'None'}")
+        if doctors:
+            print(f"[DOCTOR LIST] First doctor ID value: {doctors[0].id}")
+            print(f"[DOCTOR LIST] First doctor ID type: {type(doctors[0].id)}")
+        
         return render_template(
-            'doctor_dashboard.html',
+            'doctors_list.html',
             user=user,
             doctors=doctors,
-            patients=patients,
             is_admin=True,
             current_date=datetime.utcnow().date(),
-            query=query,
-            risk_filter=risk_filter
+            query=query
         )
     else:
         # If admin viewing specific doctor, or doctor viewing own
@@ -213,6 +240,7 @@ def doctor_dashboard():
             'doctor_dashboard.html',
             user=user,
             patients=patients,
+            doctor=user,
             viewed_doctor=viewed_doctor,
             is_admin=user.role == 'admin' and not view_doctor_id,
             is_viewing_doctor=bool(view_doctor_id),
@@ -260,9 +288,9 @@ def all_patients():
     # Assign risk levels
     for p in patients:
         assessment_count = len(p.ecg_records)
-        if assessment_count >= 3:
+        if assessment_count >= 5:
             p.risk = 'high'
-        elif assessment_count >= 1:
+        elif assessment_count >= 2:
             p.risk = 'medium'
         else:
             p.risk = 'low'
@@ -285,6 +313,7 @@ def all_patients():
         'all_patients.html',
         user=user,
         patients=patients,
+        doctors=User.query.filter_by(role='doctor').all(),
         query=query,
         risk_filter=risk_filter,
         sort_by=sort_by,
@@ -328,6 +357,8 @@ def add_patient():
         flash('Only doctors can add patients.', 'error')
         return redirect(url_for('doctor.intro'))
     
+    user = User.query.get(session['user_id'])
+    
     if request.method == 'POST':
         name = request.form.get('name')
         phone = request.form.get('phone')
@@ -338,19 +369,27 @@ def add_patient():
             flash('Patient name is required.', 'error')
             return redirect(url_for('doctor.add_patient'))
         
-        patient = Patient(
-            name=name,
-            phone=phone,
-            gender=gender,
-            birthday=birthday if birthday else None,
-            doctor_id=session['user_id']
-        )
-        db.session.add(patient)
-        db.session.commit()
-        flash('Patient added successfully!', 'success')
-        return redirect(url_for('doctor.add_patient'))
+        try:
+            from datetime import datetime
+            patient = Patient(
+                name=name,
+                phone=phone,
+                gender=gender,
+                birthday=datetime.fromisoformat(birthday).date() if birthday else None,
+                doctor_id=session['user_id']
+            )
+            db.session.add(patient)
+            db.session.commit()
+            print(f"[ADD PATIENT] Patient '{name}' added by doctor {user.username} (ID: {user.id})")
+            flash('تم إضافة المريض بنجاح ✓', 'success')
+            return redirect(url_for('doctor.add_patient'))
+        except Exception as e:
+            db.session.rollback()
+            print(f"[ADD PATIENT] ERROR: {str(e)}")
+            flash(f'حدث خطأ: {str(e)}', 'error')
+            return redirect(url_for('doctor.add_patient'))
     
-    return render_template('add_patient.html')
+    return render_template('add_patient.html', user=user)
 
 # -----------------------------------------
 # New assessment page
@@ -529,6 +568,7 @@ def new_assessment():
 
     return render_template(
         "new_assessment.html",
+        user=User.query.get(user_id),
         results=all_results,
         top_diagnosis=top_diagnosis,
         top_confidence=top_confidence,
@@ -559,7 +599,7 @@ def view_patient_details(patient_id):
 
 # -----------------------------------------
 # View Assessment Results
-@doctor_bp.route('/assessment/<int:assessment_id>', methods=['GET', 'POST'])
+@doctor_bp.route('/assessment/<int:assessment_id>')
 def view_assessment(assessment_id):
     if 'user_id' not in session:
         return redirect(url_for('doctor.login'))
@@ -573,29 +613,6 @@ def view_assessment(assessment_id):
         flash('Access denied.', 'error')
         return redirect(url_for('doctor.doctor_dashboard'))
     
-    if request.method == 'POST':
-        action = request.form.get('action')
-        if action == 'approve':
-            assessment.doctor_approved = True
-            assessment.doctor_diagnosis = assessment.top_diagnosis  # Use AI diagnosis
-            assessment.doctor_note = None
-            assessment.approved_at = datetime.utcnow()
-            db.session.commit()
-            flash('Assessment approved successfully!', 'success')
-        elif action == 'manual':
-            manual_diagnosis = request.form.get('manual_diagnosis', '').strip()
-            doctor_note = request.form.get('doctor_note', '').strip()
-            if not manual_diagnosis:
-                flash('Please select or enter a diagnosis.', 'error')
-                return redirect(url_for('doctor.view_assessment', assessment_id=assessment_id))
-            assessment.doctor_approved = True
-            assessment.doctor_diagnosis = manual_diagnosis
-            assessment.doctor_note = doctor_note if doctor_note else None
-            assessment.approved_at = datetime.utcnow()
-            db.session.commit()
-            flash('Manual diagnosis saved successfully!', 'success')
-        return redirect(url_for('doctor.view_assessment', assessment_id=assessment_id))
-    
     return render_template('assessment_results.html', assessment=assessment, patient=patient, user=user)
 
 # -----------------------------------------  
@@ -604,9 +621,96 @@ def view_assessment(assessment_id):
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('doctor.login'))
-    return redirect(url_for('doctor.doctor_dashboard'))
 
-# -----------------------------------------
+    user_id = session['user_id']
+    user = User.query.get(user_id)
+
+    # If admin, show system statistics
+    if user.role == 'admin':
+        total_doctors = db.session.query(db.func.count(User.id)).filter_by(role='doctor').scalar() or 0
+        total_patients = db.session.query(db.func.count(Patient.id)).scalar() or 0
+        total_ecg_records = db.session.query(db.func.count(ECGRecord.id)).scalar() or 0
+        
+        # Calculate risk levels
+        patients = Patient.query.all()
+        high_risk_count = 0
+        medium_risk_count = 0
+        low_risk_count = 0
+        
+        for patient in patients:
+            ecg_count = len(patient.ecg_records)
+            if ecg_count >= 5:
+                high_risk_count += 1
+            elif ecg_count >= 2:
+                medium_risk_count += 1
+            else:
+                low_risk_count += 1
+        
+        # Recent alerts
+        try:
+            recent_alerts = Alert.query.order_by(Alert.created_at.desc()).limit(5).all()
+        except:
+            recent_alerts = []
+        
+        return render_template(
+            'dashboard.html',
+            user=user,
+            is_admin=True,
+            total_doctors=total_doctors,
+            total_patients=total_patients,
+            total_ecg_records=total_ecg_records,
+            high_risk_count=high_risk_count,
+            medium_risk_count=medium_risk_count,
+            low_risk_count=low_risk_count,
+            recent_alerts=recent_alerts,
+            current_date=datetime.utcnow().date()
+        )
+
+    # Doctor view: get patient data
+    patient_id = request.args.get('patient_id', type=int)
+    patient = None
+
+    if patient_id:
+        patient = Patient.query.get(patient_id)
+        if not patient or (user.role != 'admin' and patient.doctor_id != user_id):
+            flash('Patient not found or access denied.', 'error')
+            return redirect(url_for('doctor.doctor_dashboard'))
+    else:
+        if user.role == 'doctor':
+            patient = Patient.query.filter_by(doctor_id=user_id).order_by(Patient.created_at.desc()).first()
+        else:
+            patient = Patient.query.order_by(Patient.created_at.desc()).first()
+
+    if not patient:
+        flash('No patient data available yet. Please add a patient first.', 'info')
+        return redirect(url_for('doctor.doctor_dashboard'))
+
+    latest_assessment = ECGRecord.query.filter_by(patient_id=patient.id).order_by(ECGRecord.created_at.desc()).first()
+    heart_rate = None
+    blood_pressure = None
+    temperature = None
+    breathing_rate = None
+
+    if latest_assessment and latest_assessment.full_results:
+        results = latest_assessment.full_results or {}
+        heart_rate = results.get('heart_rate') or results.get('HR') or results.get('hr')
+        blood_pressure = results.get('blood_pressure') or results.get('BP') or results.get('blood_pressure_mm')
+        temperature = results.get('temperature') or results.get('temp') or results.get('body_temperature')
+        breathing_rate = results.get('breathing_rate') or results.get('respiration_rate') or results.get('resp_rate')
+
+    return render_template(
+        'dashboard.html',
+        patient=patient,
+        latest_assessment=latest_assessment,
+        heart_rate=heart_rate,
+        blood_pressure=blood_pressure,
+        temperature=temperature,
+        breathing_rate=breathing_rate,
+        user=user,
+        is_admin=False,
+        current_date=datetime.utcnow().date()
+    )
+
 # Helper function to create alerts
 def create_alert(user_id, patient_id, alert_type, title, message):
     alert = Alert(
@@ -628,14 +732,18 @@ def alerts():
         return redirect(url_for('doctor.login'))
 
     user = User.query.get(session['user_id'])
-
-    if user.role == 'admin':
-        alerts_list = Alert.query.order_by(Alert.created_at.desc()).all()
-    else:
-        patient_ids = [p.id for p in user.patients]
-        alerts_list = Alert.query.filter(
-            db.or_(Alert.user_id == user.id, Alert.patient_id.in_(patient_ids))
-        ).order_by(Alert.created_at.desc()).all()
+    alerts_list = []
+    
+    try:
+        if user.role == 'admin':
+            alerts_list = Alert.query.order_by(Alert.created_at.desc()).all()
+        else:
+            patient_ids = [p.id for p in user.patients]
+            alerts_list = Alert.query.filter(
+                db.or_(Alert.user_id == user.id, Alert.patient_id.in_(patient_ids))
+            ).order_by(Alert.created_at.desc()).all()
+    except:
+        alerts_list = []
 
     return render_template('alerts.html', user=user, alerts=alerts_list)
 
@@ -685,11 +793,15 @@ def settings():
         return redirect(url_for('doctor.login'))
 
     user = User.query.get(session['user_id'])
-    user_settings = UserSettings.query.filter_by(user_id=user.id).first()
-    if not user_settings:
-        user_settings = UserSettings(user_id=user.id)
-        db.session.add(user_settings)
-        db.session.commit()
+    user_settings = None
+    try:
+        user_settings = UserSettings.query.filter_by(user_id=user.id).first()
+        if not user_settings:
+            user_settings = UserSettings(user_id=user.id)
+            db.session.add(user_settings)
+            db.session.commit()
+    except:
+        user_settings = None
 
     return render_template('settings.html', user=user, settings=user_settings)
 
