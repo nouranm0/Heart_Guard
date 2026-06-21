@@ -50,10 +50,6 @@ class ECGRecord(db.Model):
     top_diagnosis = db.Column(db.String(255))
     top_confidence = db.Column(db.Float)
     full_results = db.Column(db.JSON)
-    doctor_approved = db.Column(db.Boolean, default=False)
-    doctor_diagnosis = db.Column(db.Text)
-    doctor_note = db.Column(db.Text)
-    approved_at = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     patient = db.relationship('Patient', backref='ecg_records')

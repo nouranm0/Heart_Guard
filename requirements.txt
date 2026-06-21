@@ -1,0 +1,14 @@
+Flask
+Flask-SQLAlchemy
+PyMySQL
+Werkzeug
+numpy
+pandas
+scipy
+scikit-learn
+torch
+torchvision
+matplotlib
+seaborn
+joblib
+Flask-Babel

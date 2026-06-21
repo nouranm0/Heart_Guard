@@ -32,8 +32,12 @@ class ThemeManager {
         const body = document.body;
         if (theme === 'light') {
             body.classList.add('light-mode');
+            body.classList.remove('theme-dark');
+            document.documentElement.style.colorScheme = 'light';
         } else {
             body.classList.remove('light-mode');
+            body.classList.add('theme-dark');
+            document.documentElement.style.colorScheme = 'dark';
         }
     }
 
@@ -41,10 +45,10 @@ class ThemeManager {
         const themeToggle = document.querySelector('.theme-toggle');
         if (themeToggle) {
             if (this.currentTheme === 'light') {
-                themeToggle.textContent = '🌙';
+                themeToggle.innerHTML = '🌙';
                 themeToggle.title = 'Switch to Dark Mode';
             } else {
-                themeToggle.textContent = '☀️';
+                themeToggle.innerHTML = '☀️';
                 themeToggle.title = 'Switch to Light Mode';
             }
         }

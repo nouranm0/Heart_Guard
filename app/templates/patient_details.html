@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ patient.name }} - Patient Details - HEARTGAURD</title>
+    <title data-i18n="patient_details_title">{{ patient.name }} - Patient Details - HEARTGAURD</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,10 +13,10 @@
     <nav class="app-bar">
         <div class="app-bar-left">
             <button class="back-button" onclick="window.location.href='/doctor-dashboard'">←</button>
-            <h1 class="page-title">{{ patient.name }} - Patient Details</h1>
+            <h1 class="page-title">{{ patient.name }} - <span data-i18n="patient_details">Patient Details</span></h1>
         </div>
         <div class="app-bar-right">
-            <button class="theme-toggle" title="Toggle Theme">
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="5"></circle>
                     <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -29,7 +29,7 @@
                     <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                 </svg>
             </button>
-            <button class="language-toggle" title="Toggle Language">ع</button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
         </div>
     </nav>
 
@@ -44,7 +44,7 @@
                 <div class="patient-header-info">
                     <h1>{{ patient.name }}</h1>
                     {% if patient.birthday %}
-                        <p class="patient-age">{{ ((current_date - patient.birthday).days // 365) }} years old</p>
+                        <p class="patient-age"><span data-i18n-content>{{ ((current_date - patient.birthday).days // 365) }}</span> <span data-i18n="years_old">years old</span></p>
                     {% endif %}
                 </div>
             </div>
@@ -52,22 +52,22 @@
             <div class="patient-info-grid">
                 <div class="info-card">
                     <span class="info-icon">👤</span>
-                    <span class="info-label">Gender</span>
-                    <span class="info-value">{{ patient.gender or 'Not specified' }}</span>
+                    <span class="info-label" data-i18n="gender">Gender</span>
+                    <span class="info-value">{% if patient.gender %}{{ patient.gender }}{% else %}<span data-i18n="not_specified">Not specified</span>{% endif %}</span>
                 </div>
                 <div class="info-card">
                     <span class="info-icon">📞</span>
-                    <span class="info-label">Phone</span>
-                    <span class="info-value">{{ patient.phone or 'Not provided' }}</span>
+                    <span class="info-label" data-i18n="phone">Phone</span>
+                    <span class="info-value">{% if patient.phone %}{{ patient.phone }}{% else %}<span data-i18n="not_provided">Not provided</span>{% endif %}</span>
                 </div>
                 <div class="info-card">
                     <span class="info-icon">📅</span>
-                    <span class="info-label">Registered</span>
+                    <span class="info-label" data-i18n="registered">Registered</span>
                     <span class="info-value">{{ patient.created_at.strftime('%b %d, %Y') }}</span>
                 </div>
                 <div class="info-card">
                     <span class="info-icon">📊</span>
-                    <span class="info-label">Total Assessments</span>
+                    <span class="info-label" data-i18n="total_assessments">Total Assessments</span>
                     <span class="info-value">{{ assessments|length }}</span>
                 </div>
             </div>
@@ -75,7 +75,7 @@
 
         <!-- Assessment History -->
         <section class="assessment-history">
-            <h2>Assessment History</h2>
+            <h2 data-i18n="assessment_history">Assessment History</h2>
             {% if assessments %}
                 <div class="assessments-timeline">
                     {% for assessment in assessments %}
@@ -91,22 +91,22 @@
                             </div>
                             <div class="assessment-body">
                                 <div class="diagnosis-box">
-                                    <p class="diagnosis-label">Top Diagnosis</p>
-                                    <p class="diagnosis-result">{{ assessment.top_diagnosis or 'N/A' }}</p>
+                                    <p class="diagnosis-label" data-i18n="top_diagnosis">Top Diagnosis</p>
+                                    <p class="diagnosis-result">{% if assessment.top_diagnosis %}{{ assessment.top_diagnosis }}{% else %}<span data-i18n="not_available">N/A</span>{% endif %}</p>
                                     {% if assessment.top_confidence %}
                                         <div class="confidence-bar" style="--confidence: {{ (assessment.top_confidence * 100)|round(1) }}%">
                                             <div class="confidence-fill"></div>
                                         </div>
-                                        <p class="confidence-text">Confidence: {{ (assessment.top_confidence * 100)|round(1) }}%</p>
+                                        <p class="confidence-text"><span data-i18n="confidence">Confidence</span>: {{ (assessment.top_confidence * 100)|round(1) }}%</p>
                                     {% endif %}
                                 </div>
                                 <div class="assessment-meta">
-                                    <p><strong>File Size:</strong> {{ (assessment.file_size / 1024)|round(2) }} KB</p>
-                                    <p><strong>Status:</strong> <span class="status-badge success">{{ assessment.validation_status }}</span></p>
+                                    <p><strong data-i18n="file_size">File Size:</strong> {{ (assessment.file_size / 1024)|round(2) }} KB</p>
+                                    <p><strong data-i18n="status_label">Status:</strong> <span class="status-badge success">{{ assessment.validation_status }}</span></p>
                                 </div>
                             </div>
                             <div class="assessment-actions">
-                                <a href="/assessment/{{ assessment.id }}" class="btn-action btn-view-results">
+                                <a href="/assessment/{{ assessment.id }}" class="btn-action btn-view-results" data-i18n="view_full_results">
                                     View Full Results
                                 </a>
                             </div>
@@ -116,8 +116,8 @@
                 </div>
             {% else %}
                 <div class="no-assessments">
-                    <p>No assessments yet for this patient.</p>
-                    <a href="/new-assessment" class="btn-action btn-primary">Create Assessment</a>
+                    <p data-i18n="no_assessments_yet">No assessments yet for this patient.</p>
+                    <a href="/new-assessment" class="btn-action btn-primary" data-i18n="create_assessment">Create Assessment</a>
                 </div>
             {% endif %}
         </section>

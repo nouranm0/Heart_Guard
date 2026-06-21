@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - HEARTGAURD</title>
+    <title data-i18n="settings_title">Settings - HEARTGAURD</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
@@ -16,8 +16,8 @@
             <h1 class="page-title" data-i18n="settings">Settings</h1>
         </div>
         <div class="app-bar-right">
-            <button class="theme-toggle" title="Toggle Theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
-            <button class="language-toggle" title="Toggle Language">ع</button>
+            <button class="theme-toggle" title="Toggle Theme" data-i18n-title="toggle_theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button>
+            <button class="language-toggle" title="Toggle Language" data-i18n-title="toggle_language">ع</button>
         </div>
     </nav>
 
@@ -25,72 +25,126 @@
     <div class="dashboard-container">
         <!-- Professional Left Sidebar Navigation -->
         <aside class="dashboard-sidebar">
-            <!-- Logo Section -->
-            <div class="sidebar-logo-section">
-                <div class="sidebar-logo" onclick="window.location.href='/dashboard'">
-                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M50,15 Q35,30 25,45 Q20,52 25,60 Q35,70 50,85 Q65,70 75,60 Q80,52 75,45 Q65,30 50,15 Z" fill="url(#heartGradient)" stroke="currentColor" stroke-width="1.5"/>
-                        <defs>
-                            <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:var(--accent-glow);stop-opacity:1" />
-                                <stop offset="100%" style="stop-color:var(--heart-glow);stop-opacity:1" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-            </div>
+    <nav class="sidebar-nav">
+        {% if user.role == 'admin' %}
+            <!-- Admin Dashboard -->
+            <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" title="Dashboard" data-tooltip="Dashboard" data-i18n-tooltip="dashboard_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span class="nav-tooltip" data-i18n="dashboard_tooltip">Dashboard</span>
+            </a>
 
-            <!-- Navigation Items -->
-            <nav class="sidebar-nav">
-                <!-- Dashboard -->
-                <a href="/dashboard" class="nav-item" data-tooltip="Dashboard">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <rect x="3" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="14" width="7" height="7"></rect>
-                        <rect x="3" y="14" width="7" height="7"></rect>
-                    </svg>
-                    <span class="nav-tooltip">Dashboard</span>
-                </a>
+            <!-- Doctors Management -->
+            <a href="/doctor-dashboard" class="nav-item {% if request.path == '/doctor-dashboard' %}active{% endif %}" title="Doctors" data-tooltip="Doctors" data-i18n-tooltip="doctors_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="doctors_tooltip">Doctors</span>
+            </a>
 
-                <!-- Patients -->
-                <a href="/doctor-dashboard" class="nav-item" data-tooltip="Patients">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                    <span class="nav-tooltip">Patients</span>
-                </a>
+            <!-- Patients Overview -->
+            <a href="/all-patients" class="nav-item {% if request.path == '/all-patients' %}active{% endif %}" title="Patients" data-tooltip="Patients" data-i18n-tooltip="patients_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="patients_tooltip">Patients</span>
+            </a>
 
-                <!-- Alerts -->
-                <a href="/alerts" class="nav-item" data-tooltip="Alerts">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                    </svg>
-                    <span class="nav-tooltip">Alerts</span>
-                </a>
+            <!-- Alerts -->
+            <a href="/alerts" class="nav-item {% if request.path == '/alerts' %}active{% endif %}" title="Alerts" data-tooltip="Alerts" data-i18n-tooltip="alerts_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="alerts_tooltip">Alerts</span>
+            </a>
 
-                <!-- Settings (Active) -->
-                <a href="/settings" class="nav-item active" data-tooltip="Settings">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6m-16.78 7.78l4.24-4.24m3.08-3.08l4.24-4.24"></path>
-                    </svg>
-                    <span class="nav-tooltip">Settings</span>
-                </a>
-            </nav>
+            <!-- Settings -->
+            <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}" title="Settings" data-tooltip="Settings" data-i18n-tooltip="settings_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="settings_tooltip">Settings</span>
+            </a>
+        {% else %}
+            <!-- Doctor Dashboard -->
+            <a href="/dashboard" class="nav-item {% if request.path == '/dashboard' %}active{% endif %}" title="Dashboard" data-tooltip="Dashboard" data-i18n-tooltip="dashboard_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span class="nav-tooltip" data-i18n="dashboard_tooltip">Dashboard</span>
+            </a>
 
-            <!-- User Profile at Bottom -->
-            <div class="sidebar-bottom">
-                <div class="user-avatar-container">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Doctor" alt="Doctor Profile" class="user-avatar">
-                    <div class="user-status"></div>
-                </div>
-            </div>
-        </aside>
+            <!-- Doctor Dashboard -->
+            <a href="/doctor-dashboard" class="nav-item {% if request.path == '/doctor-dashboard' %}active{% endif %}" title="My Patients" data-tooltip="My Patients" data-i18n-tooltip="my_patients_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="my_patients_tooltip">My Patients</span>
+            </a>
+
+            <!-- Alerts -->
+            <a href="/alerts" class="nav-item {% if request.path == '/alerts' %}active{% endif %}" title="Alerts" data-tooltip="Alerts" data-i18n-tooltip="alerts_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="alerts_tooltip">Alerts</span>
+            </a>
+
+            <!-- New Assessment -->
+            <a href="/new-assessment" class="nav-item {% if request.path == '/new-assessment' %}active{% endif %}" title="New Assessment" data-tooltip="New Assessment" data-i18n-tooltip="new_assessment_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="new_assessment_tooltip">New Assessment</span>
+            </a>
+
+            <!-- Settings -->
+            <a href="/settings" class="nav-item {% if request.path == '/settings' %}active{% endif %}" title="Settings" data-tooltip="Settings" data-i18n-tooltip="settings_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m3.08 3.08l4.24 4.24M1 12h6m6 0h6m-1.78 7.78l-4.24-4.24m-3.08-3.08L4.22 4.22"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="settings_tooltip">Settings</span>
+            </a>
+
+            <!-- Add Patient -->
+            <a href="/add-patient" class="nav-item {% if request.path == '/add-patient' %}active{% endif %}" title="Add Patient" data-tooltip="Add Patient" data-i18n-tooltip="add_patient_tooltip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                <span class="nav-tooltip" data-i18n="add_patient_tooltip">Add Patient</span>
+            </a>
+        {% endif %}
+
+        <!-- Profile -->
+        <a href="/profile" class="nav-item {% if request.path == '/profile' %}active{% endif %}" title="Profile" data-tooltip="Profile" data-i18n-tooltip="profile_tooltip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span class="nav-tooltip" data-i18n="profile_tooltip">Profile</span>
+        </a>
+    </nav>
+</aside>
 
     <!-- Settings Container -->
     <div class="settings-container">
@@ -103,25 +157,25 @@
                 </div>
                     <div class="form-group">
                         <label data-i18n="first_name">First Name</label>
-                        <input type="text" name="first_name" placeholder="Ahmed" value="{{ settings.first_name or '' }}">
+                        <input type="text" name="first_name" placeholder="Ahmed" data-i18n-placeholder="placeholder_first_name" value="{{ settings.first_name or '' }}">
                     </div>
                     <div class="form-group">
                         <label data-i18n="last_name">Last Name</label>
-                        <input type="text" name="last_name" placeholder="Hassan" value="{{ settings.last_name or '' }}">
+                        <input type="text" name="last_name" placeholder="Hassan" data-i18n-placeholder="placeholder_last_name" value="{{ settings.last_name or '' }}">
                     </div>
                 </div>
 
                 <div class="settings-group">
                     <div class="form-group full">
                         <label data-i18n="email">Email</label>
-                        <input type="email" name="email" placeholder="ahmed@example.com" value="{{ user.email }}" readonly>
+                        <input type="email" name="email" placeholder="ahmed@example.com" data-i18n-placeholder="placeholder_email" value="{{ user.email }}" readonly>
                     </div>
                 </div>
 
                 <div class="settings-group">
                     <div class="form-group">
                         <label data-i18n="phone">Phone</label>
-                        <input type="tel" name="phone" placeholder="+1 (555) 123-4567" value="{{ settings.phone or '' }}">
+                        <input type="tel" name="phone" placeholder="+1 (555) 123-4567" data-i18n-placeholder="placeholder_phone" value="{{ settings.phone or '' }}">
                     </div>
                     <div class="form-group">
                         <label data-i18n="date_of_birth">Date of Birth</label>
@@ -203,89 +257,6 @@
                 </div>
             </div>
 
-            <!-- Appearance Section -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <h3 class="section-title">🎨 <span data-i18n="appearance">Appearance</span></h3>
-                </div>
-
-                <div class="settings-group">
-                    <div class="toggle-item">
-                        <div class="toggle-label">
-                            <span data-i18n="dark_mode">Dark Mode</span>
-                            <p class="toggle-desc" data-i18n="dark_mode_desc">Use dark theme</p>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" name="dark_mode" {{ 'checked' if settings.dark_mode else '' }}>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label data-i18n="language">Language</label>
-                        <select name="language">
-                            <option value="en" {% if settings.language == 'en' %}selected{% endif %}>English</option>
-                            <option value="ar" {% if settings.language == 'ar' %}selected{% endif %}>العربية</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Privacy & Data Section -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <h3 class="section-title"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> <span data-i18n="privacy_data">Privacy & Data</span></h3>
-                </div>
-
-                <div class="settings-group">
-                    <div class="toggle-item">
-                        <div class="toggle-label">
-                            <span data-i18n="data_analytics">Data Analytics</span>
-                            <p class="toggle-desc" data-i18n="data_analytics_desc">Help improve our services</p>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="toggle-item">
-                        <div class="toggle-label">
-                            <span data-i18n="research">Research</span>
-                            <p class="toggle-desc" data-i18n="research_desc">Share data for research</p>
-                        </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="settings-group" style="margin-top: 2rem;">
-                    <button class="btn btn-secondary" data-i18n="download_data">
-                        📥 Download My Data
-                    </button>
-                    <button class="btn btn-danger" data-i18n="delete_account">
-                        🗑️ Delete Account
-                    </button>
-                </div>
-            </div>
-
-            <!-- About Section -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <h3 class="section-title">ℹ️ <span data-i18n="about">About</span></h3>
-                </div>
-
-                <div class="about-info">
-                    <p><strong data-i18n="app_version">Application Version:</strong> 2.1</p>
-                    <p><strong data-i18n="last_update">Last Update:</strong> January 2026</p>
-                    <p><strong data-i18n="api_version">API Version:</strong> 1.0</p>
-                    <a href="#" data-i18n="view_license">View License</a> • 
-                    <a href="#" data-i18n="view_privacy">View Privacy Policy</a> • 
-                    <a href="#" data-i18n="view_terms">View Terms of Service</a>
-                </div>
-            </div>
         </div>
         </form>
         </div>
@@ -296,5 +267,175 @@
     <script src="{{ url_for('static', filename='js/language.js') }}"></script>
     <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
-</body>
-</html>
+
+    <script>
+        // Handle form submission with API
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    await saveSettings();
+                });
+            }
+        });
+
+        async function saveSettings() {
+            try {
+                console.log('[SAVE SETTINGS] Collecting form data');
+                
+                const formData = new FormData(document.querySelector('form'));
+                const settings = {
+                    first_name: formData.get('first_name'),
+                    last_name: formData.get('last_name'),
+                    phone: formData.get('phone'),
+                    date_of_birth: formData.get('date_of_birth'),
+                    email_notifications: document.querySelector('input[name="email_notifications"]').checked,
+                    push_notifications: document.querySelector('input[name="push_notifications"]').checked,
+                    sms_notifications: document.querySelector('input[name="sms_notifications"]').checked,
+                    dark_mode: document.querySelector('input[name="dark_mode"]')?.checked || false,
+                    language: document.querySelector('select[name="language"]')?.value || 'en'
+                };
+                
+                console.log('[SAVE SETTINGS] Data:', settings);
+                
+                const response = await fetch('/api/settings', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(settings)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('[SAVE SETTINGS] Success');
+                    showNotification('تم حفظ الإعدادات بنجاح ✓', 'success');
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    console.error('[SAVE SETTINGS] Error:', data.message);
+                    showNotification('خطأ: ' + (data.message || 'فشل الحفظ'), 'error');
+                }
+            } catch (error) {
+                console.error('[SAVE SETTINGS] Error:', error);
+                showNotification('حدث خطأ: ' + error.message, 'error');
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `flash-message flash-${type}`;
+            notification.innerHTML = `
+                ${message}
+                <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+            `;
+
+            let container = document.getElementById('notificationContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'notificationContainer';
+                container.className = 'notification-container';
+                document.body.prepend(container);
+            }
+
+            container.appendChild(notification);
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.opacity = '0';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 4000);
+        }
+
+        // Load settings on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+        });
+
+        async function loadSettings() {
+            try {
+                console.log('[LOAD SETTINGS] Fetching from API');
+                const response = await fetch('/api/settings', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('[LOAD SETTINGS] Loaded settings');
+                    // Settings are already populated by the server, but you can update them here if needed
+                }
+            } catch (error) {
+                console.error('[LOAD SETTINGS] Error:', error);
+            }
+        }
+
+        // Notification container CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            .notification-container {
+                position: fixed;
+                top: 80px;
+                left: 20px;
+                right: 20px;
+                z-index: 9999;
+                max-width: 500px;
+                pointer-events: none;
+            }
+
+            .flash-message {
+                padding: 14px 20px;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                animation: slideIn 0.3s ease-out;
+                border: 1px solid transparent;
+                font-weight: 500;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                pointer-events: auto;
+            }
+
+            .flash-success {
+                background: rgba(0, 217, 143, 0.15);
+                border-color: rgba(0, 217, 143, 0.4);
+                color: #00D98F;
+            }
+
+            .flash-error {
+                background: rgba(255, 46, 99, 0.15);
+                border-color: rgba(255, 46, 99, 0.4);
+                color: #FF2E63;
+            }
+
+            .flash-close {
+                background: none;
+                border: none;
+                color: inherit;
+                font-size: 20px;
+                cursor: pointer;
+                opacity: 0.7;
+                padding: 0;
+                margin-left: 10px;
+            }
+
+            .flash-close:hover {
+                opacity: 1;
+            }
+
+            @keyframes slideIn {
+                from {
+                    transform: translateX(-100px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
